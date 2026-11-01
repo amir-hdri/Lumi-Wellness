@@ -8,7 +8,7 @@ import globals from "globals";
 export default [
   js.configs.recommended,
   {
-    files: ["**/*.{js,jsx,ts,tsx}"],
+    files: ["**/*.{js,jsx,mjs,ts,tsx}"],
     plugins: {
       "@next/next": nextPlugin,
       "react-hooks": reactHooks,

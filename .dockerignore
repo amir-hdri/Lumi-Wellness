@@ -1,0 +1,42 @@
+# Build context for apps/web/Dockerfile (built from the repo root).
+node_modules
+**/node_modules
+.turbo
+**/.turbo
+.next
+**/.next
+.next-*
+**/.next-*
+
+# Secrets and local overrides must never reach the image: NEXT_PUBLIC_* values
+# are inlined into the client bundle at build time.
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+.git
+.github
+.vercel
+.playwright-mcp
+design-review
+.playwright
+
+backend/venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+coverage
+**/coverage
+htmlcov
+
+**/*.log
+**/.DS_Store
+test-results
+playwright-report
+**/test-results
+**/playwright-report

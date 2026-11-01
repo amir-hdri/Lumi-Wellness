@@ -160,6 +160,59 @@ build:
 Full methodology, fix log (P0/P1/P2) and the measured roadmap for reaching 95+:
 [`docs/PERFORMANCE_AUDIT.md`](docs/PERFORMANCE_AUDIT.md).
 
+## Deployment
+
+### Vercel — frontend
+
+`apps/web/vercel.json` pins the framework preset and the build command; the
+remaining settings live in the dashboard (Project → Settings → Build &
+Deployment):
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | `apps/web` |
+| Framework Preset | Next.js |
+| Build Command | `cd ../.. && npm run build --workspace=apps/web` (from `vercel.json`) |
+| Install Command | auto-detected — npm workspaces are installed from the repo root |
+| Node.js | 20.9+ (`engines.node` in the root `package.json`) |
+
+Environment variables (Project → Settings → Environment Variables — set them for
+Production *and* Preview):
+
+| Variable | Value |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | the deployed API origin, e.g. `https://api.gymapp.ir` |
+| `NEXT_PUBLIC_APP_URL` | the frontend origin, e.g. `https://gymapp.ir` |
+| `NEXT_PUBLIC_USE_MOCKS` | unset (or `false`) — the mock layer is dev-only |
+
+`NEXT_PUBLIC_*` values are inlined into the bundle at build time, so changing
+one requires a rebuild. The build fails on purpose when `NEXT_PUBLIC_USE_MOCKS`
+is `true`, or when `NEXT_PUBLIC_API_URL` is missing or points at localhost
+(`apps/web/config/deploy-env.mjs`) — a mock or localhost build must never
+reach production.
+
+The API is a separate project and has to allow the frontend origins:
+`CORS_ORIGINS=https://gymapp.ir,https://www.gymapp.ir`. Preview deployments get
+a new hostname on every push, so add
+`CORS_ALLOW_ORIGIN_REGEX=^https://<project>-.*\.vercel\.app$` to the API
+environment.
+
+### Docker — frontend
+
+```bash
+docker build -f apps/web/Dockerfile \
+  --build-arg NEXT_PUBLIC_API_URL=https://api.gymapp.ir \
+  --build-arg NEXT_PUBLIC_APP_URL=https://gymapp.ir \
+  -t lumi-web .
+docker run -p 3000:3000 lumi-web
+```
+
+The image is a Next.js `standalone` build and the API origin is baked in at
+build time, for the same reason as on Vercel. `.dockerignore` keeps
+`.env.local`, `node_modules` and `.next` out of the build context — the dev
+`.env.local` points at the mock layer and would otherwise be compiled into the
+image.
+
 ## Known limitations
 
 - **Password reset needs SMTP env to work in production.**
@@ -205,6 +258,8 @@ spec is recorded under `## Deviations` in
 | `NEXT_PUBLIC_API_URL` | apps/web | `http://localhost:8000` |
 | `NEXT_PUBLIC_USE_MOCKS` | apps/web | unset (real API) |
 | `NEXT_PUBLIC_APP_URL` | apps/web | `https://gymapp.ir` (metadata base) |
+| `CORS_ORIGINS` | backend | `http://localhost:3000` (comma-separated allow-list) |
+| `CORS_ALLOW_ORIGIN_REGEX` | backend | unset (regex for Vercel preview origins) |
 
 See `FINAL_REPORT.md` for the full engineering audit, bug fixes, and known gaps,
 `docs/API_CONTRACT_V2.md` for the API contract and its deviations, and

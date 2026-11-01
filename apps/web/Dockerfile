@@ -10,6 +10,16 @@ WORKDIR /srv
 COPY --from=deps /srv/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# NEXT_PUBLIC_* values are inlined into the bundle, so they have to be known at
+# build time. The deploy guard in config/deploy-env.mjs rejects a build that
+# still points at the mock layer or at localhost.
+ENV NEXT_DOCKER_BUILD=1
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_USE_MOCKS=false
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
+    NEXT_PUBLIC_USE_MOCKS=$NEXT_PUBLIC_USE_MOCKS
 RUN npm run build --workspace=apps/web
 
 FROM node:20-alpine AS runner

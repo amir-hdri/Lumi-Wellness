@@ -13,6 +13,10 @@ class Settings(BaseSettings):
 
     # CORS — environment-based origin list (comma-separated)
     CORS_ORIGINS: str = "http://localhost:3000"
+    # Optional regex for origins that cannot be enumerated — every Vercel
+    # preview deployment gets its own hostname, so the frontend origin varies
+    # per deploy. Matched against the full Origin header.
+    CORS_ALLOW_ORIGIN_REGEX: str = ""
 
     # Environment toggle — controls seeding and error detail in responses
     ENVIRONMENT: str = "development"
@@ -48,6 +52,11 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+
+    @property
+    def cors_origin_regex(self) -> str | None:
+        pattern = self.CORS_ALLOW_ORIGIN_REGEX.strip()
+        return pattern or None
 
     @property
     def is_production(self) -> bool:
