@@ -1,7 +1,7 @@
-# FINAL ENGINEERING REPORT — GYM APP (UNIFIED)
+# FINAL ENGINEERING REPORT — LUMI WELLNESS (UNIFIED)
 
-**Date:** 2026-08-15 · last updated 2026-10-09 (§12)
-**Repository:** https://github.com/amir-hdri/gym-app
+**Date:** 2026-08-15 · last updated 2026-10-09 (§12) · repository renamed to `Lumi-Wellness` on 2026-11-01
+**Repository:** https://github.com/amir-hdri/Lumi-Wellness
 **Branch:** `main`
 **Build Status:** type-check clean, lint clean (0 errors, 0 warnings), 104 frontend unit tests, 94 backend tests, backend loads 60 paths / 92 operations. `npm run build` cannot complete in the development sandbox — see §11.4.
 
@@ -31,7 +31,7 @@ All GitHub branches were merged into `main`, security fixes were ported to the a
 ### 2.1 Top-Level Layout
 
 ```
-gym-app/
+Lumi-Wellness/
 ├── apps/
 │   └── web/                  # Next.js 16 (React 19) frontend — 3 portals
 │       ├── src/app/          # App Router routes (RTL / Persian)

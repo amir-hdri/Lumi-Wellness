@@ -240,7 +240,7 @@ export default function HistoryPage() {
         <>
         <TwilightCard>
           <SectionTitle>حجم فعالیت و جلسات هفتگی</SectionTitle>
-          <p className="mt-1 text-xs text-muted-foreground">مدت جلسات تکمیل‌شده در ۷ روز اخیر</p>
+          <p className="mt-1 text-xs text-muted-foreground">مدت ۷ روز فعالیت اخیر — هر کپسول یک روزِ دارای جلسه</p>
           <div className="mt-4">
             {checkinsLoadingOrError ? (
               checkinsLoading ? <Loading /> : <ErrorDisplay message={checkinsErr?.message} />

@@ -41,8 +41,8 @@ export default function NewAthletePage() {
 
   const selectedBranch = watch("branch");
 
-  // Single-branch rule: gym-app has only the LUMI branch, so hide the branch
-  // field and bind it automatically when exactly one branch exists.
+  // Single-branch rule: Lumi-Wellness has only the LUMI branch, so hide the
+  // branch field and bind it automatically when exactly one branch exists.
   useEffect(() => {
     if (branches.length === 1) {
       setValue("branch", branches[0].id);

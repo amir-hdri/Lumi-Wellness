@@ -6,7 +6,7 @@ from typing import Any, Optional, List
 
 from fastapi.responses import JSONResponse
 
-logger = logging.getLogger("gym-app")
+logger = logging.getLogger("lumi-wellness")
 
 def _encode(data):
     return jsonable_encoder(data, custom_encoder={datetime: lambda value: (value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value).isoformat()})

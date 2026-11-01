@@ -5,8 +5,10 @@ membership plans, training programs, goals, check-ins (incl. staff QR check-in),
 payments, in-app messaging, notifications, and analytics dashboards. Persian
 (RTL) UI, mobile-first, Jalali dates.
 
-The repository is named `gym-app`; the product was rebranded to **Lumi
-Wellness**, which is the name in the UI, the manifest and the metadata.
+The repository and the project are named **Lumi-Wellness** (`Lumi Wellness` in
+the UI, the manifest and the metadata). The deployed domain (`gymapp.ir`) and
+the seeded account domain (`@gymapp.ir`) are still the old name — they are
+infrastructure, not product naming, and changing them means a DNS/mail cutover.
 
 ## Architecture
 
@@ -62,6 +64,10 @@ Wellness**, which is the name in the UI, the manifest and the metadata.
 - **UI:** Radix UI primitives, framer-motion, lucide-react, recharts (behind
   `React.lazy` with a fixed-height skeleton, so charts cost no layout shift),
   sonner toasts, react-hook-form + **zod 3**
+- **Activity capsule chart:** the member's own weekly volume is a bespoke SVG
+  component (`components/twilight/CapsuleChart.tsx`) — capsules on a visible
+  `--muted` track over the last 7 **active** days (days with a session), scaled
+  against the busiest day in that window
 - **Visual language:** calm and warm rather than dashboard-bright — warm
   near-black surfaces, hairline borders instead of shadows, generous rounding,
   large light-weight numerals. Two accents with two jobs: `--primary` (sand in
@@ -195,7 +201,9 @@ The API is a separate project and has to allow the frontend origins:
 `CORS_ORIGINS=https://gymapp.ir,https://www.gymapp.ir`. Preview deployments get
 a new hostname on every push, so add
 `CORS_ALLOW_ORIGIN_REGEX=^https://<project>-.*\.vercel\.app$` to the API
-environment.
+environment. Name the Vercel project `lumi-wellness` to match the repository;
+while old preview hostnames are still alive, accept both prefixes:
+`^https://(lumi-wellness|gym-app)-.*\.vercel\.app$`.
 
 ### Docker — frontend
 

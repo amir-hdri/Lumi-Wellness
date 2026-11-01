@@ -42,15 +42,15 @@ def _origin_allowed(origin: str, regex: str) -> bool:
 
 def test_preview_origin_allowed_by_regex():
     assert _origin_allowed(
-        "https://gym-app-git-feature-x1.vercel.app",
-        r"^https://gym-app-.*\.vercel\.app$",
+        "https://lumi-wellness-git-feature-x1.vercel.app",
+        r"^https://lumi-wellness-.*\.vercel\.app$",
     )
 
 
 def test_foreign_origin_not_allowed_by_regex():
     assert not _origin_allowed(
         "https://evil.example.com",
-        r"^https://gym-app-.*\.vercel\.app$",
+        r"^https://lumi-wellness-.*\.vercel\.app$",
     )
 
 

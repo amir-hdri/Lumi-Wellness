@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
         try:
             seed_database()
         except Exception:
-            logging.getLogger("gym-app").exception("Database seed failed")
+            logging.getLogger("lumi-wellness").exception("Database seed failed")
     yield
     # Shutdown — nothing to clean up for SQLite
 
@@ -90,7 +90,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         raise exc
     import logging
 
-    logging.getLogger("gym-app").exception("Unhandled exception on %s: %s", request.url.path, exc)
+    logging.getLogger("lumi-wellness").exception("Unhandled exception on %s: %s", request.url.path, exc)
     return JSONResponse(
         status_code=500,
         content={"success": False, "error": "Internal server error", "statusCode": 500},

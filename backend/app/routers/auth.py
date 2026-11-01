@@ -38,7 +38,7 @@ from app.schemas import (
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 
-logger = logging.getLogger("gym-app")
+logger = logging.getLogger("lumi-wellness")
 
 
 def _utcnow_naive() -> datetime:

@@ -188,6 +188,14 @@ Other rules:
   bar width. Series colours come from the activity tokens; grid and axis from
   `--border` / `--muted-foreground`. Always render a skeleton of the same
   height to keep CLS at 0.
+- **Activity capsules** (`components/twilight/CapsuleChart.tsx`): the member's
+  own weekly volume is drawn as SVG capsules, not recharts bars — a rounded
+  value stroke over a `--muted` track of the same height, newest day last.
+  The window is the **last 7 days that actually have sessions**, not the last
+  7 calendar days; days without a session are absent, never zero-filled. The
+  scale is relative to the busiest day in the window and the exact value is
+  always printed beside the chart. Fill is the `--blush` gradient and animates
+  `stroke-dashoffset` only — never animated `height`/`width` (§4).
 - Empty, loading, and error states are mandatory for every data surface — use
   `components/ui/DataState.tsx`. A bare spinner is not an acceptable empty state.
 
