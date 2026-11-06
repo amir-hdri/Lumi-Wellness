@@ -141,7 +141,7 @@ function NewProgramForm() {
 
           <div className="flex justify-end pt-2">
             <Button onClick={handleSave} loading={isSubmitting}>
-              <Save className="ml-2 h-4 w-4" />
+              <Save className="me-2 h-4 w-4" />
               ذخیره برنامه
             </Button>
           </div>

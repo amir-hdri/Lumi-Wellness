@@ -10,30 +10,27 @@ import { MicroLabel } from "@/components/twilight/Type";
 import { LumiWordmark } from "@/components/auth/AuthLayout";
 import { Activity, Users, MessageCircle, Calendar, Heart, Sparkles, ChevronDown, ArrowLeft, Star, CheckCircle2 } from "lucide-react";
 import { Reveal } from "@/components/animations/ScrollReveal";
-import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 
-function LandingNavigation({ onLogin, onRegister }: { onLogin: () => void; onRegister: () => void }) {
+function LandingNavigation() {
   return (
     <header className="sticky inset-x-0 top-0 z-30 px-4 py-3">
       <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-border bg-background/90 px-4 py-3 backdrop-blur-xl" aria-label="ناوبری صفحه اصلی">
-        <a href="#top" className="flex items-center" aria-label="Lumi Wellness">
+        <a href="#top" className="ring-focus flex min-h-11 items-center" aria-label="Lumi Wellness">
           <LumiWordmark />
         </a>
         <div className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
-          <a href="#experience" className="transition-colors hover:text-foreground">تجربه تمرین</a>
-          <a href="#schedule" className="transition-colors hover:text-foreground">برنامه هفتگی</a>
-          <a href="#coaches" className="transition-colors hover:text-foreground">مربیان</a>
+          <a href="#experience" className="ring-focus inline-flex min-h-11 items-center transition-colors hover:text-foreground">تجربه تمرین</a>
+          <a href="#schedule" className="ring-focus inline-flex min-h-11 items-center transition-colors hover:text-foreground">برنامه هفتگی</a>
+          <a href="#coaches" className="ring-focus inline-flex min-h-11 items-center transition-colors hover:text-foreground">مربیان</a>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={onLogin}
-            className="cursor-pointer rounded-xl px-4 py-2.5 text-xs font-bold tracking-wide text-foreground transition-colors hover:bg-secondary"
+          <Link
+            href="/auth/login"
+            className="ring-focus inline-flex min-h-11 items-center rounded-xl px-4 py-2.5 text-xs font-bold tracking-wide text-foreground transition-colors hover:bg-secondary"
           >
             ورود
-          </button>
-          <CtaButton onClick={onRegister} className="w-auto px-5 py-2.5 text-xs">
-            عضویت
-          </CtaButton>
+          </Link>
+          <CtaButton asChild className="w-auto px-5"><Link href="/auth/register">عضویت</Link></CtaButton>
         </div>
       </nav>
     </header>
@@ -93,7 +90,7 @@ function FeaturesSection() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
             <Reveal key={f.title} delay={i * 0.08}>
-              <div className="group h-full rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-border">
+              <div className="group h-full rounded-2xl border border-border bg-card p-5 transition-[color,background-color,border-color,opacity,transform] duration-300 hover:-translate-y-1 hover:border-border">
                 <div className={i % 2 === 0
                   ? "mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-blush/30 bg-blush/10 text-blush"
                   : "mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-cream/40 bg-cream/20 text-primary"}>
@@ -120,7 +117,7 @@ function WeeklyExperienceSection() {
     <section id="schedule" className="cv-below-fold px-4 py-20">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[.9fr_1.1fr]">
         <div className="rounded-[26px] border border-border bg-card p-6 text-foreground sm:p-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">برنامه همین هفته</p>
+          <p className="text-xs font-medium text-primary">برنامه همین هفته</p>
           <h2 className="mt-3 font-serif text-[22px] font-normal leading-tight md:text-2xl">تمرین‌هایی که با زندگی تو هماهنگ‌اند.</h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">برنامه را ببین، حضور را ثبت کن و بازخورد مربی را همان‌جا دریافت کن.</p>
           <div className="mt-7 space-y-3">
@@ -140,7 +137,7 @@ function WeeklyExperienceSection() {
         <div id="coaches" className="rounded-[26px] border border-border bg-card p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">مربی همراه، نه فقط برنامه</p>
+              <p className="text-xs font-medium text-primary">مربی همراه، نه فقط برنامه</p>
               <h2 className="mt-3 font-serif text-[22px] font-normal text-foreground md:text-2xl">مهسا احمدی</h2>
               <p className="mt-1 text-sm text-muted-foreground">مربی قدرت و تناسب اندام بانوان</p>
             </div>
@@ -169,10 +166,10 @@ function WeeklyExperienceSection() {
 
 function StatsSection() {
   const stats = [
-    { icon: Users, value: 450, suffix: "+", label: "ورزشکار فعال" },
-    { icon: Activity, value: 12, suffix: "+", label: "مربی متخصص" },
-    { icon: Heart, value: 98, suffix: "%", label: "رضایت مشتریان" },
-    { icon: Sparkles, value: 5000, suffix: "+", label: "جلسه تمرینی" },
+    { icon: Users, value: "مربی همراه", label: "برای مسیر تمرین تو" },
+    { icon: Activity, value: "برنامه شخصی", label: "متناسب با توان امروزت" },
+    { icon: Heart, value: "پیشرفت روشن", label: "با هدف‌های قابل پیگیری" },
+    { icon: Sparkles, value: "تمرین منظم", label: "با ثبت فعالیت و حضور" },
   ];
 
   return (
@@ -185,10 +182,10 @@ function StatsSection() {
                 <div className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-cream/40 bg-cream/20">
                   <stat.icon className="h-5 w-5 text-primary" strokeWidth={1.75} />
                 </div>
-                <div className="font-sans text-2xl font-normal tabular-nums tracking-tight text-foreground md:text-3xl">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                <div className="font-sans text-base font-medium leading-7 text-foreground md:text-lg">
+                  {stat.value}
                 </div>
-                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{stat.label}</p>
+                <p className="mt-1 text-xs font-medium leading-6 text-muted-foreground">{stat.label}</p>
               </div>
             </Reveal>
           ))}
@@ -198,7 +195,7 @@ function StatsSection() {
   );
 }
 
-function HeroSection({ onLogin, onRegister }: { onLogin: () => void; onRegister: () => void }) {
+function HeroSection() {
   return (
     <section id="top" className="relative flex min-h-[92svh] items-center px-4 py-16 lg:py-28">
       <GymBackdrop className="absolute inset-0" />
@@ -210,7 +207,7 @@ function HeroSection({ onLogin, onRegister }: { onLogin: () => void; onRegister:
            * the H1/CTA row is the LCP element and every millisecond of
            * animation delay lands directly on the score.
            */}
-          <p className="mb-6 inline-flex max-w-full items-center gap-2 whitespace-nowrap rounded-full border border-blush-fixed/30 bg-blush-fixed/10 px-4 py-1.5 text-xs font-medium text-blush-fixed sm:text-sm">
+          <p className="mb-6 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-blush-fixed/30 bg-blush-fixed/10 px-4 py-1.5 text-xs font-medium text-blush-fixed sm:text-sm">
             <Sparkles className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
             بهترین پلتفرم مدیریت باشگاه بانوان
           </p>
@@ -220,19 +217,19 @@ function HeroSection({ onLogin, onRegister }: { onLogin: () => void; onRegister:
             <span className="block text-blush-fixed">نسخه بهتر تو</span>
           </h1>
 
-          <p className="mb-8 max-w-xl text-[15px] leading-8 text-muted-foreground md:text-lg">
+          <p className="mb-8 max-w-xl text-[15px] leading-8 text-logo-ink-inverse/85 md:text-lg">
             Lumi Wellness، باشگاه دیجیتال اختصاصی بانوان برای برنامه تمرینی شخصی، ارتباط مستقیم با مربی و دیدن پیشرفت واقعی در هر روز.
           </p>
 
           <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-start">
-            <CtaButton onClick={onLogin} className="w-full whitespace-nowrap sm:w-auto sm:min-w-40">
+            <CtaButton asChild className="w-full sm:w-auto sm:min-w-40"><Link href="/auth/login">
               <Heart className="h-4 w-4" strokeWidth={1.75} aria-hidden />
               ورود اعضا
-            </CtaButton>
-            <CtaButton onClick={onRegister} variant="orange" className="w-full whitespace-nowrap sm:w-auto sm:min-w-40">
+            </Link></CtaButton>
+            <CtaButton asChild variant="orange" className="w-full sm:w-auto sm:min-w-40"><Link href="/auth/register">
               <Sparkles className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-              عضویت ورزشکار یا مربی
-            </CtaButton>
+              ثبت‌نام ورزشکار
+            </Link></CtaButton>
           </div>
         </div>
 
@@ -247,9 +244,9 @@ function HeroSection({ onLogin, onRegister }: { onLogin: () => void; onRegister:
             <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-8">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cream-fixed">
-                  امروز، یک قدم جلوتر
+                  نمونهٔ پیشرفت روزانه
                 </p>
-                <p className="mt-2 font-serif text-4xl font-medium text-logo-ink-inverse" dir="ltr">78%</p>
+                <p className="mt-2 font-serif text-4xl font-medium text-logo-ink-inverse" dir="ltr">۷۸٪</p>
                 <p className="mt-1 text-xs text-logo-ink-inverse/70">فعالیت روزانه تکمیل شده</p>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -288,6 +285,7 @@ export default function HomePage() {
     if (!isLoading && isAuthenticated && user) {
       switch (user.role) {
         case "admin":
+        case "receptionist":
           router.replace("/admin");
           break;
         case "coach":
@@ -303,17 +301,17 @@ export default function HomePage() {
   }, [isLoading, isAuthenticated, user, router]);
 
   if (isAuthenticated && user) {
-    const panelHref = user.role === "admin" ? "/admin" : user.role === "coach" ? "/coach" : user.role === "athlete" ? "/athlete" : "/auth/login";
-    const roleLabel = user.role === "admin" ? "پنل ادمین" : user.role === "coach" ? "پنل مربی" : "پنل ورزشکار";
+    const panelHref = (user.role === "admin" || user.role === "receptionist") ? "/admin" : user.role === "coach" ? "/coach" : user.role === "athlete" ? "/athlete" : "/auth/login";
+    const roleLabel = (user.role === "admin" || user.role === "receptionist") ? "پنل ادمین" : user.role === "coach" ? "پنل مربی" : "پنل ورزشکار";
     return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-10 text-foreground">
+      <main id="main" className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-10 text-foreground">
         <GymBackdrop className="absolute inset-0" />
         <div className="relative z-10 w-full max-w-md rounded-[32px] border border-border bg-popover p-8 text-center shadow-2xl shadow-scrim/50">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/40 bg-secondary text-primary"><CheckCircle2 className="h-6 w-6" strokeWidth={1.75} /></div>
           <h1 className="mt-4 font-serif text-2xl font-medium text-foreground">خوش آمدی، {user.firstName || user.email}!</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">حساب شما فعال است. می‌توانی مستقیم به پنل بروی یا با حساب دیگری وارد شوی.</p>
           <div className="mt-6 flex flex-col gap-3">
-            <CtaButton onClick={() => router.push(panelHref)} className="text-sm">ورود به {roleLabel}</CtaButton>
+            <CtaButton asChild className="text-sm"><Link href={panelHref}>ورود به {roleLabel}</Link></CtaButton>
             <CtaButton variant="ghost" onClick={() => { logout(); router.push("/auth/login"); }} className="text-sm">خروج و ورود با حساب دیگر</CtaButton>
             <Link href="/auth/login" className="text-xs text-muted-foreground hover:text-foreground">رفتن به صفحه ورود</Link>
           </div>
@@ -325,11 +323,8 @@ export default function HomePage() {
 
   return (
     <main id="main" className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      <LandingNavigation onLogin={() => router.push("/auth/login")} onRegister={() => router.push("/auth/register")} />
-      <HeroSection
-        onLogin={() => router.push("/auth/login")}
-        onRegister={() => router.push("/auth/register")}
-      />
+      <LandingNavigation />
+      <HeroSection />
       <StatsSection />
       <FeaturesSection />
       <WeeklyExperienceSection />

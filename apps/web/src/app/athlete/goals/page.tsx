@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
+import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { formatPersianNumber, calculateProgress, calculateDaysRemaining } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -20,15 +23,15 @@ const categoryLabels: Record<string, string> = {
 };
 
 export default function GoalsPage() {
-  const router = useRouter();
   const { user } = useAuth();
   const athleteId = user?.id;
   const { data, isLoading, isError, error } = useGoals(athleteId);
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay message={error?.message} />;
 
   const goals = data?.data || [];
+  const pagination = usePagination(goals.length);
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorDisplay message={error?.message} />;
   const achievedCount = goals.filter((g) => g.status === "achieved").length;
 
   return (
@@ -36,7 +39,7 @@ export default function GoalsPage() {
       <PageHeader
         title="اهداف"
         subtitle="اهداف تمرینی خود را دنبال کنید"
-        action={<CtaButton className="w-auto px-5" onClick={() => router.push("/athlete/goals/new")}>هدف جدید</CtaButton>}
+        action={<CtaButton asChild className="w-auto px-5"><Link href="/athlete/goals/new">هدف جدید</Link></CtaButton>}
       />
 
       {goals.length === 0 ? (
@@ -44,7 +47,7 @@ export default function GoalsPage() {
           icon={<Target className="h-6 w-6" strokeWidth={1.75} />}
           title="هیچ هدفی ثبت نشده است"
           description="شما هنوز هدف تمرینی ثبت نکرده‌اید"
-          action={<CtaButton onClick={() => router.push("/athlete/goals/new")}>ثبت هدف جدید</CtaButton>}
+          action={<CtaButton asChild><Link href="/athlete/goals/new">ثبت هدف جدید</Link></CtaButton>}
         />
       ) : (
         <>
@@ -54,14 +57,15 @@ export default function GoalsPage() {
           </div>
 
           <div className="flex flex-col gap-2.5">
-            {goals.map((goal) => {
+            {goals.slice(pagination.from, pagination.to).map((goal) => {
               const statusVariant = goal.status === "achieved" ? ("success" as const) : ("warning" as const);
               const statusLabel = goal.status === "achieved" ? "تکمیل شده" : "در حال انجام";
-              const progress = Math.round(calculateProgress(goal.currentValue, goal.targetValue));
+              const progress = Math.round(Number.isFinite(goal.progressPercentage) ? goal.progressPercentage : calculateProgress(goal.currentValue, goal.targetValue));
 
               return (
                 <RowCard
                   key={goal.id}
+                  href={`/athlete/goals/${goal.id}`}
                   className="cursor-default"
                   icon={<Target className="h-5 w-5" strokeWidth={1.75} />}
                   title={goal.title}
@@ -80,6 +84,7 @@ export default function GoalsPage() {
           </div>
         </>
       )}
+      <Pagination view={pagination} total={goals.length} unit="هدف" />
     </PageShell>
   );
 }

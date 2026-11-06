@@ -63,7 +63,7 @@ These are the rules that previously broke, so they are non-negotiable.
    The two themes invert: in dark, `--primary-solid` is pale sand and its ink
    is near-black; in light it is deep bronze and its ink is white. So
    `text-white` on `bg-primary-solid` is correct in light and unreadable in
-   dark. `text-primary-foreground` is right in both (10.77:1 dark / 6.88:1
+   dark. `text-primary-foreground` is right in both (10.38:1 dark / 5.40:1
    light) — and the same applies to `text-blush-foreground` on
    `bg-blush-solid` (9.88:1 / 10.58:1). Fill with the `-solid` token, never
    with `--primary` or `--blush`, which are *ink* colours.
@@ -247,3 +247,29 @@ everywhere:
    grids, ticks, tooltips and series adapt to both themes.
 5. Anything still hardcoded (`GymNavIcons` knockouts, decorative `yellow-400`
    star) is documented at its call site as deliberate.
+
+
+## 11. UI verification update — 2026-11-06
+
+- Shared fields generate stable unique ids, merge external/internal descriptions,
+  use a visible focus ring and render at 16px on coarse mobile pointers.
+- Field boundaries use `--color-input` at >=3:1 against card/background surfaces;
+  normal borders do not replace error or focused states. Decorative card borders
+  remain hairlines.
+- Every CTA uses its fill's foreground token. Orange promotional CTAs use
+  `text-cta-foreground`; never fixed light ink across both themes. Navigation
+  uses Link through `asChild`; actions use a button.
+- Shared headings, figures and metadata use the common scale; Persian labels
+  are not tracked/uppercased. Page copy remains selectable.
+- Dialogs bound their height to the dynamic viewport and scroll internally.
+  Sheets and the mobile dock reserve safe-area space. Print CSS hides chrome,
+  PWA banners and buttons while preserving receipt content.
+- Shared pagination bounds active directories to 10 rows; filters/tabs/page use
+  URL state with safe defaults and preserve unrelated query parameters.
+- Goal forms hydrate from fetched data. Failed writes preserve fields; a
+  session draft keyed by owner/goal survives Back/Forward and is cleared after
+  save/delete. Unload and ordinary link navigation still warn when dirty.
+- Fixed artwork merges position classes with `cn` and assigns unique SVG ids.
+  The capsule chart's 7 active-day window and blush meaning remain unchanged.
+
+Fresh evidence and operational limits are in `UI_UX_AUDIT_2026-11-06.md`.

@@ -93,7 +93,7 @@ export default function OnboardingPage() {
   };
 
   const radioClass = (selected: boolean) =>
-    `flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border p-3 transition-all has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:focus-visible]:ring-offset-2 ${
+    `flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border p-3 transition-[color,background-color,border-color,opacity,transform] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:focus-visible]:ring-offset-2 ${
       selected ? "border-primary bg-primary/5" : "border-border hover:border-input"
     }`;
 

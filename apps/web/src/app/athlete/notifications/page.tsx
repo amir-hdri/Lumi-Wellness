@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { cn, parseApiDate } from "@/lib/utils";
+import { cn, parseApiDate, formatPersianNumber } from "@/lib/utils";
 import { Bell, Calendar, MessageSquare, CreditCard, Dumbbell, CheckCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -44,12 +44,13 @@ export default function NotificationsPage() {
     if (athleteId) {
       markAllRead.mutate(athleteId, {
         onSuccess: () => toast.success("همه اعلان‌ها به عنوان خوانده شده علامت خوردند"),
+        onError: () => toast.error("خواندن اعلان‌ها ناموفق بود؛ دوباره تلاش کنید."),
       });
     }
   };
 
   const handleMarkRead = (id: string) => {
-    markRead.mutate(id);
+    markRead.mutate(id, { onError: () => toast.error("خواندن اعلان ناموفق بود؛ دوباره تلاش کنید.") });
   };
 
   const handleDeleteConfirm = () => {
@@ -76,9 +77,9 @@ export default function NotificationsPage() {
           <div className="flex max-w-full flex-wrap items-center gap-3">
             {unreadCount > 0 && (
               <>
-                <Badge variant="default" className="border-transparent bg-blush-solid text-blush-foreground">{unreadCount} عدد خوانده نشده</Badge>
-                <Button variant="outline" size="sm" onClick={handleMarkAllRead}>
-                  <CheckCheck className="ml-2 h-4 w-4" strokeWidth={1.75} />علامت همه به عنوان خوانده شده
+                <Badge variant="default" className="border-transparent bg-blush-solid text-blush-foreground">{formatPersianNumber(unreadCount)} اعلان خوانده‌نشده</Badge>
+                <Button variant="outline" size="sm" onClick={handleMarkAllRead} loading={markAllRead.isPending}>
+                  <CheckCheck className="me-2 h-4 w-4" strokeWidth={1.75} />علامت همه به عنوان خوانده شده
                 </Button>
               </>
             )}
@@ -98,23 +99,22 @@ export default function NotificationsPage() {
             return (
               <div
                 key={n.id}
-                onClick={() => handleMarkRead(n.id)}
                 className={cn(
-                  "flex cursor-pointer items-start gap-4 px-4 py-3.5 transition-colors hover:bg-secondary",
+                  "flex items-start gap-3 px-4 py-3.5",
                   !n.isRead && "bg-blush/10"
                 )}
               >
-                <div className="mt-1 shrink-0">{typeIcons[n.type] || typeIcons.info}</div>
-                <div className="min-w-0 flex-1">
+                <div className="mt-2 shrink-0" aria-hidden>{typeIcons[n.type] || typeIcons.info}</div>
+                <button type="button" aria-label={`${n.isRead ? "اعلان خوانده‌شده" : "خواندن اعلان"}: ${n.title}`} disabled={n.isRead || markRead.isPending} onClick={() => handleMarkRead(n.id)} className="ring-focus min-h-11 min-w-0 flex-1 rounded-xl px-1 py-1 text-start transition-colors hover:bg-secondary disabled:cursor-default">
                   <div className="flex items-start justify-between gap-2">
-                    <p className={cn("text-sm font-medium text-foreground", !n.isRead && "text-primary")}>{n.title}</p>
+                    <p className={cn("min-w-0 text-sm font-medium text-foreground", !n.isRead && "text-blush")}>{n.title}</p>
                     <div className="flex shrink-0 items-center gap-2">
                       <span className="text-xs text-muted-foreground">{timeAgo}</span>
                       {!n.isRead && <span className="h-2 w-2 shrink-0 rounded-full bg-blush-solid" />}
                     </div>
                   </div>
                   <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{n.message}</p>
-                </div>
+                </button>
                 <button
                   type="button"
                   aria-label={`حذف اعلان: ${n.title}`}
@@ -159,10 +159,10 @@ function getRelativeTime(dateStr: string): string {
   const diff = Date.now() - parseApiDate(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
   if (minutes < 1) return "چند لحظه پیش";
-  if (minutes < 60) return `${minutes} دقیقه پیش`;
+  if (minutes < 60) return `${formatPersianNumber(minutes)} دقیقه پیش`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} ساعت پیش`;
+  if (hours < 24) return `${formatPersianNumber(hours)} ساعت پیش`;
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days} روز پیش`;
-  return `${Math.floor(days / 7)} هفته پیش`;
+  if (days < 7) return `${formatPersianNumber(days)} روز پیش`;
+  return `${formatPersianNumber(Math.floor(days / 7))} هفته پیش`;
 }

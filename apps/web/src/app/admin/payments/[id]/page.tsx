@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { usePayment } from "@/hooks/use-api";
+import { downloadPaymentReceipt } from "@/lib/payment-receipt";
 import { PaymentRowActions } from "../../_components/PaymentSheets";
 import { PAYMENT_METHOD, PAYMENT_STATUS } from "../../_components/admin-data";
 
@@ -25,24 +26,14 @@ export default function TransactionDetailPage() {
   if (!payment) return <ErrorDisplay message="تراکنش یافت نشد" />;
   const status = PAYMENT_STATUS[payment.status];
 
-  const downloadReceipt = () => {
-    const text = ["رسید Lumi Wellness", `شناسه: ${payment.id}`, `کد پیگیری: ${payment.referenceId ?? "—"}`,
-      `مبلغ: ${formatCurrency(payment.amount)}`, `وضعیت: ${status.label}`,
-      `پرداخت‌کننده: ${payment.user ? `${payment.user.firstName} ${payment.user.lastName}` : payment.userId}`,
-      `روش پرداخت: ${PAYMENT_METHOD[payment.method] ?? payment.method}`,
-      `تاریخ: ${formatDateTime(payment.paidAt || payment.createdAt)}`, `توضیحات: ${payment.description ?? "—"}`].join("\n");
-    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url; link.download = `lumi-receipt-${payment.id}.txt`; link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 0);
-  };
+
 
   return (
     <PageShell>
       <div>
         <Link
           href="/admin/payments"
-          className="mb-2 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="ring-focus mb-2 inline-flex min-h-11 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           <ChevronRight strokeWidth={1.75} className="h-4 w-4" />
           بازگشت به پرداخت‌ها
@@ -96,7 +87,7 @@ export default function TransactionDetailPage() {
           <Printer strokeWidth={1.75} className="h-4 w-4" />
           چاپ رسید
         </CtaButton>
-        <CtaButton variant="outline" onClick={downloadReceipt} className="flex-1">
+        <CtaButton variant="outline" onClick={() => downloadPaymentReceipt(payment)} className="flex-1">
           <Download strokeWidth={1.75} className="h-4 w-4" />
           دریافت رسید متنی
         </CtaButton>

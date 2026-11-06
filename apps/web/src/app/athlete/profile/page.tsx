@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatPersianNumber, formatDate, getInitials } from "@/lib/utils";
@@ -13,7 +12,6 @@ import { CtaButton } from "@/components/twilight/controls";
 import { User, Mail, Phone, CheckCircle2, Sparkles, CalendarDays, Clock } from "lucide-react";
 
 export default function ProfilePage() {
-  const router = useRouter();
   const { user } = useAuth();
   const athleteId = user?.id;
   const { data: dashData, isLoading: dashLoading } = useAthleteDashboard(athleteId);
@@ -105,7 +103,7 @@ export default function ProfilePage() {
         </div>
         {/* Nested interactive elements (Link > button) break keyboard/SR
             semantics — a single button navigating programmatically. */}
-        <CtaButton onClick={() => router.push("/athlete/membership")}>مدیریت و تمدید اشتراک باشگاه</CtaButton>
+        <CtaButton asChild><Link href="/athlete/membership">مدیریت و تمدید اشتراک باشگاه</Link></CtaButton>
       </div>
 
       {/* Personal info — settings list pattern */}

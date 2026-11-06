@@ -30,7 +30,7 @@ import { StaffAccounts } from "../_components/StaffAccounts";
 
 /** Twilight input override (ui/Input base carries old theme tokens + a dark: variant). */
 const inputClassName =
-  "h-10 rounded-xl border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary/50";
+  "h-11 min-h-11 rounded-xl border-input bg-card text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary";
 
 function SettingsRow({
   id,
@@ -57,7 +57,7 @@ function SettingsRow({
           {label}
         </Label>
       </div>
-      <div className="w-44 shrink-0 sm:w-60">
+      <div className="min-w-0 flex-1 sm:w-60 sm:flex-none">
         <Input id={id} type={type} disabled={disabled} value={value} onChange={(e) => onChange(e.target.value)} className={inputClassName} />
       </div>
     </div>

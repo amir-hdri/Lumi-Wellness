@@ -23,14 +23,14 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-start justify-between gap-3 pt-1", className)}>
-      <div className="min-w-0">
-        <h1 className="font-serif text-[24px] font-normal leading-tight tracking-tight text-foreground">
+    <div className={cn("flex flex-wrap items-start justify-between gap-4 pt-1", className)}>
+      <div className="min-w-0 flex-1 basis-48">
+        <h1 className="font-serif text-2xl font-medium leading-relaxed tracking-tight text-foreground md:text-3xl">
           {title}
         </h1>
-        {subtitle ? <p className="mt-1 font-sans text-xs text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-1.5 max-w-2xl font-sans text-sm leading-7 text-muted-foreground">{subtitle}</p> : null}
       </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
+      {action ? <div className="flex max-w-full flex-wrap items-center gap-2">{action}</div> : null}
     </div>
   );
 }
@@ -45,8 +45,8 @@ export function SectionTitle({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-center justify-between", className)}>
-      <h2 className="font-serif text-lg font-normal text-foreground">{children}</h2>
+    <div className={cn("flex flex-wrap items-center justify-between gap-3", className)}>
+      <h2 className="min-w-0 font-serif text-lg font-medium leading-relaxed text-foreground">{children}</h2>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>
   );

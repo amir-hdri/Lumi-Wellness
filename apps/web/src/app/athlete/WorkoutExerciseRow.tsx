@@ -41,7 +41,7 @@ export function WorkoutExerciseRow({ exercise, checked, onCheckedChange }: Worko
         {checked && <Check className="h-4 w-4" strokeWidth={1.75} />}
       </span>
       <div className="min-w-0 flex-1">
-        <p className={cn("text-sm font-medium text-foreground transition-all", checked && "text-muted-foreground line-through")}>
+        <p className={cn("text-sm font-medium text-foreground transition-[color,background-color,border-color,opacity,transform]", checked && "text-muted-foreground line-through")}>
           {exerciseName}
         </p>
         <p className={cn("text-xs leading-5 text-muted-foreground", checked && "line-through")}>

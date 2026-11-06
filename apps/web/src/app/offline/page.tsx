@@ -28,11 +28,11 @@ export default function OfflinePage() {
         </p>
         <div className="mt-6 flex gap-3">
           <Link href="/" className={ctaCream}>
-            <RefreshCw className="ml-2 h-4 w-4" strokeWidth={1.75} />
+            <RefreshCw className="me-2 h-4 w-4" strokeWidth={1.75} />
             تلاش مجدد
           </Link>
           <Link href="/athlete/checkin" className={ctaGhost}>
-            <Dumbbell className="ml-2 h-4 w-4" strokeWidth={1.75} />
+            <Dumbbell className="me-2 h-4 w-4" strokeWidth={1.75} />
             رفتن به چک‌این
           </Link>
         </div>

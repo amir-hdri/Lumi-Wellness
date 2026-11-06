@@ -95,7 +95,7 @@ export function PwaRegister() {
   return (
     <>
       {showInstall && (
-        <div className="fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 flex items-center gap-3 rounded-2xl border border-primary/20 bg-popover p-3 shadow-xl backdrop-blur-xl md:inset-x-auto md:left-1/2 md:w-[420px] md:-translate-x-1/2 lg:bottom-6">
+        <div data-lumi-pwa className="fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 flex items-center gap-3 rounded-2xl border border-primary/20 bg-popover p-3 shadow-xl backdrop-blur-xl md:inset-x-auto md:left-1/2 md:w-[420px] md:-translate-x-1/2 lg:bottom-6">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Download className="h-5 w-5" />
           </div>
@@ -116,7 +116,7 @@ export function PwaRegister() {
         </div>
       )}
       {needRefresh && (
-        <div className="fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 flex items-center gap-3 rounded-2xl border border-primary/30 bg-popover p-3 shadow-xl md:inset-x-auto md:left-1/2 md:w-[420px] md:-translate-x-1/2 lg:bottom-6">
+        <div data-lumi-pwa className="fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 flex items-center gap-3 rounded-2xl border border-primary/30 bg-popover p-3 shadow-xl md:inset-x-auto md:left-1/2 md:w-[420px] md:-translate-x-1/2 lg:bottom-6">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <RefreshCw className="h-5 w-5" />
           </div>

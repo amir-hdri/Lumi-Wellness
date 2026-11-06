@@ -1,5 +1,10 @@
 "use client";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
+import { useUrlState } from "@/hooks/use-url-state";
+
 import * as React from "react";
 import Link from "next/link";
 import { Plus, Eye, Pencil } from "lucide-react";
@@ -32,17 +37,19 @@ const statusLabels: Record<StatusOption, string> = {
 };
 
 export default function ProgramsPage() {
-  const [statusFilter, setStatusFilter] = React.useState<StatusOption>("all");
+  const [statusFilter, setStatusFilter] = useUrlState<StatusOption>("status", "all", statusOptions);
   const { data, isLoading, isError, error } = useTrainingPrograms();
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay message={error?.message} />;
 
   const programsData = data?.data || [];
 
   const filtered = programsData.filter(
     (p) => statusFilter === "all" || p.status === statusFilter
   );
+  const pagination = usePagination(filtered.length);
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorDisplay message={error?.message} />;
+
 
   return (
     <PageShell>
@@ -81,7 +88,7 @@ export default function ProgramsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((program) => (
+            {filtered.slice(pagination.from, pagination.to).map((program) => (
               <TableRow key={program.id} className={cn("border-t border-border hover:bg-secondary")}>
                 <TableCell className="font-medium text-foreground">{program.name}</TableCell>
                 <TableCell className="text-foreground">{program.athlete ? `${program.athlete.firstName} ${program.athlete.lastName}` : "–"}</TableCell>
@@ -131,6 +138,7 @@ export default function ProgramsPage() {
           </div>
         )}
       </div>
+      <Pagination view={pagination} total={filtered.length} unit="برنامه" />
     </PageShell>
   );
 }

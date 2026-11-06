@@ -2,9 +2,10 @@
 
 import { USER_STATUS } from "../_components/admin-data";
 
-import { useState } from "react";
+import { useUrlState } from "@/hooks/use-url-state";
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatPersianNumber, formatDate } from "@/lib/utils";
@@ -33,15 +34,12 @@ const thClass = "px-4 py-3 text-right text-[10px] font-semibold text-muted-foreg
 const tdClass = "px-4 py-3 text-muted-foreground";
 
 export default function MembersPage() {
-  const router = useRouter();
   const { data, isLoading, isError, refetch } = useUsers("athlete");
   const memberships = useMemberships();
   const plans = useMembershipPlans();
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<StatusFilter>("all");
+  const [search, setSearch] = useUrlState<string>("q", "");
+  const [filter, setFilter] = useUrlState<StatusFilter>("status", "all", statusFilterOptions);
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay onRetry={refetch} />;
   const latestMemberships = new Map<string, Membership>();
   for (const membership of memberships.data?.data ?? []) {
     const previous = latestMemberships.get(membership.userId);
@@ -59,6 +57,9 @@ export default function MembersPage() {
     const matchFilter = filter === "all" || m.status === filter;
     return matchSearch && matchFilter;
   });
+  const pagination = usePagination(filtered.length);
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorDisplay onRetry={refetch} />;
 
   return (
     <PageShell>
@@ -66,10 +67,10 @@ export default function MembersPage() {
         title="مدیریت اعضا"
         subtitle="لیست تمام اعضای باشگاه"
         action={
-          <CtaButton onClick={() => router.push("/admin/members/new")} className="w-auto px-5">
+          <CtaButton asChild className="w-auto px-5"><Link href={"/admin/members/new"}>
             <Plus className="h-4 w-4" strokeWidth={1.75} />
             افزودن عضو جدید
-          </CtaButton>
+          </Link></CtaButton>
         }
       />
 
@@ -93,7 +94,7 @@ export default function MembersPage() {
       ) : (
         <>
           <div className="grid gap-3 sm:hidden">
-            {filtered.map((member) => (
+            {filtered.slice(pagination.from, pagination.to).map((member) => (
               <article key={member.id} className="rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -107,9 +108,9 @@ export default function MembersPage() {
                   <div><dt className="text-muted-foreground">طرح اشتراک</dt><dd className="mt-1 font-medium text-foreground">{member.plan || "بدون طرح"}</dd></div>
                   <div className="col-span-2"><dt className="text-muted-foreground">تاریخ ثبت‌نام</dt><dd className="mt-1 font-medium text-foreground">{formatDate(member.createdAt)}</dd></div>
                 </dl>
-                <CtaButton variant="outline" onClick={() => router.push(`/admin/members/${member.id}`)} aria-label={`مشاهده و ویرایش ${member.firstName} ${member.lastName}`} className="mt-3 w-full">
+                <CtaButton variant="outline" asChild aria-label={`مشاهده و ویرایش ${member.firstName} ${member.lastName}`} className="mt-3 w-full"><Link href={`/admin/members/${member.id}`}>
                   مشاهده و ویرایش
-                </CtaButton>
+                </Link></CtaButton>
               </article>
             ))}
           </div>
@@ -128,9 +129,9 @@ export default function MembersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((member, idx) => (
+                {filtered.slice(pagination.from, pagination.to).map((member, idx) => (
                   <tr key={member.id} className="border-t border-border hover:bg-secondary">
-                    <td className={tdClass}>{formatPersianNumber(idx + 1)}</td>
+                    <td className={tdClass}>{formatPersianNumber(pagination.from + idx + 1)}</td>
                     <td className={`${tdClass} font-medium text-foreground`}>{member.firstName} {member.lastName}</td>
                     <td dir="ltr" className={`${tdClass} text-left`}>{member.email}</td>
                     <td dir="ltr" className={`${tdClass} text-left`}>{member.phone}</td>
@@ -151,6 +152,7 @@ export default function MembersPage() {
           </div>
         </>
       )}
+      <Pagination view={pagination} total={filtered.length} unit="عضو" />
     </PageShell>
   );
 }

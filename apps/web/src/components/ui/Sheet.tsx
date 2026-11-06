@@ -122,7 +122,7 @@ export function Sheet({
               <X className="h-5 w-5" aria-hidden="true" />
             </DialogPrimitive.Close>
           </div>
-          <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain", hero ? "relative z-10 -mt-8 px-6 pb-6" : "px-5 py-4")}>
+          <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[calc(1.25rem+env(safe-area-inset-bottom))]", hero ? "relative z-10 -mt-8 px-6" : "px-5 pt-4")}>
             {children}
           </div>
         </DialogPrimitive.Content>

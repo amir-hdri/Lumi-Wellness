@@ -29,6 +29,13 @@ const ADMIN_ID = "u1";
 const COACH_ID = "u2";
 const ATHLETE_ID = "u5";
 
+it("preserves the athlete's entered initial progress when creating a goal", async () => {
+  const created = await mockService.createGoal({ athleteId: ATHLETE_ID, title: "هدف اولیه", targetValue: 20, currentValue: 5, unit: "kg" });
+  try {
+    expect((await mockService.getGoal(created.data!.id)).data).toMatchObject({ currentValue: 5, progressPercentage: 25 });
+  } finally { await mockService.deleteGoal(created.data!.id); }
+});
+
 async function freshProgram(): Promise<TrainingProgram> {
   const res = await mockService.createTrainingProgram({
     athleteId: ATHLETE_ID,

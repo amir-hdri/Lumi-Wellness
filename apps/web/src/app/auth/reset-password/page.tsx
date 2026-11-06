@@ -91,9 +91,9 @@ function ResetPasswordContent() {
               <CheckCircle2 className="h-7 w-7" strokeWidth={1.75} />
             </div>
             <p className="text-sm text-muted-foreground">رمز عبور با موفقیت تغییر کرد.</p>
-            <CtaButton onClick={() => router.push("/auth/login")} className="mt-4 text-sm">
+            <CtaButton asChild className="mt-4 text-sm"><Link href={"/auth/login"}>
               ورود به Lumi Wellness
-            </CtaButton>
+            </Link></CtaButton>
           </motion.div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

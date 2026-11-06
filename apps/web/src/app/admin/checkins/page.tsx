@@ -1,5 +1,10 @@
 "use client";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
+import { useUrlState } from "@/hooks/use-url-state";
+
 import { useMemo, useState } from "react";
 import { ClipboardCheck, LogOut, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -70,8 +75,8 @@ function errorMessage(err: unknown, fallback: string): string {
 }
 
 export default function CheckInsPage() {
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<StatusFilter>("all");
+  const [search, setSearch] = useUrlState<string>("q", "");
+  const [status, setStatus] = useUrlState<StatusFilter>("status", "all", ["all", "open", "closed"]);
   const [times, setTimes] = useState<Record<string, string>>({});
   const [actingId, setActingId] = useState<string | null>(null);
   const [voidTarget, setVoidTarget] = useState<CheckIn | null>(null);
@@ -106,6 +111,7 @@ export default function CheckInsPage() {
       .sort((a, b) => +new Date(b.checkInTime) - +new Date(a.checkInTime));
   }, [checkIns.data, search, status, byId]);
 
+  const pagination = usePagination(rows.length);
   const openCount = useMemo(() => rows.filter((c) => !c.checkOutTime).length, [rows]);
   const isFiltered = search.trim().length > 0 || status !== "all";
 
@@ -205,7 +211,7 @@ export default function CheckInsPage() {
               />
             ) : (
               <ul className="space-y-3">
-                {rows.map((session) => {
+                {rows.slice(pagination.from, pagination.to).map((session) => {
                   const open = !session.checkOutTime;
                   const name = resolveName(session, byId);
                   const timeValue = times[session.id] ?? currentTimeInput();
@@ -292,6 +298,7 @@ export default function CheckInsPage() {
               </ul>
             )}
           </div>
+          <Pagination view={pagination} total={rows.length} unit="حضور" />
         </Panel>
       </FadeIn>
 

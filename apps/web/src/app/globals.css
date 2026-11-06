@@ -46,7 +46,7 @@
   --color-info-foreground: #ffffff;
   --color-info-solid: #2f6f9e;
   --color-border: #e3d9c6;
-  --color-input: #cfc3ae;
+  --color-input: #98856c;
   --color-ring: #8a6b3f;
   --color-cta: #c2410c;
   --color-cta-foreground: #ffffff;
@@ -115,10 +115,10 @@
     --color-info-foreground: #121417;
     --color-info-solid: #7dd3fc;
     --color-border: #232934;
-    --color-input: #2c3444;
+    --color-input: #68778c;
     --color-ring: #d2c0a5;
     --color-cta: #ff5a1f;
-    --color-cta-foreground: #ffffff;
+    --color-cta-foreground: #211a13;
     --color-activity-move: #d2c0a5;
     --color-activity-exercise: #4ade80;
     --color-activity-stand: #7dd3fc;
@@ -137,6 +137,12 @@
 }
 
 @layer base {
+  html {
+    scroll-padding-block-start: calc(5rem + env(safe-area-inset-top));
+    scroll-padding-block-end: calc(8rem + env(safe-area-inset-bottom));
+    -webkit-tap-highlight-color: transparent;
+  }
+
   * {
     border-color: var(--color-border);
   }
@@ -156,12 +162,19 @@
      Bodoni Moda lives only in the LUMI wordmark logo. */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-serif);
-    font-weight: 400;
-    line-height: 1.25;
+    font-weight: 500;
+    line-height: 1.5;
     text-wrap: balance;
     letter-spacing: -0.01em;
     color: var(--color-foreground);
+    scroll-margin-block-start: calc(5rem + env(safe-area-inset-top));
   }
+
+  h1 { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); }
+  h2 { font-size: 1.25rem; }
+  h3, h4, h5, h6 { font-size: 1rem; font-weight: 600; }
+
+  button, a, input, textarea, select, [role="button"] { touch-action: manipulation; }
 
   p, li, label, button, input, textarea, select, th, td {
     overflow-wrap: break-word;
@@ -209,6 +222,12 @@
 }
 
 @layer components {
+  .meta-label { font-size: 0.75rem; font-weight: 500; line-height: 1.7; color: var(--color-muted-foreground); }
+  .stat-figure { font-size: clamp(2rem, 1.6rem + 1vw, 2.75rem); font-weight: 300; line-height: 1.25; font-variant-numeric: tabular-nums; }
+  .stat-unit { font-size: 0.75rem; color: var(--color-muted-foreground); }
+  .latin-kicker { direction: ltr; unicode-bidi: isolate; font-size: 0.625rem; font-weight: 600; letter-spacing: 0.16em; color: var(--color-primary); }
+  .origin-inline-start { transform-origin: left center; }
+  [dir="rtl"] .origin-inline-start { transform-origin: right center; }
   /* Hide scrollbars for horizontal chip/icon rows (reference .no-scrollbar) */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -274,5 +293,25 @@
    cover the landing hero CTA at short viewports, so give the page bottom
    breathing room. Set/cleared by PwaRegister via body[data-pwa-banner="visible"]. */
 body[data-pwa-banner="visible"] #main {
-  padding-bottom: 8rem;
+  padding-bottom: calc(12rem + env(safe-area-inset-bottom));
+}
+
+/* Field boundaries must remain identifiable even before focus (WCAG 1.4.11).
+   Error and focused states retain their dedicated semantic colors. */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]), textarea, [role="combobox"]):not([aria-invalid="true"]):not(:focus-visible) {
+  border-color: var(--color-input);
+}
+
+/* Keep text inputs readable without triggering the mobile Safari focus zoom. */
+@media (max-width: 767px) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select {
+    font-size: 1rem !important;
+  }
+}
+
+@media print {
+  body { background: var(--color-card); }
+  body > a, header, aside, nav, [data-lumi-pwa], [data-sonner-toaster], #main button { display: none !important; }
+  [data-portal-content] { margin-inline-start: 0 !important; }
+  #main { padding: 0 !important; margin: 0 !important; }
 }

@@ -22,3 +22,11 @@
 - **گراف:** hosted Graphify در ابزارهای نشست موجود نبود؛ کاربر ساخت محلی را صریحاً خواست. corpus اولیه ۳۲۰ فایل، snapshot محفوظ، AST و اسناد تغییرکردهٔ نهایی تازه می‌شوند؛ گراف/HTML/گزارش/benchmark/manifest/provenance منتخب در graphify-out همراه با هشدارهای integrity و هزینهٔ نامعلوم توکن ذخیره می‌شوند.
 - **فایل‌ها:** گروه‌های apps/web/src/app/{admin,coach,athlete}، اجزای مشترک و hooks/types/client/mock، آزمون‌های واحد و مرورگر، backend/{models,schemas,routers/memberships,users,goals} و migration/tests، README/API_CONTRACT/FULLSTACK_AUDIT، .context/STATE و SESSION_LOG و خروجی منتخب گراف.
 - **تسک بعدی:** domain واقعی API، CORS/Vercel، حساب مدیر production و alembic upgrade head در محیط مقصد. انتشار، push و migration production انجام نشد؛ تغییرهای اولیهٔ .serena، next-env و تصاویر context حفظ و از کامیت این نشست جدا هستند.
+
+---
+
+## [2026-11-06T13:05:12+03:30] Agent: codex-ui
+- **خلاصه:** طرح کامل UI توسط کاربر تأیید شد؛ سشن قبل و Graphify خوانده شدند. اجزای مشترک، فرم و وضعیت هدف و پیش‌نویس نشست، اعلان، رسید، URL/صفحه‌بندی فعال، پذیرش، hero/CTA/تم و دسترس‌پذیری ارتقا یافتند.
+- **شواهد:** ۲۴۰ تست وب، ۱۱۲ مرورگر mock، ۳۴ API واقعی؛ TypeScript/ESLint و بیلدها موفق. گزارش و شواهد در docs/UI_UX_AUDIT_2026-11-06.md و docs/ui-audit.
+- **تصمیم‌ها:** هویت و قراردادهای قبلی حفظ شدند؛ بازبین سه نقص و یک شکاف صفحات فعال پیدا کرد که با آزمون رگرسیون اصلاح شدند. گراف اولیه ۳۴۸ هش برابر داشت؛ بدون بازسازی، snapshot قبلی و هش اختلاف‌ها حفظ شدند.
+- **حدود:** production/push انجام نشد؛ تغییرهای اولیه از stage جدا هستند. فضای Ego اولیه در مرور پایانی موجود نبود؛ تصاویر نهایی به پاسخ کاربر برای فضای تازه وابسته‌اند.

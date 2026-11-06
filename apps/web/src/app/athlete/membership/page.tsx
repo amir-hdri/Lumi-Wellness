@@ -173,7 +173,7 @@ export default function MembershipPage() {
         />
         <p className="mt-3 text-center font-sans text-2xl font-normal tabular-nums text-blush">
           {formatPersianNumber(remaining)}
-          <span className="mr-2 text-xs font-normal text-muted-foreground">جلسه باقی‌مانده</span>
+          <span className="ms-2 text-xs font-normal text-muted-foreground">جلسه باقی‌مانده</span>
         </p>
       </TwilightCard>
 
@@ -223,7 +223,7 @@ export default function MembershipPage() {
                   key={plan.id}
                   type="button"
                   onClick={() => setSelectedPlanId(plan.id)}
-                  className={`flex cursor-pointer items-center justify-between rounded-2xl border p-3.5 text-right transition-all ${
+                  className={`flex cursor-pointer items-center justify-between rounded-2xl border p-3.5 text-right transition-[color,background-color,border-color,opacity,transform] ${
                     isSelected
                       ? "border-primary bg-secondary shadow-md"
                       : "border-border bg-card opacity-70 hover:opacity-100"

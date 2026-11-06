@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useUrlState } from "@/hooks/use-url-state";
+
 import type { ReactNode } from "react";
 import {
   Dumbbell,
@@ -136,7 +137,7 @@ export default function HistoryPage() {
   const { user } = useAuth();
   const userId = user?.id;
 
-  const [tab, setTab] = useState<TabValue>("checkins");
+  const [tab, setTab] = useUrlState<TabValue>("tab", "checkins", TAB_OPTIONS);
   const { query: readinessQuery, mutation: readinessMutation } = useReadiness(userId);
   const { data: dashboardData, isLoading: statsLoading, isError: statsError } = useAthleteDashboard(userId);
   const selectedReadiness = readinessQuery.data?.data?.state ?? null;

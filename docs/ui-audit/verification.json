@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-06",
+  "timezone": "Asia/Tehran",
+  "checks": [
+    {
+      "check": "Vitest",
+      "passed": 240,
+      "failed": 0
+    },
+    {
+      "check": "Playwright mock",
+      "passed": 112,
+      "failed": 0
+    },
+    {
+      "check": "Playwright real API",
+      "passed": 34,
+      "failed": 0
+    }
+  ],
+  "typescript": "passed",
+  "eslint": "passed",
+  "production_builds": [
+    ".next-e2e (mock mode)",
+    ".next-real-e2e (real API mode)"
+  ],
+  "real_api_database": "isolated temporary SQLite supplied by playwright.real.config.ts",
+  "production_deployment_performed": false,
+  "visual_final_review": "pending browser workspace approval"
+}

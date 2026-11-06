@@ -2,9 +2,10 @@
 
 import { USER_STATUS } from "../_components/admin-data";
 
-import { useState } from "react";
+import { useUrlState } from "@/hooks/use-url-state";
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatPersianNumber } from "@/lib/utils";
@@ -22,13 +23,10 @@ const tdClass = "px-4 py-3 text-muted-foreground";
 
 export default function CoachesPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const { data, isLoading, isError, refetch } = useUsers("coach");
   const { data: programsData } = useTrainingPrograms();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useUrlState<string>("q", "");
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay onRetry={refetch} />;
   const coaches = data?.data || [];
 
   // Distinct coached athletes per coach, from the program roster.
@@ -45,6 +43,9 @@ export default function CoachesPage() {
   const filtered = coaches.filter((c) =>
     `${c.firstName} ${c.lastName}`.includes(search) || c.email.includes(search) || c.phone.includes(search)
   );
+  const pagination = usePagination(filtered.length);
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorDisplay onRetry={refetch} />;
 
   return (
     <PageShell>
@@ -52,10 +53,10 @@ export default function CoachesPage() {
         title="مدیریت مربیان"
         subtitle="لیست تمام مربیان باشگاه"
         action={
-          user?.role === "admin" && <CtaButton onClick={() => router.push("/admin/coaches/new")} className="w-auto px-5">
+          user?.role === "admin" && <CtaButton asChild className="w-auto px-5"><Link href={"/admin/coaches/new"}>
             <Plus className="h-4 w-4" strokeWidth={1.75} />
             افزودن مربی جدید
-          </CtaButton>
+          </Link></CtaButton>
         }
       />
 
@@ -82,9 +83,9 @@ export default function CoachesPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((coach, idx) => (
+              {filtered.slice(pagination.from, pagination.to).map((coach, idx) => (
                 <tr key={coach.id} className="border-t border-border hover:bg-secondary">
-                  <td className={tdClass}>{formatPersianNumber(idx + 1)}</td>
+                  <td className={tdClass}>{formatPersianNumber(pagination.from + idx + 1)}</td>
                   <td className={`${tdClass} font-medium text-foreground`}>{coach.firstName} {coach.lastName}</td>
                   <td dir="ltr" className={`${tdClass} text-left`}>{coach.email}</td>
                   <td dir="ltr" className={`${tdClass} text-left`}>{coach.phone}</td>
@@ -103,6 +104,7 @@ export default function CoachesPage() {
           </table>
         </div>
       )}
+      <Pagination view={pagination} total={filtered.length} unit="مربی" />
     </PageShell>
   );
 }

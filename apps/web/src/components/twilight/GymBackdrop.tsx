@@ -1,17 +1,22 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   className?: string;
 }
 
 export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
+  const uid = React.useId().replace(/[^A-Za-z0-9]/g, "");
+  const barbellGrad = `gym-barbell-${uid}`;
+  const plateGrad = `gym-plate-${uid}`;
   // DELIBERATE (§9.5): fixed-dark artwork — the gradients below are the art
   // itself and stay dark in both themes, so they are not theme tokens.
   // Content over this surface must use the theme-invariant
   // `text-logo-ink-inverse` ink, never theme text.
   return (
     <div
-      className={`relative w-full h-full overflow-hidden select-none pointer-events-none ${className}`}
+      aria-hidden="true"
+      className={cn("relative w-full h-full overflow-hidden select-none pointer-events-none", className)}
     >
       {/* Dark Obsidian & Amber Dusk Gradient */}
       <div
@@ -38,12 +43,12 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
         className="absolute inset-0 w-full h-full opacity-65"
       >
         <defs>
-          <linearGradient id="barbellGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={barbellGrad} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#1e2530" />
             <stop offset="50%" stopColor="#3d4959" />
             <stop offset="100%" stopColor="#1e2530" />
           </linearGradient>
-          <linearGradient id="plateGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient id={plateGrad} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#2c3645" />
             <stop offset="100%" stopColor="#13171f" />
           </linearGradient>
@@ -68,7 +73,7 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
           width="16"
           height="130"
           rx="4"
-          fill="url(#plateGrad)"
+          fill={`url(#${plateGrad})`}
           stroke="#3a4759"
           strokeWidth="1"
         />
@@ -78,7 +83,7 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
           width="14"
           height="100"
           rx="3"
-          fill="url(#plateGrad)"
+          fill={`url(#${plateGrad})`}
         />
         <rect
           x="108"
@@ -86,7 +91,7 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
           width="12"
           height="70"
           rx="2"
-          fill="url(#plateGrad)"
+          fill={`url(#${plateGrad})`}
         />
 
         {/* Main Bar */}
@@ -96,7 +101,7 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
           width="480"
           height="10"
           rx="3"
-          fill="url(#barbellGrad)"
+          fill={`url(#${barbellGrad})`}
         />
 
         {/* Right plates */}
@@ -106,7 +111,7 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
           width="12"
           height="70"
           rx="2"
-          fill="url(#plateGrad)"
+          fill={`url(#${plateGrad})`}
         />
         <rect
           x="496"
@@ -114,7 +119,7 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
           width="14"
           height="100"
           rx="3"
-          fill="url(#plateGrad)"
+          fill={`url(#${plateGrad})`}
         />
         <rect
           x="514"
@@ -122,7 +127,7 @@ export const GymBackdrop: React.FC<Props> = ({ className = "" }) => {
           width="16"
           height="130"
           rx="4"
-          fill="url(#plateGrad)"
+          fill={`url(#${plateGrad})`}
           stroke="#3a4759"
           strokeWidth="1"
         />

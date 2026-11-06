@@ -14,7 +14,7 @@ interface LoadingProps {
   message?: string;
 }
 
-export function Loading({ message = "در حال بارگذاری..." }: LoadingProps) {
+export function Loading({ message = "در حال بارگذاری…" }: LoadingProps) {
   return (
     <div className="flex flex-col items-center justify-center py-20" role="status" aria-live="polite">
       <Spinner size="lg" label={null} className="text-primary" />

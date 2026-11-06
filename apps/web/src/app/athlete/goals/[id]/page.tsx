@@ -1,162 +1,65 @@
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, Target, Calendar, Save, Trash2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { ChevronRight, Target, Calendar, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
 import { Progress } from "@/components/ui/Progress";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
-import { PageShell, SectionTitle } from "@/components/twilight/Page";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/Dialog";
+import { PageShell, PageHeader, SectionTitle } from "@/components/twilight/Page";
 import { TwilightCard } from "@/components/twilight/controls";
-import { formatPersianNumber, calculateProgress, calculateDaysRemaining } from "@/lib/utils";
-import { useGoal, useUpdateGoalProgress } from "@/hooks/use-api";
+import { formatPersianNumber, formatDate, calculateProgress } from "@/lib/utils";
+import { useGoal, useUpdateGoal, useDeleteGoal } from "@/hooks/use-api";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
-import type { Goal } from "@/lib/types";
+import { GoalForm, clearGoalDraft, goalDraftKey } from "../GoalForm";
 
-const goalSchema = z.object({
-  title: z.string().min(1, "عنوان هدف را وارد کنید"),
-  category: z.string().min(1, "دسته‌بندی را انتخاب کنید"),
-  current: z.string().min(1, "مقدار فعلی را وارد کنید"),
-  target: z.string().min(1, "مقدار هدف را وارد کنید"),
-  unit: z.string().min(1, "واحد را وارد کنید"),
-  deadline: z.string().min(1, "مهلت را انتخاب کنید"),
-  notes: z.string().optional(),
-});
-
-const categories = [
-  { value: "weight_loss", label: "کاهش وزن" }, { value: "muscle_gain", label: "افزایش عضله" },
-  { value: "strength", label: "قدرت" }, { value: "endurance", label: "استقامت" },
-];
-
-const inputClassName = "h-11 rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none";
+const statuses = { not_started: "شروع نشده", in_progress: "در حال انجام", achieved: "تکمیل شده", missed: "مهلت گذشته", paused: "متوقف" } as const;
 
 export default function GoalDetailPage() {
-  const params = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { data, isLoading, isError, error } = useGoal(params.id);
-  const updateProgress = useUpdateGoalProgress();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const goal = data?.data;
-
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
-    resolver: zodResolver(goalSchema),
-    defaultValues: goal ? {
-      title: goal.title,
-      category: goal.category,
-      current: String(goal.currentValue),
-      target: String(goal.targetValue),
-      unit: goal.unit,
-      deadline: goal.targetDate,
-      notes: goal.description || "",
-    } : undefined,
-  });
-
-  const category = watch("category");
-  const currentVal = Number(watch("current")) || 0;
-  const targetVal = Number(watch("target")) || 1;
-  const progress = calculateProgress(currentVal, targetVal);
-
-  const onSubmit = async (formData: { title: string; category: string; current: string; target: string; unit: string; deadline: string; notes?: string }) => {
-    setIsSubmitting(true);
-    try {
-      if (goal) {
-        await updateProgress.mutateAsync({ id: goal.id, currentValue: Number(formData.current) });
-      }
-      toast.success("هدف با موفقیت به‌روزرسانی شد");
-      router.push("/athlete/goals");
-    } catch {
-      toast.error("خطا در به‌روزرسانی هدف");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay message={error?.message} />;
-  if (!goal) return <ErrorDisplay message="هدف یافت نشد" />;
-
-  return (
-    <PageShell>
-      <div>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/athlete/goals"><ChevronRight className="h-4 w-4" strokeWidth={1.75} /> بازگشت به اهداف</Link>
-        </Button>
-      </div>
-
-      <TwilightCard>
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-blush/30 bg-blush/10 text-blush">
-            <Target className="h-8 w-8" strokeWidth={1.75} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="font-serif text-2xl font-normal tracking-tight text-foreground">{goal.title}</h1>
-              <Badge
-                variant={goal.status === "achieved" ? "success" : "warning"}
-                className={goal.status === "achieved" ? "border-transparent bg-blush-solid text-blush-foreground" : undefined}
-              >
-                {goal.status === "achieved" ? "تکمیل شده" : "در حال انجام"}
-              </Badge>
-            </div>
-            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1"><Calendar className="h-4 w-4" strokeWidth={1.75} />مهلت: {goal.targetDate}</span>
-              <span>{formatPersianNumber(calculateDaysRemaining(goal.targetDate))} روز باقی‌مانده</span>
-            </div>
-          </div>
-        </div>
-      </TwilightCard>
-
-      <TwilightCard className="flex flex-col gap-4">
-        <SectionTitle>پیشرفت</SectionTitle>
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">مقدار فعلی</span>
-            <span className="font-sans text-2xl font-bold tabular-nums text-foreground">{formatPersianNumber(goal.currentValue)}</span>
-          </div>
-          <Progress value={progress} className="bg-border" indicatorClassName="bg-none bg-blush-solid" />
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">۰</span>
-            <span className="text-sm font-medium text-foreground">{formatPersianNumber(Math.round(progress))}%</span>
-            <span className="text-sm text-muted-foreground">{formatPersianNumber(goal.targetValue)} {goal.unit}</span>
-          </div>
-        </div>
-      </TwilightCard>
-
-      <TwilightCard className="flex flex-col gap-4">
-        <SectionTitle>ویرایش هدف</SectionTitle>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input label="عنوان هدف" error={errors.title?.message} {...register("title")} className={inputClassName} />
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Input label="مقدار فعلی" type="number" error={errors.current?.message} {...register("current")} className={inputClassName} />
-            <Input label="مقدار هدف" type="number" error={errors.target?.message} {...register("target")} className={inputClassName} />
-            <Input label="واحد" placeholder="کیلوگرم" error={errors.unit?.message} {...register("unit")} className={inputClassName} />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5"><Label>دسته‌بندی</Label>
-              <Select value={category} onValueChange={(v) => setValue("category", v as Goal["category"])}>
-                <SelectTrigger className={inputClassName}><SelectValue /></SelectTrigger>
-                <SelectContent>{categories.map((c) => (<SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>))}</SelectContent>
-              </Select>
-            </div>
-            <Input label="مهلت" type="date" error={errors.deadline?.message} {...register("deadline")} className={inputClassName} />
-          </div>
-          <Textarea label="یادداشت" rows={3} {...register("notes")} className="rounded-xl border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none" />
-          <div className="flex justify-between">
-            <Button variant="destructive" type="button"><Trash2 className="ml-2 h-4 w-4" strokeWidth={1.75} />حذف هدف</Button>
-            <Button type="submit" loading={isSubmitting}><Save className="ml-2 h-4 w-4" strokeWidth={1.75} />ذخیره تغییرات</Button>
-          </div>
-        </form>
-      </TwilightCard>
-    </PageShell>
-  );
+  const query = useGoal(id);
+  const update = useUpdateGoal();
+  const remove = useDeleteGoal();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const goal = query.data?.data;
+  if (query.isLoading) return <Loading />;
+  if (query.isError || !goal) return <ErrorDisplay message={query.error?.message ?? "هدف یافت نشد"} onRetry={() => void query.refetch()} />;
+  const progress = Math.max(0, Math.min(100, Number.isFinite(goal.progressPercentage) ? goal.progressPercentage : calculateProgress(goal.currentValue, goal.targetValue)));
+  return <PageShell>
+    <Button asChild variant="ghost" size="sm" className="self-start"><Link href="/athlete/goals"><ChevronRight aria-hidden className="h-4 w-4" />بازگشت به اهداف</Link></Button>
+    <PageHeader title={goal.title} subtitle="پیشرفتت را ثبت کن و هدف را با مسیر امروزت هماهنگ نگه دار." action={<Badge variant={goal.status === "achieved" ? "success" : "secondary"}>{statuses[goal.status] ?? goal.status}</Badge>} />
+    <TwilightCard className="space-y-4">
+      <div className="flex items-center gap-3"><span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush/10 text-blush"><Target className="h-5 w-5" /></span><SectionTitle>پیشرفت ثبت‌شده</SectionTitle></div>
+      <div className="flex flex-wrap items-baseline justify-between gap-3"><p className="text-sm text-muted-foreground">{formatPersianNumber(goal.currentValue)} از {formatPersianNumber(goal.targetValue)} {goal.unit}</p><span className="text-2xl font-medium tabular-nums text-blush">{formatPersianNumber(Math.round(progress))}٪</span></div>
+      <Progress value={progress} aria-label="پیشرفت هدف" indicatorClassName="bg-none bg-blush-solid" />
+      <p className="flex items-center gap-2 text-sm text-muted-foreground"><Calendar aria-hidden className="h-4 w-4" />مهلت: {goal.targetDate ? formatDate(goal.targetDate) : "ثبت نشده"}</p>
+    </TwilightCard>
+    <TwilightCard className="space-y-5">
+      <SectionTitle>ویرایش هدف</SectionTitle>
+      <GoalForm key={goal.id} goal={goal} pending={update.isPending || remove.isPending} onSubmit={async patch => {
+        const valuesChanged = patch.currentValue !== goal.currentValue || patch.targetValue !== goal.targetValue;
+        const status = valuesChanged ? patch.currentValue >= patch.targetValue ? "achieved" : "in_progress" : goal.status;
+        await update.mutateAsync({ id: goal.id, data: { ...patch, status } });
+        toast.success("تغییرات هدف ذخیره شد"); router.push("/athlete/goals");
+      }} footer={<Button variant="destructive" disabled={update.isPending || remove.isPending} onClick={() => { setDeleteError(""); setConfirmOpen(true); }}><Trash2 aria-hidden className="h-4 w-4" />حذف هدف</Button>} />
+    </TwilightCard>
+    <Dialog open={confirmOpen} onOpenChange={open => { if (!remove.isPending) setConfirmOpen(open); }}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>حذف هدف</DialogTitle><DialogDescription>هدف «{goal.title}» و پیشرفت آن حذف می‌شود. این اقدام قابل بازگشت نیست.</DialogDescription></DialogHeader>
+        {deleteError && <p role="alert" className="text-sm text-destructive">{deleteError}</p>}
+        <DialogFooter>
+          <Button variant="outline" disabled={remove.isPending} onClick={() => setConfirmOpen(false)}>انصراف</Button>
+          <Button variant="destructive" loading={remove.isPending} onClick={async () => {
+            try { await remove.mutateAsync(goal.id); clearGoalDraft(goalDraftKey(goal)); toast.success("هدف حذف شد"); router.push("/athlete/goals"); }
+            catch (e) { setDeleteError(e instanceof Error ? e.message : "حذف ناموفق بود؛ دوباره تلاش کنید."); }
+          }}>تأیید حذف هدف</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </PageShell>;
 }

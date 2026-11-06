@@ -1,5 +1,8 @@
 "use client";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -195,6 +198,7 @@ export default function PlansPage() {
   const [toggling, setToggling] = useState<MembershipPlan | null>(null);
   const [deleting, setDeleting] = useState<MembershipPlan | null>(null);
   const plans = data?.data ?? [];
+  const pagination = usePagination(plans.length);
 
   if (isLoading) return <Loading />;
   if (isError) return <ErrorDisplay onRetry={refetch} />;
@@ -257,7 +261,7 @@ export default function PlansPage() {
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {plans.map((plan) => (
+          {plans.slice(pagination.from, pagination.to).map((plan) => (
             <TwilightCard key={plan.id} className={cn(!plan.isActive && "opacity-60")}>
               <div className="flex items-center justify-between">
                 <h3 className="font-serif text-lg font-normal text-foreground">{plan.name}</h3>
@@ -359,6 +363,7 @@ export default function PlansPage() {
         loading={remove.isPending}
         onConfirm={confirmDelete}
       />
+      <Pagination view={pagination} total={plans.length} unit="پلن" />
     </PageShell>
   );
 }

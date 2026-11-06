@@ -1,5 +1,8 @@
 "use client";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -34,9 +37,10 @@ const tableCell = "px-4 py-3 align-middle";
 export default function PaymentsPage() {
   const [newOpen, setNewOpen] = useState(false);
   const { data, isLoading, isError, refetch } = usePayments();
+  const payments = data?.data || [];
+  const pagination = usePagination(payments.length);
   if (isLoading) return <Loading />;
   if (isError) return <ErrorDisplay onRetry={refetch} />;
-  const payments = data?.data || [];
   const totalRevenue = payments.reduce((sum: number, p) => sum + (p.status === "completed" ? p.amount : 0), 0);
   const totalPending = payments.reduce((sum: number, p) => sum + (p.status === "pending" ? p.amount : 0), 0);
   return (
@@ -94,9 +98,9 @@ export default function PaymentsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {payments.map((payment, idx) => (
+                  {payments.slice(pagination.from, pagination.to).map((payment, idx) => (
                     <tr key={payment.id} className="border-t border-border transition-colors hover:bg-secondary">
-                      <td className={tableCell}>{formatPersianNumber(idx + 1)}</td>
+                      <td className={tableCell}>{formatPersianNumber(pagination.from + idx + 1)}</td>
                       <td className={`${tableCell} font-medium text-foreground`}>{payment.user ? `${payment.user.firstName} ${payment.user.lastName}` : payment.userId}</td>
                       <td className={`${tableCell} font-medium tabular-nums text-foreground`}>{formatCurrency(payment.amount)}</td>
                       <td className={tableCell}>
@@ -125,6 +129,7 @@ export default function PaymentsPage() {
         )}
       </section>
       <NewPaymentSheet open={newOpen} onOpenChange={setNewOpen} />
+      <Pagination view={pagination} total={payments.length} unit="تراکنش" />
     </PageShell>
   );
 }

@@ -14,8 +14,9 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, error, hint, id, startAdornment, endAdornment, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
+  ({ className, type = "text", label, error, hint, id, startAdornment, endAdornment, "aria-describedby": describedBy, "aria-invalid": invalid, ...props }, ref) => {
+    const generatedId = React.useId();
+    const inputId = id ?? `input-${generatedId}`;
     const errorId = `${inputId}-error`;
     const hintId = `${inputId}-hint`;
 
@@ -34,11 +35,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             id={inputId}
+            autoComplete={type === "email" ? "email" : undefined}
+            spellCheck={type === "email" ? false : undefined}
             className={cn(
-              "flex h-11 w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground",
+              "flex h-11 min-h-11 w-full rounded-xl border border-input bg-card px-4 py-2.5 text-base text-foreground md:text-sm",
               "file:border-0 file:bg-transparent file:text-sm file:font-medium",
               "placeholder:text-muted-foreground",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:border-primary/60",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:border-primary",
               "disabled:cursor-not-allowed disabled:opacity-50",
               "transition-colors",
               startAdornment && "ps-11",
@@ -48,8 +51,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 : "hover:border-input",
               className
             )}
-            aria-invalid={error ? "true" : "false"}
-            aria-describedby={error ? errorId : hint ? hintId : undefined}
+            aria-invalid={error ? true : invalid}
+            aria-describedby={[describedBy, error ? errorId : hint ? hintId : null].filter(Boolean).join(" ") || undefined}
             ref={ref}
             {...props}
           />

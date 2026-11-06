@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useUrlState } from "@/hooks/use-url-state";
 import Link from "next/link";
 import { Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
@@ -85,8 +86,8 @@ export function UserDirectory({
   emptyTitle,
   emptyDescription,
 }: UserDirectoryProps) {
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<UserStatus | "all">(initialStatus);
+  const [search, setSearch] = useUrlState<string>("q", "");
+  const [status, setStatus] = useUrlState<UserStatus | "all">("status", initialStatus, ["all", "active", "inactive", "suspended", "pending"]);
   const [sort, setSort] = useState<SortState<DirectorySortKey>>({ key: "createdAt", dir: "desc" });
 
   const filtered = useMemo(() => {

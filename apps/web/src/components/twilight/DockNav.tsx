@@ -93,7 +93,7 @@ export function DockNav({ items, dotId }: { items: DockItem[]; dotId: string }) 
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-5 z-40 select-none lg:hidden">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-40 select-none lg:hidden">
       <nav
         aria-label="ناوبری اصلی موبایل"
         className="pointer-events-auto mx-auto flex h-[65px] w-[330px] max-w-[calc(100vw-2rem)] items-center justify-around rounded-[36px] border border-border bg-popover/94 px-3 shadow-[0_18px_44px_color-mix(in_srgb,var(--color-scrim)_75%,transparent)] backdrop-blur-2xl"

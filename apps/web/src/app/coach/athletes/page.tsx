@@ -1,5 +1,10 @@
 "use client";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
+import { useUrlState } from "@/hooks/use-url-state";
+
 import * as React from "react";
 import Link from "next/link";
 import { Plus, Eye, ClipboardList } from "lucide-react";
@@ -29,15 +34,13 @@ function getStatusBadge(status: string) {
 }
 
 export default function AthletesPage() {
-  const [search, setSearch] = React.useState("");
-  const [filter, setFilter] = React.useState<StatusFilter>("all");
+  const [search, setSearch] = useUrlState<string>("q", "");
+  const [filter, setFilter] = useUrlState<StatusFilter>("status", "all", statusFilters);
   const { user } = useAuth();
   const { data, isLoading, isError, error, refetch: refetchUsers } = useUsers("athlete");
   const dashboard = useCoachDashboard(user?.id);
   const roster = new Map((dashboard.data?.data?.athletes ?? []).map((athlete) => [athlete.id, athlete]));
 
-  if (isLoading || dashboard.isLoading) return <Loading />;
-  if (isError || dashboard.isError) return <ErrorDisplay message={error?.message ?? dashboard.error?.message} onRetry={() => { void refetchUsers(); void dashboard.refetch(); }} />;
 
   const usersData = data?.data || [];
 
@@ -47,6 +50,11 @@ export default function AthletesPage() {
     const matchesFilter = filter === "all" || a.status === filter;
     return matchesSearch && matchesFilter;
   });
+  const pagination = usePagination(filtered.length);
+  if (isLoading || dashboard.isLoading) return <Loading />;
+  if (isError || dashboard.isError) return <ErrorDisplay message={error?.message ?? dashboard.error?.message} onRetry={() => { void refetchUsers(); void dashboard.refetch(); }} />;
+
+
 
   return (
     <PageShell>
@@ -88,7 +96,7 @@ export default function AthletesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((athlete) => {
+            {filtered.slice(pagination.from, pagination.to).map((athlete) => {
               const name = `${athlete.firstName} ${athlete.lastName}`;
               const summary = roster.get(athlete.id);
               const program = summary?.currentProgram;
@@ -150,6 +158,7 @@ export default function AthletesPage() {
           </div>
         )}
       </div>
+      <Pagination view={pagination} total={filtered.length} unit="شاگرد" />
     </PageShell>
   );
 }

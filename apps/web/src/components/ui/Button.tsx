@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 active:bg-primary/95",
+        default: "bg-primary-solid text-primary-foreground shadow-sm hover:bg-primary-solid/90 active:bg-primary-solid/95",
         destructive: "bg-destructive-solid text-destructive-foreground hover:brightness-95 shadow-sm",
         outline: "border border-primary/50 bg-card text-primary hover:bg-secondary",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm",
@@ -48,6 +48,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const showLoading = Boolean(loading) && !asChild;
     return (
       <Comp
+        type={asChild ? undefined : "button"}
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={asChild ? disabled : disabled || loading}
@@ -77,7 +78,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            <span>در حال پردازش...</span>
+            <span>در حال پردازش…</span>
           </span>
         ) : (
           children

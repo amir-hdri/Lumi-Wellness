@@ -1,6 +1,7 @@
 "use client";
 
 import { type ButtonHTMLAttributes } from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 
 export type CtaProps = Omit<
@@ -8,6 +9,7 @@ export type CtaProps = Omit<
   "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "onAnimationEnd"
 > & {
   variant?: "cream" | "orange" | "ghost" | "outline";
+  asChild?: boolean;
 };
 
 /**
@@ -21,13 +23,15 @@ export type CtaProps = Omit<
  * of JS lands directly on LCP/TBT. `motion-reduce` keeps it still for users
  * who asked for reduced motion (the framer-motion version had no such guard).
  */
-export function CtaButton({ variant = "cream", className, children, ...rest }: CtaProps) {
+export function CtaButton({ variant = "cream", className, children, asChild = false, ...rest }: CtaProps) {
+  const Comp = asChild ? Slot : "button";
   return (
-    <button
+    <Comp
+      type={asChild ? undefined : "button"}
       className={cn(
-        "flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-xs font-bold tracking-wide shadow-lg shadow-scrim/40 transition-all duration-150 ease-out hover:scale-[1.02] active:scale-[0.96] motion-reduce:transition-colors motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
-        variant === "cream" && "bg-primary text-primary-foreground hover:bg-primary",
-        variant === "orange" && "bg-cta text-logo-ink-inverse shadow-cta/20 hover:bg-cta",
+        "ring-focus flex min-h-11 min-w-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold leading-5 shadow-sm transition-[color,background-color,border-color,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 motion-reduce:transform-none",
+        variant === "cream" && "bg-primary-solid text-primary-foreground hover:bg-primary-solid/90",
+        variant === "orange" && "bg-cta text-cta-foreground hover:bg-cta/90",
         variant === "ghost" && "bg-card text-foreground shadow-none hover:bg-secondary",
         variant === "outline" &&
           "border border-primary/50 bg-card text-primary shadow-none hover:bg-secondary",
@@ -36,6 +40,6 @@ export function CtaButton({ variant = "cream", className, children, ...rest }: C
       {...rest}
     >
       {children}
-    </button>
+    </Comp>
   );
 }

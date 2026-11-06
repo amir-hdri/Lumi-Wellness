@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { DURATION, EASE_OUT, useReducedMotion } from "@/lib/motion";
 
 /**
  * Twilight Meditation page primitives — exact port of the reference screen
@@ -16,15 +17,14 @@ import { cn } from "@/lib/utils";
 
 export { PageHeader, SectionTitle, MicroLabel, MicroLabelFa } from "./Type";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-
 export function PageShell({ children, className }: { children: ReactNode; className?: string }) {
+  const reduced = useReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={reduced ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: EASE }}
-      className={cn("flex flex-col gap-6 pb-6 text-foreground select-none", className)}
+      transition={{ duration: reduced ? 0 : DURATION.page, ease: EASE_OUT }}
+      className={cn("flex min-w-0 flex-col gap-6 pb-6 text-foreground", className)}
     >
       {children}
     </motion.div>

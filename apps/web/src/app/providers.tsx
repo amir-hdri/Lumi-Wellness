@@ -6,6 +6,7 @@ import { MotionConfig } from "framer-motion";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "sonner";
+import { RouteTitle } from "@/components/layout/RouteTitle";
 
 // Devtools are dev-only: keep them out of the production chunk graph.
 const ReactQueryDevtools =
@@ -37,6 +38,7 @@ export function Providers({ children }: Readonly<{ children: ReactNode }>) {
       <MotionConfig reducedMotion="user">
       <QueryClientProvider client={queryClient}>
           <AuthProvider>{children}</AuthProvider>
+          <RouteTitle />
           <Toaster
             position="bottom-center"
             expand

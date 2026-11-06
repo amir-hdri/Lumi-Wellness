@@ -11,6 +11,7 @@ import { usePayment } from "@/hooks/use-api";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { PageShell, PageHeader, SectionTitle, MicroLabelFa } from "@/components/twilight/Page";
 import { TwilightCard } from "@/components/twilight/controls";
+import { downloadPaymentReceipt, paymentStatusLabels } from "@/lib/payment-receipt";
 
 export default function InvoiceDetailPage() {
   const params = useParams<{ id: string }>();
@@ -36,7 +37,7 @@ export default function InvoiceDetailPage() {
         subtitle={`شماره فاکتور: ${p.referenceId || p.id}`}
         action={
           <Badge variant={isCompleted ? "success" : "secondary"} className="px-4 py-1.5 text-sm">
-            {isCompleted ? "موفق" : p.status}
+            {paymentStatusLabels[p.status] ?? p.status}
           </Badge>
         }
       />
@@ -78,12 +79,12 @@ export default function InvoiceDetailPage() {
           </div>
         )}
 
-        <div className="mt-6 flex justify-end gap-3 border-t border-border pt-6">
-          <Button variant="outline">
+        <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-border pt-6 print:hidden">
+          <Button variant="outline" onClick={() => window.print()}>
             <Printer className="h-4 w-4" strokeWidth={1.75} /> چاپ
           </Button>
-          <Button variant="outline">
-            <Download className="h-4 w-4" strokeWidth={1.75} /> دانلود PDF
+          <Button variant="outline" onClick={() => downloadPaymentReceipt(p)}>
+            <Download className="h-4 w-4" strokeWidth={1.75} aria-hidden /> دریافت رسید متنی
           </Button>
         </div>
       </TwilightCard>

@@ -110,7 +110,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning className={`${estedad.variable} ${estedadLatin.variable} ${vazirmatn.variable} ${bodoni.variable} ${montserrat.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:right-4 focus:top-4 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">پرش به محتوا</a>
+        <a href="#main" className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:z-[100] focus-visible:start-4 focus-visible:top-4 focus-visible:rounded-xl focus-visible:bg-primary-solid focus-visible:px-4 focus-visible:py-3 focus-visible:text-primary-foreground">پرش به محتوا</a>
         <Providers>{children}</Providers>
         <PwaRegister />
       </body>

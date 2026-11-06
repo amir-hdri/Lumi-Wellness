@@ -1,5 +1,10 @@
 "use client";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
+import { useUrlState } from "@/hooks/use-url-state";
+
 import { useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
@@ -17,7 +22,6 @@ import { ConfirmDialog } from "../_components/ConfirmDialog";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { DIFFICULTIES, difficultyLabels } from "../_meta";
 
-const muscles = ["همه", "سینه", "پشت", "پاها", "بازو", "شکم", "سرشانه"];
 const difficulties = ["all", ...DIFFICULTIES.map((item) => item.value)];
 const difficultyChipLabels = { all: "همه", ...difficultyLabels };
 
@@ -25,12 +29,13 @@ const chipLabels = (opts: string[]): Record<string, string> =>
   Object.fromEntries(opts.map((o) => [o, o]));
 
 export default function ExerciseLibraryPage() {
-  const [search, setSearch] = useState("");
+  const { data, isLoading, isError, error, refetch } = useExercises();
+  const muscles = ["همه", ...new Set((data?.data ?? []).map(ex => ex.muscleGroup).filter(Boolean))];
+  const [search, setSearch] = useUrlState<string>("q", "");
   const [deleteTarget, setDeleteTarget] = useState<Exercise | null>(null);
   const remove = useDeleteExercise();
-  const [muscleFilter, setMuscleFilter] = useState("همه");
-  const [difficultyFilter, setDifficultyFilter] = useState("all");
-  const { data, isLoading, isError, error, refetch } = useExercises();
+  const [muscleFilter, setMuscleFilter] = useUrlState<string>("muscle", "همه", muscles);
+  const [difficultyFilter, setDifficultyFilter] = useUrlState<string>("difficulty", "all", difficulties);
 
   const deleteExercise = async () => {
     if (!deleteTarget || remove.isPending) return;
@@ -44,8 +49,6 @@ export default function ExerciseLibraryPage() {
     }
   };
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay message={error?.message} onRetry={refetch} />;
 
   const exercisesData = data?.data || [];
 
@@ -55,6 +58,10 @@ export default function ExerciseLibraryPage() {
     const matchDifficulty = difficultyFilter === "all" || ex.difficulty === difficultyFilter;
     return matchSearch && matchMuscle && matchDifficulty;
   });
+  const pagination = usePagination(filtered.length);
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorDisplay message={error?.message} onRetry={refetch} />;
+
 
   const difficultyColor: Record<string, "default" | "secondary" | "destructive" | "info"> = {
     beginner: "default", intermediate: "secondary", advanced: "destructive",
@@ -69,7 +76,7 @@ export default function ExerciseLibraryPage() {
         action={
           <Button variant="default" asChild className="w-auto">
             <Link href="/coach/exercises/new">
-              <Plus className="ml-2 h-4 w-4" />
+              <Plus className="me-2 h-4 w-4" />
               افزودن حرکت جدید
             </Link>
           </Button>
@@ -113,9 +120,9 @@ export default function ExerciseLibraryPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((ex, idx) => (
+            {filtered.slice(pagination.from, pagination.to).map((ex, idx) => (
               <TableRow key={ex.id} className={cn("border-t border-border hover:bg-secondary")}>
-                <TableCell className="tabular-nums text-foreground">{formatPersianNumber(idx + 1)}</TableCell>
+                <TableCell className="tabular-nums text-foreground">{formatPersianNumber(pagination.from + idx + 1)}</TableCell>
                 <TableCell className="font-medium text-foreground">{ex.name}</TableCell>
                 <TableCell><Badge variant="outline">{ex.muscleGroup}</Badge></TableCell>
                 <TableCell>
@@ -157,6 +164,7 @@ export default function ExerciseLibraryPage() {
       <ConfirmDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open && !remove.isPending) setDeleteTarget(null); }}
         title="حذف حرکت" description={`حرکت «${deleteTarget?.name ?? ""}» حذف شود؟ حرکت‌های استفاده‌شده در برنامه قابل حذف نیستند.`}
         confirmLabel="حذف حرکت" loading={remove.isPending} onConfirm={deleteExercise} />
+      <Pagination view={pagination} total={filtered.length} unit="حرکت" />
     </PageShell>
   );
 }

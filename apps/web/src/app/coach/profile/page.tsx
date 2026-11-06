@@ -54,7 +54,7 @@ export default function CoachProfilePage() {
                 <Input label="تلفن" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} />
               </div>
               <div className="flex justify-end pt-2">
-                <Button onClick={handleSaveProfile} disabled={isSaving}><Save className="ml-2 h-4 w-4" />ذخیره تغییرات</Button>
+                <Button onClick={handleSaveProfile} disabled={isSaving}><Save className="me-2 h-4 w-4" />ذخیره تغییرات</Button>
               </div>
             </div>
           </TwilightCard>
@@ -73,7 +73,7 @@ export default function CoachProfilePage() {
                 />
               ))}
               <div className="flex justify-end pt-2">
-                <Button onClick={handleChangePassword} disabled={isChangingPassword}><Lock className="ml-2 h-4 w-4" />تغییر رمز عبور</Button>
+                <Button onClick={handleChangePassword} disabled={isChangingPassword}><Lock className="me-2 h-4 w-4" />تغییر رمز عبور</Button>
               </div>
             </div>
           </TwilightCard>

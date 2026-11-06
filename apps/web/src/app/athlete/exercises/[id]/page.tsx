@@ -117,12 +117,12 @@ export default function ExerciseDetailPage() {
               </p>
             </div>
             <div className="space-y-1.5">
-              <Label>تکرار</Label>
-              <Input type="number" value={reps} onChange={(e) => setReps(e.target.value)} />
+              <Label htmlFor="set-reps">تکرار</Label>
+              <Input id="set-reps" name="reps" type="number" inputMode="numeric" min={1} step={1} value={reps} onChange={(e) => setReps(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label>وزن (کیلوگرم)</Label>
-              <Input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} />
+              <Label htmlFor="set-weight">وزن (کیلوگرم)</Label>
+              <Input id="set-weight" name="weight" type="number" inputMode="decimal" min={0} step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} />
             </div>
           </div>
           <div className="mt-5 flex items-center gap-3">

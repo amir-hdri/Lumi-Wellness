@@ -27,12 +27,12 @@ export function PortalLayout({ children, navItems, dockItems, dockId }: PortalLa
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
-        <div className="flex min-w-0 flex-1 flex-col lg:mr-[280px]">
+        <div data-portal-content className="flex min-w-0 flex-1 flex-col lg:ms-[280px]">
           <div className="relative flex min-h-screen flex-col">
             <Header
               onMenuToggle={() => setSidebarOpen((prev) => !prev)}
             />
-            <main className="relative flex-1 px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-5 md:px-7 md:pb-8 lg:px-10 lg:pt-7" id="main">
+            <main className="relative mx-auto w-full min-w-0 max-w-[1440px] flex-1 px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-6 md:px-7 lg:px-10 lg:pb-8 lg:pt-8" id="main" tabIndex={-1}>
               <PageTransition key={pathname}>{children}</PageTransition>
             </main>
             <DockNav items={dockItems} dotId={dockId} />

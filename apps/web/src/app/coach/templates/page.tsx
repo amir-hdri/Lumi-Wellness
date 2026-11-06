@@ -1,5 +1,10 @@
 "use client";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/ui/Pagination";
+
+import { useUrlState } from "@/hooks/use-url-state";
+
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -25,7 +30,7 @@ export default function TemplatesPage() {
   const create = useCreateTrainingProgram();
   const add = useAddProgramExercise();
   const remove = useDeleteTrainingProgram();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useUrlState<string>("q", "");
   const [source, setSource] = useState<TrainingProgram | null>(null);
   const [pending, setPending] = useState(false);
   const copying = useRef(false);
@@ -36,6 +41,7 @@ export default function TemplatesPage() {
   // model. The API/mock list can contain other coaches' rows, so scope here too.
   const owned = (programs.data?.data ?? []).filter((program) => program.coachId === user?.id);
   const filtered = owned.filter((program) => `${program.name} ${program.description ?? ""}`.includes(search.trim()));
+  const pagination = usePagination(filtered.length);
 
   const clone = async (values: CloneProgramValues) => {
     if (copying.current || !source || !user || user.role !== "coach") return;
@@ -106,7 +112,7 @@ export default function TemplatesPage() {
       {filtered.length === 0 ? <EmptyState tone="blush" icon={<LayoutTemplate className="h-6 w-6" aria-hidden />}
         title="الگویی یافت نشد" description={owned.length ? "برنامه‌ای با جست‌وجوی شما وجود ندارد" : "ابتدا برنامه‌ای بسازید تا بتوانید حرکت‌های آن را دوباره استفاده کنید"} /> :
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((program) => <TwilightCard key={program.id} className="flex flex-col gap-4">
+          {filtered.slice(pagination.from, pagination.to).map((program) => <TwilightCard key={program.id} className="flex flex-col gap-4">
             <div className="flex items-start justify-between gap-3">
               <h3 className="min-w-0 flex-1 break-words font-serif text-lg font-normal leading-snug text-foreground">{program.name}</h3>
               <Badge variant="outline">{program.status === "draft" ? "پیش‌نویس" : program.status === "active" ? "فعال" : program.status === "completed" ? "تکمیل‌شده" : "بایگانی"}</Badge>
@@ -124,6 +130,7 @@ export default function TemplatesPage() {
         </div>}
       {source && <CloneProgramSheet open onOpenChange={(open) => { if (!open && !copying.current) setSource(null); }} source={source}
         athletes={athleteRows} athletesLoading={athletes.isLoading} pending={pending} progress={progress} onSubmit={clone} />}
+      <Pagination view={pagination} total={filtered.length} unit="الگو" />
     </PageShell>
   );
 }

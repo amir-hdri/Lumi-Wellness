@@ -782,10 +782,10 @@ export const mockService = {
     const goal: Goal = {
       id: generateId(), athleteId: data.athleteId || "", coachId: data.coachId,
       title: data.title || "", description: data.description,
-      targetValue: data.targetValue || 0, currentValue: 0, unit: data.unit || "",
+      targetValue: data.targetValue || 0, currentValue: data.currentValue ?? 0, unit: data.unit || "",
       category: data.category || "custom", startDate: data.startDate || new Date().toISOString(),
       targetDate: data.targetDate || new Date().toISOString(), status: "not_started",
-      progressPercentage: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      progressPercentage: data.targetValue && data.targetValue > 0 ? Math.min(100, Math.round(((data.currentValue ?? 0) / data.targetValue) * 100)) : 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     };
     mockGoals.push(goal);
     return wrap(goal);

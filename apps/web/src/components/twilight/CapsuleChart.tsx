@@ -122,7 +122,7 @@ export function WeeklyCapsuleChart({ checkIns }: { checkIns: CapsuleCheckIn[] })
               >
                 <defs>
                   <linearGradient
-                    id={gradientId}
+                    id={`${gradientId}-${index}`}
                     gradientUnits="userSpaceOnUse"
                     x1="16"
                     y1={TRACK_TOP}
@@ -162,7 +162,7 @@ export function WeeklyCapsuleChart({ checkIns }: { checkIns: CapsuleCheckIn[] })
                   y1={TRACK_TOP}
                   x2="16"
                   y2={TRACK_BOTTOM}
-                  stroke={`url(#${gradientId})`}
+                  stroke={`url(#${gradientId}-${index})`}
                   strokeWidth={STROKE}
                   strokeLinecap="round"
                   strokeDasharray={TRACK_LENGTH}

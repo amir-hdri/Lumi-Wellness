@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -195,9 +197,9 @@ export function NewUserForm({ role, listHref, submitLabel, noun, afterCreateHref
           استفاده کنید.
         </p>
         <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
-          <Button type="button" variant="outline" onClick={() => router.push(listHref)} disabled={isSubmitting}>
+          <Button type="button" variant="outline" asChild disabled={isSubmitting}><Link href={listHref}>
             انصراف
-          </Button>
+          </Link></Button>
           <Button type="submit" loading={isSubmitting}>
             <UserPlus aria-hidden className="h-4 w-4" />
             {submitLabel}

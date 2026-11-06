@@ -94,7 +94,7 @@ export function Sidebar({ items, isOpen, onClose }: SidebarProps) {
               const submenuId = `sidebar-sub-${index}`;
 
               const rowClass = cn(
-                "relative flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "relative flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-sm font-medium transition-[color,background-color,border-color,opacity,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 active
                   ? "border border-primary/25 bg-secondary text-foreground"
                   : "border border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground"
@@ -131,7 +131,7 @@ export function Sidebar({ items, isOpen, onClose }: SidebarProps) {
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2, ease: "easeInOut" }}
-                            className="mr-4 mt-0.5 space-y-0.5 overflow-hidden border-r border-border pr-2"
+                            className="ms-4 mt-0.5 space-y-0.5 overflow-hidden border-r border-border pr-2"
                           >
                             {item.subItems!.map((sub) => {
                               const subActive = sub.href === pathname || pathname.startsWith(`${sub.href}/`) || sub.active;
@@ -141,7 +141,7 @@ export function Sidebar({ items, isOpen, onClose }: SidebarProps) {
                                     href={sub.href}
                                     onClick={onClose}
                                     className={cn(
-                                      "relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 font-sans text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                                      "relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 font-sans text-sm font-medium transition-[color,background-color,border-color,opacity,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                                       subActive
                                         ? "text-primary"
                                         : "text-muted-foreground hover:bg-secondary hover:text-foreground"

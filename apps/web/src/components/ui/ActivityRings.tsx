@@ -12,9 +12,9 @@ interface ActivityRingsProps {
 // Change the hues there, never here.
 export function ActivityRings({ className, progress = [86, 68, 78] }: ActivityRingsProps) {
   const rings = [
-    { radius: 42, color: "hsl(var(--activity-move))", value: progress[0] },
-    { radius: 31, color: "hsl(var(--activity-exercise))", value: progress[1] },
-    { radius: 20, color: "hsl(var(--activity-stand))", value: progress[2] },
+    { radius: 42, color: "var(--color-activity-move)", value: progress[0] },
+    { radius: 31, color: "var(--color-activity-exercise)", value: progress[1] },
+    { radius: 20, color: "var(--color-activity-stand)", value: progress[2] },
   ];
 
   return (
@@ -31,7 +31,7 @@ export function ActivityRings({ className, progress = [86, 68, 78] }: ActivityRi
               cy="50"
               r={ring.radius}
               fill="none"
-              stroke="hsl(var(--border))"
+              stroke="var(--color-input)"
               strokeWidth="7.5"
               strokeLinecap="round"
               opacity="1"

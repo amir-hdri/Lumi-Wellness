@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "@/lib/motion";
 
 interface AnimatedCounterProps {
   value: number;
@@ -17,6 +18,7 @@ export function AnimatedCounter({
   prefix = "",
   className = "",
 }: AnimatedCounterProps) {
+  const reduced = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   // If IntersectionObserver is unavailable (very old browsers), start in view.
   const [isInView, setIsInView] = useState(() => typeof IntersectionObserver === "undefined");
@@ -42,7 +44,7 @@ export function AnimatedCounter({
   }, []);
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || reduced || duration <= 0) return;
 
     let startTime: number;
     let animationFrame: number;
@@ -61,12 +63,12 @@ export function AnimatedCounter({
 
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [isInView, value, duration]);
+  }, [isInView, value, duration, reduced]);
 
   return (
     <span ref={ref} className={className}>
       {prefix}
-      {displayValue.toLocaleString("fa-IR")}
+      {(reduced || duration <= 0 ? value : displayValue).toLocaleString("fa-IR")}
       {suffix}
     </span>
   );

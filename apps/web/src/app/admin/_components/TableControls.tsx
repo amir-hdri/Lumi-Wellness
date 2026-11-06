@@ -1,11 +1,9 @@
 "use client";
 
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Search } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { ArrowDown, ArrowUp, Search } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { TableHead } from "@/components/ui/Table";
-import { cn, formatPersianNumber } from "@/lib/utils";
-import type { PaginationView } from "./use-pagination";
+import { cn } from "@/lib/utils";
 import type { SortState } from "./admin-data";
 
 export interface SortableHeadProps<K extends string> {
@@ -70,51 +68,4 @@ export function SearchField({ value, onValueChange, placeholder, label, classNam
   );
 }
 
-export interface PaginationBarProps {
-  view: PaginationView;
-  total: number;
-  /** Noun for the summary line, e.g. "عضو". */
-  unit: string;
-}
-
-/**
- * Page stepper plus a count summary.
- *
- * The chevrons point the way the pages move on screen: in RTL "next" is to the
- * left, so `ChevronLeft` advances.
- */
-export function PaginationBar({ view, total, unit }: PaginationBarProps) {
-  if (total === 0) return null;
-
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-      <p className="text-xs text-muted-foreground" aria-live="polite">
-        نمایش {formatPersianNumber(view.from + 1)}–{formatPersianNumber(view.to)} از{" "}
-        {formatPersianNumber(total)} {unit}
-      </p>
-      <div className="flex items-center gap-1.5">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => view.setPage(view.page - 1)}
-          disabled={view.page <= 1}
-          aria-label="صفحه قبل"
-        >
-          <ChevronRight aria-hidden className="h-4 w-4" />
-        </Button>
-        <span className="min-w-24 text-center text-xs font-semibold text-foreground">
-          صفحه {formatPersianNumber(view.page)} از {formatPersianNumber(view.totalPages)}
-        </span>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => view.setPage(view.page + 1)}
-          disabled={view.page >= view.totalPages}
-          aria-label="صفحه بعد"
-        >
-          <ChevronLeft aria-hidden className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
-}
+export { Pagination as PaginationBar, type PaginationProps as PaginationBarProps } from "@/components/ui/Pagination";

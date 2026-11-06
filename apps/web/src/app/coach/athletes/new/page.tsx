@@ -124,8 +124,8 @@ export default function NewAthletePage() {
             </div>
           )}
           <div className="flex justify-end gap-3 pt-4">
-            <Button variant="ghost" type="button" onClick={() => router.push("/coach/athletes")}>انصراف</Button>
-            <Button type="submit" loading={isSubmitting}><Save className="ml-2 h-4 w-4" />ثبت شاگرد</Button>
+            <Button variant="ghost" type="button" asChild><Link href={"/coach/athletes"}>انصراف</Link></Button>
+            <Button type="submit" loading={isSubmitting}><Save className="me-2 h-4 w-4" />ثبت شاگرد</Button>
           </div>
         </form>
       </TwilightCard>

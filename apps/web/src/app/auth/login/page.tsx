@@ -17,7 +17,7 @@ import { homeForRole, panelLabelForRole } from "@/components/auth/auth-helpers";
 import { USE_MOCK } from "@/hooks/api-source";
 
 const inputClassName =
-  "h-12 w-full rounded-xl border border-border bg-card pe-11 ps-4 text-sm text-foreground placeholder:text-muted-foreground transition-all duration-200 focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/15 disabled:opacity-60";
+  "h-12 w-full rounded-xl border border-border bg-card pe-11 ps-4 text-sm text-foreground placeholder:text-muted-foreground transition-[color,background-color,border-color,opacity,transform] duration-200 focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/15 disabled:opacity-60";
 
 interface DemoAccount {
   email: string;
@@ -226,7 +226,7 @@ function SignInContent() {
                 <button
                   type="button"
                   onClick={() => fillDemoAccount(account)}
-                  className="inline-flex min-h-11 items-center rounded-xl border border-cream-foreground/25 bg-cream/20 px-3 text-xs font-medium text-foreground transition-all duration-150 hover:-translate-y-px hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:translate-y-0"
+                  className="inline-flex min-h-11 items-center rounded-xl border border-cream-foreground/25 bg-cream/20 px-3 text-xs font-medium text-foreground transition-[color,background-color,border-color,opacity,transform] duration-150 hover:-translate-y-px hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:translate-y-0"
                 >
                   {account.label}
                 </button>

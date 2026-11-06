@@ -1,5 +1,6 @@
 "use client";
 
+import { useReducedMotion } from "@/lib/motion";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 
 /**
@@ -12,6 +13,7 @@ export function PageTransition({ children, className }: { children: ReactNode; c
   // Start hidden so SSR and the first client render match (no hydration
   // mismatch); reveal on the next frame after mount.
   const [entered, setEntered] = useState(false);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     // Reveal on the next frame after mount. A synchronous setState here
@@ -21,10 +23,10 @@ export function PageTransition({ children, className }: { children: ReactNode; c
   }, []);
 
   const style: CSSProperties = {
-    opacity: entered ? 1 : 0,
-    transform: entered ? "translateY(0)" : "translateY(10px)",
+    opacity: entered || reduced ? 1 : 0,
+    transform: entered || reduced ? "translateY(0)" : "translateY(10px)",
     transitionProperty: "opacity, transform",
-    transitionDuration: "0.18s",
+    transitionDuration: reduced ? "0s" : "0.18s",
     transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
   };
 
