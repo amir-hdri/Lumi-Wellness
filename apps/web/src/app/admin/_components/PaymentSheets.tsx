@@ -245,8 +245,8 @@ function NewPaymentForm({ onDone }: { onDone: () => void }) {
       </Field>
 
       <p className="rounded-xl bg-muted p-3 text-xs leading-6 text-muted-foreground">
-        پرداخت تازه با وضعیت «موفق» ثبت می‌شود. برای ثبت تراکنش در انتظار یا ناموفق، پس از ثبت وضعیت
-        آن را از همین فهرست تغییر دهید.
+        پرداخت تازه با وضعیت «در انتظار» ثبت می‌شود. پس از بررسی تراکنش، وضعیت آن را از فهرست
+        یا صفحهٔ پرداخت تغییر دهید.
       </p>
 
       <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
@@ -299,12 +299,7 @@ function EditPaymentForm({ payment, onDone }: { payment: Payment; onDone: () => 
   } = useForm<EditPaymentFormData>({
     resolver: zodResolver(editPaymentSchema),
     defaultValues: {
-      // `cancelled` is not among the statuses `PUT /payments/{id}` accepts, so
-      // a cancelled payment opens on `pending` rather than on a value the save
-      // would be rejected for.
-      status: PAYMENT_EDITABLE_STATUSES.includes(payment.status as (typeof PAYMENT_EDITABLE_STATUSES)[number])
-        ? (payment.status as EditPaymentFormData["status"])
-        : "pending",
+      status: payment.status,
       method: payment.method,
       notes: payment.description ?? "",
     },

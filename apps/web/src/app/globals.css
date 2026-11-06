@@ -103,7 +103,7 @@
     --color-accent: #202632;
     --color-accent-foreground: #f5f3ef;
     --color-destructive: #f87171;
-    --color-destructive-foreground: #121417;
+    --color-destructive-foreground: #ffffff;
     --color-destructive-solid: #dc2626;
     --color-success: #4ade80;
     --color-success-foreground: #121417;
@@ -266,7 +266,7 @@
     80% { transform: translateX(-2px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition-duration: 0.01ms !important; }
   }
 }
 

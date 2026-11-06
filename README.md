@@ -44,8 +44,7 @@ infrastructure, not product naming, and changing them means a DNS/mail cutover.
   notifications, messages, readiness
 - Extra endpoints beyond plain CRUD: role update, check-in void, membership
   renew, readiness history, QR check-in, broadcast, deduct-session
-- Schema is created with `Base.metadata.create_all` — there are **no
-  migrations**. A model change means recreating the dev database.
+- Schema is created with `Base.metadata.create_all` — there are **Alembic migrations** in `backend/migrations`. Apply `python -m alembic upgrade head` before starting an existing database.
 - Password reset mail is delivered over SMTP when `SMTP_HOST`/`SMTP_FROM` are
   set; otherwise production answers 503 and non-prod returns `devToken`.
 - Interactive docs at `/docs` (Swagger UI)
@@ -193,7 +192,7 @@ Production *and* Preview):
 
 `NEXT_PUBLIC_*` values are inlined into the bundle at build time, so changing
 one requires a rebuild. The build fails on purpose when `NEXT_PUBLIC_USE_MOCKS`
-is `true`, or when `NEXT_PUBLIC_API_URL` is missing or points at localhost
+is `true`, or when `NEXT_PUBLIC_API_URL` is missing, is not an HTTPS origin, or points at loopback. Credentials, paths (including `/api/v1`), queries, fragments and surrounding whitespace are rejected
 (`apps/web/config/deploy-env.mjs`) — a mock or localhost build must never
 reach production.
 
@@ -229,13 +228,8 @@ image.
   Outside production the response also carries the token as `devToken`;
   in production without SMTP the endpoint answers 503. Tokens are
   single-use, 30-minute, SHA-256 stored, rate-limited, and pruned.
-- **No database migrations.** Schema changes require recreating the database.
-- **`@playwright/test` is not in `package.json`.** The end-to-end specs under
-  `apps/web/e2e/` are committed and the config is self-sufficient, but the
-  dependency could not be added in the environment they were written in (no
-  registry access, and adding it without regenerating `package-lock.json` would
-  break `npm ci`). The `e2e` CI job installs it ad hoc with `--no-save` and is
-  `continue-on-error`. Add the dependency properly, then delete both.
+- **Database migrations:** use `cd backend && python -m alembic upgrade head` before running an updated backend. Migration `0003` adds renewal request/approval timestamps without deleting membership data.
+- **Browser verification:** Playwright is a pinned development dependency in the lockfile. CI runs both the mock suite and the real FastAPI suite against an isolated SQLite database; screenshots and failure traces are uploaded as evidence.
 - **Fonts are self-hosted.** `app/layout.tsx` loads Estedad (UI),
   Bodoni Moda + Montserrat (LUMI WELLNESS wordmark) and Vazirmatn
   (fallback) from `src/app/fonts/` via `next/font/local` — builds work
@@ -272,3 +266,32 @@ spec is recorded under `## Deviations` in
 See `FINAL_REPORT.md` for the full engineering audit, bug fixes, and known gaps,
 `docs/API_CONTRACT_V2.md` for the API contract and its deviations, and
 `docs/PERFORMANCE_AUDIT.md` for the performance/accessibility audit.
+
+
+### Membership renewal approval
+
+Athletes submit `POST /api/v1/memberships/{id}/renewal-request` for their own
+membership. This records a pending request and notifies active managers; it does
+not extend dates or change sessions. Only an `admin` can approve a new term via
+`POST /api/v1/memberships/{id}/renew`. The member page shows the pending request,
+and the manager can review it from received notifications and the member detail
+page. Approval records the manager id and timestamp; payment reconciliation is
+still a separate staff action.
+
+See [the full-stack audit](docs/FULLSTACK_AUDIT_2026-11-06.md) for current evidence
+and deployment prerequisites.
+
+### Management and coach operations
+
+Managers can create and edit member/coach accounts, assign and freeze membership,
+review renewal requests, reconcile all five payment statuses, and download a
+text receipt or print one. Settings includes admin/reception accounts, including
+accounts promoted from another directory. Staff creation and changes to other
+staff accounts require admin access; reception can create and manage athletes.
+Account creation stores the initial password atomically, and identity validation
+rejects null required fields, invalid login emails/statuses and missing branches.
+
+Coaches use saved exercises, programs, templates, goals and conversations.
+Program drafts support all seven days and save exercise prescriptions through
+the existing API. Clones omit workout completion history. Unsupported profile
+fields are not presented as persisted settings.

@@ -9,11 +9,8 @@ import { Badge } from "@/components/ui/Badge";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { usePayment } from "@/hooks/use-api";
-import { PAYMENT_METHOD } from "../../_components/admin-data";
-
-const statusConfig: Record<string, { label: string; variant: "success" | "warning" | "destructive" }> = {
-  completed: { label: "موفق", variant: "success" }, pending: { label: "معلق", variant: "warning" }, failed: { label: "ناموفق", variant: "destructive" },
-};
+import { PaymentRowActions } from "../../_components/PaymentSheets";
+import { PAYMENT_METHOD, PAYMENT_STATUS } from "../../_components/admin-data";
 
 const infoRow = "flex items-center justify-between gap-3 px-4 py-3.5";
 const infoLabel = "text-[11px] font-semibold text-muted-foreground";
@@ -26,7 +23,19 @@ export default function TransactionDetailPage() {
   if (isError) return <ErrorDisplay />;
   const payment = data?.data;
   if (!payment) return <ErrorDisplay message="تراکنش یافت نشد" />;
-  const status = statusConfig[payment.status];
+  const status = PAYMENT_STATUS[payment.status];
+
+  const downloadReceipt = () => {
+    const text = ["رسید Lumi Wellness", `شناسه: ${payment.id}`, `کد پیگیری: ${payment.referenceId ?? "—"}`,
+      `مبلغ: ${formatCurrency(payment.amount)}`, `وضعیت: ${status.label}`,
+      `پرداخت‌کننده: ${payment.user ? `${payment.user.firstName} ${payment.user.lastName}` : payment.userId}`,
+      `روش پرداخت: ${PAYMENT_METHOD[payment.method] ?? payment.method}`,
+      `تاریخ: ${formatDateTime(payment.paidAt || payment.createdAt)}`, `توضیحات: ${payment.description ?? "—"}`].join("\n");
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url; link.download = `lumi-receipt-${payment.id}.txt`; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
 
   return (
     <PageShell>
@@ -40,7 +49,7 @@ export default function TransactionDetailPage() {
         </Link>
         <PageHeader
           title="جزئیات تراکنش"
-          subtitle={`کد پیگیری: ${payment.referenceId}`}
+          subtitle={`کد پیگیری: ${payment.referenceId ?? payment.id}`}
           action={
             <Badge variant={status.variant} className="px-4 py-1.5 text-sm">
               {status.label}
@@ -81,14 +90,15 @@ export default function TransactionDetailPage() {
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <CtaButton variant="outline" className="flex-1">
+      <div className="flex flex-wrap gap-3 print:hidden">
+        <PaymentRowActions payment={payment} />
+        <CtaButton variant="outline" onClick={() => window.print()} className="flex-1">
           <Printer strokeWidth={1.75} className="h-4 w-4" />
           چاپ رسید
         </CtaButton>
-        <CtaButton variant="outline" className="flex-1">
+        <CtaButton variant="outline" onClick={downloadReceipt} className="flex-1">
           <Download strokeWidth={1.75} className="h-4 w-4" />
-          دانلود PDF
+          دریافت رسید متنی
         </CtaButton>
       </div>
     </PageShell>

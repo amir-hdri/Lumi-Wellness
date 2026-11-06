@@ -18,18 +18,18 @@ const THEME_KEY = "theme";
  * which is exactly why the split exists.
  */
 const AA_PAIRS: [fg: string, bg: string][] = [
-  ["--foreground", "--background"],
-  ["--foreground", "--card"],
-  ["--muted-foreground", "--background"],
-  ["--muted-foreground", "--card"],
-  ["--muted-foreground", "--muted"],
-  ["--primary-foreground", "--primary-solid"],
-  ["--success-foreground", "--success-solid"],
-  ["--warning-foreground", "--warning-solid"],
-  ["--destructive-foreground", "--destructive-solid"],
-  ["--secondary-foreground", "--secondary"],
-  ["--accent-foreground", "--accent"],
-  ["--popover-foreground", "--popover"],
+  ["--color-foreground", "--color-background"],
+  ["--color-foreground", "--color-card"],
+  ["--color-muted-foreground", "--color-background"],
+  ["--color-muted-foreground", "--color-card"],
+  ["--color-muted-foreground", "--color-muted"],
+  ["--color-primary-foreground", "--color-primary-solid"],
+  ["--color-success-foreground", "--color-success-solid"],
+  ["--color-warning-foreground", "--color-warning-solid"],
+  ["--color-destructive-foreground", "--color-destructive-solid"],
+  ["--color-secondary-foreground", "--color-secondary"],
+  ["--color-accent-foreground", "--color-accent"],
+  ["--color-popover-foreground", "--color-popover"],
 ];
 
 const AA_NORMAL_TEXT = 4.5;
@@ -78,9 +78,9 @@ async function measureContrast(page: import("@playwright/test").Page, pairs: [st
       if (!fgRaw || !bgRaw) {
         return { pair: `${fgToken} on ${bgToken}`, ratio: 0, missing: !fgRaw ? fgToken : bgToken };
       }
-      // Tokens are stored as bare HSL components so Tailwind can add an alpha.
-      const fg = luminance(toRgb(`hsl(${fgRaw})`));
-      const bg = luminance(toRgb(`hsl(${bgRaw})`));
+      // Tailwind 4 exposes complete CSS colors through --color-* tokens.
+      const fg = luminance(toRgb(fgRaw));
+      const bg = luminance(toRgb(bgRaw));
       const [lighter, darker] = fg > bg ? [fg, bg] : [bg, fg];
       return {
         pair: `${fgToken} on ${bgToken}`,

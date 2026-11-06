@@ -15,6 +15,7 @@ import { ChevronRight, Save } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/twilight/Page";
 import { TwilightCard } from "@/components/twilight/controls";
 import { useCreateUser, useBranches } from "@/hooks/use-api";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const athleteSchema = z.object({
   firstName: z.string().min(1, "نام را وارد کنید"),
@@ -29,6 +30,7 @@ type AthleteFormData = z.infer<typeof athleteSchema>;
 
 export default function NewAthletePage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const createUser = useCreateUser();
   const { data: branchesData } = useBranches();
@@ -49,6 +51,16 @@ export default function NewAthletePage() {
     }
   }, [branches, setValue]);
 
+  // Account creation is a desk operation: POST /users permits only admin and
+  // receptionist. Do not offer coaches a form that can never save on the API.
+  if (!user || !["admin", "receptionist"].includes(user.role)) {
+    return <PageShell>
+      <PageHeader title="ثبت شاگرد جدید" subtitle="حساب شاگرد باید توسط پذیرش یا مدیر ثبت شود" />
+      <p className="text-sm text-muted-foreground">پس از ثبت حساب، می‌توانید از صفحه برنامه‌ها برای شاگرد برنامه بسازید.</p>
+      <Button asChild><Link href="/coach/athletes">بازگشت به شاگردان</Link></Button>
+    </PageShell>;
+  }
+
   const onSubmit = async (formData: AthleteFormData) => {
     setIsSubmitting(true);
     try {
@@ -57,6 +69,7 @@ export default function NewAthletePage() {
         lastName: formData.lastName,
         email: formData.email,
         phone: formData.phone,
+        password: formData.password,
         role: "athlete",
         branchId: formData.branch,
         status: "active",

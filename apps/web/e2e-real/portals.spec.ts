@@ -1,34 +1,5 @@
-import {
-  expect,
-  test,
-  type Page,
-  type APIRequestContext,
-} from "@playwright/test";
-const api = "http://127.0.0.1:8100/api/v1";
-
-async function signIn(page: Page, request: APIRequestContext, role: string) {
-  const username =
-    role === "receptionist"
-      ? "reception"
-      : ["athlete", "coach"].includes(role)
-        ? `${role}1`
-        : role;
-  const password = role === "receptionist" ? "reception123" : `${role}123`;
-  const result = await request.post(`${api}/auth/login`, {
-    data: { email: `${username}@gymapp.ir`, password },
-  });
-  expect(result.ok()).toBeTruthy();
-  const auth = (await result.json()).data;
-  await page.addInitScript((data) => {
-    localStorage.setItem("auth_tokens", JSON.stringify(data.tokens));
-    localStorage.setItem("auth_user", JSON.stringify(data.user));
-    localStorage.setItem("theme", "dark");
-  }, auth);
-  return {
-    ...auth,
-    headers: { Authorization: `Bearer ${auth.tokens.accessToken}` },
-  };
-}
+import { expect, test } from "@playwright/test";
+import { api, signIn } from "./helpers";
 
 for (const [role, routes] of Object.entries({
   athlete: [
@@ -70,7 +41,7 @@ for (const [role, routes] of Object.entries({
     "/admin/profile",
   ],
 })) {
-  test(`${role}: every portal section renders with the reference canvas`, async ({
+  test(`${role}: every portal section renders without overflow`, async ({
     page,
     request,
   }, testInfo) => {
@@ -81,20 +52,23 @@ for (const [role, routes] of Object.entries({
       await page.goto(route);
       await expect(page.locator("main h1")).toHaveCount(1);
       await expect(page.locator("main h1")).toBeVisible();
-      await expect(page.locator(".twilight-dock")).toBeVisible();
-        await page.waitForLoadState("networkidle");
+      await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+      if (testInfo.project.name === "mobile") {
+        await expect(page.getByRole("navigation", { name: "ناوبری اصلی موبایل" })).toBeVisible();
+      } else {
+        await expect(page.getByRole("complementary")).toBeVisible();
+      }
+      await page.waitForLoadState("networkidle");
       const widths = await page.evaluate(() => ({
         content: document.documentElement.scrollWidth,
         screen: innerWidth,
         canvas: document
-          .querySelector(".athlete-shell")!
+          .querySelector("main")!
           .getBoundingClientRect().width,
       }));
       expect(widths.content, route).toBeLessThanOrEqual(widths.screen);
-      expect(widths.canvas).toBeLessThanOrEqual(430);
-      expect(widths.canvas).toBeGreaterThanOrEqual(
-        Math.min(390, widths.screen),
-      );
+      expect(widths.canvas).toBeLessThanOrEqual(widths.screen);
+      expect(widths.canvas).toBeGreaterThan(0);
       await page.screenshot({
         path: `test-results/screens/${testInfo.project.name}-${role}-${route.slice(1).replaceAll("/", "-")}.png`,
         fullPage: true,
@@ -116,11 +90,10 @@ test("plan creation and status changes survive reload", async ({
   await page.getByLabel("قیمت (ریال)").fill("750000");
   await page.getByRole("button", { name: "ذخیره پلن", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
-  const card = page
-    .locator("section")
-    .filter({ has: page.getByRole("heading", { name, exact: true }) });
+  const card = page.getByRole("heading", { name, exact: true }).locator("xpath=../..");
   await expect(card).toBeVisible();
   await card.getByRole("button", { name: "غیرفعال کردن", exact: true }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "غیرفعال کن", exact: true }).click();
   await expect(
     card.getByRole("button", { name: "فعال کردن", exact: true }),
   ).toBeVisible();
@@ -178,17 +151,17 @@ test("exercise completion, readiness and attendance persist against real API", a
     page.getByRole("button", { name: "پرانرژی", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await page.goto("/athlete/checkin");
-  const end = page.getByRole("button", { name: "پایان جلسه و ثبت خروج" });
+  const end = page.getByRole("button", { name: "پایان جلسه" });
   if (await end.isVisible()) await end.click();
   await page
-    .getByRole("button", { name: "ثبت ورود به باشگاه", exact: true })
+    .getByRole("button", { name: "ثبت ورود", exact: true })
     .click();
   await expect(end).toBeVisible();
   await page.reload();
   await expect(end).toBeVisible();
   await end.click();
   await expect(
-    page.getByRole("button", { name: "ثبت ورود به باشگاه", exact: true }),
+    page.getByRole("button", { name: "ثبت ورود", exact: true }),
   ).toBeVisible();
 });
 
@@ -265,15 +238,13 @@ test("profile and branch forms save real data", async ({
 }, info) => {
   const auth = await signIn(page, request, "admin");
   await page.goto("/admin/profile");
-  await page
-    .getByRole("button", { name: "ویرایش اطلاعات شخصی", exact: true })
-    .click();
   const newName = `مدیر ${info.project.name}`;
   await page.getByRole("textbox", { name: "نام", exact: true }).fill(newName);
-  await page
-    .getByRole("button", { name: "ذخیره تغییرات", exact: true })
-    .click();
-  await expect(page.getByRole("dialog")).not.toBeVisible();
+  const savedProfile = page.waitForResponse((r) => r.url().endsWith("/auth/profile") && r.request().method() === "PUT");
+  await page.getByRole("button", { name: "ذخیره تغییرات", exact: true }).click();
+  expect((await savedProfile).ok()).toBeTruthy();
+  await page.reload();
+  await expect(page.getByRole("textbox", { name: "نام", exact: true })).toHaveValue(newName);
   expect(
     (
       await (
@@ -290,12 +261,93 @@ test("profile and branch forms save real data", async ({
   await page
     .getByRole("textbox", { name: "نشانی", exact: true })
     .fill("تهران، خیابان نمونه");
-  await page
-    .getByRole("button", { name: "ذخیره تنظیمات", exact: true })
-    .click();
+  await page.getByRole("button", { name: "ذخیره شعبه", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole("button", { name: new RegExp(branchName) }),
+    page.getByText(branchName, { exact: true }),
   ).toBeVisible();
+});
+
+test("messages survive reload and reach the other participant", async ({ page, request }, info) => {
+  const auth = await signIn(page, request, "athlete");
+  const conversations = (await (await request.get(`${api}/messages/conversations`, { headers: auth.headers })).json()).data;
+  const conversation = conversations[0];
+  expect(conversation).toBeTruthy();
+  await page.goto(`/athlete/messages?c=${conversation.id}`);
+  const body = `پیام آزمون ${info.project.name} ${Date.now()}`;
+  await page.getByRole("textbox", { name: "متن پیام" }).fill(body);
+  const sent = page.waitForResponse((r) => r.url().endsWith(`/conversations/${conversation.id}/messages`) && r.request().method() === "POST");
+  await page.getByRole("button", { name: "ارسال پیام", exact: true }).click();
+  expect((await sent).ok()).toBeTruthy();
+  await page.reload();
+  await expect(page.getByText(body, { exact: true })).toBeVisible();
+  const coach = await page.context().browser()!.newContext({ viewport: info.project.use.viewport });
+  try {
+    const other = await coach.newPage();
+    await signIn(other, request, "coach");
+    await other.goto(`${info.project.use.baseURL || "http://127.0.0.1:3300"}/coach/messages?c=${conversation.id}`);
+    await expect(other.getByText(body, { exact: true })).toBeVisible();
+    const reply = `پاسخ ${body}`;
+    await other.getByRole("textbox", { name: "متن پیام" }).fill(reply);
+    const replied = other.waitForResponse((r) => r.url().endsWith(`/conversations/${conversation.id}/messages`) && r.request().method() === "POST");
+    await other.getByRole("button", { name: "ارسال پیام", exact: true }).click();
+    expect((await replied).ok()).toBeTruthy();
+    await page.reload();
+    await expect(page.getByText(reply, { exact: true })).toBeVisible();
+  } finally {
+    await coach.close();
+  }
+});
+
+test("general branch settings survive reload", async ({ page, request }, info) => {
+  const auth = await signIn(page, request, "admin");
+  await page.goto("/admin/settings");
+  const name = `باشگاه آزمون ${info.project.name}`;
+  await page.getByRole("textbox", { name: "نام باشگاه", exact: true }).fill(name);
+  const saved = page.waitForResponse((r) => /\/branches\/[^/]+$/.test(r.url()) && r.request().method() === "PUT");
+  await page.getByRole("button", { name: "ذخیره تنظیمات", exact: true }).click();
+  expect((await saved).ok()).toBeTruthy();
+  await page.reload();
+  await expect(page.getByRole("textbox", { name: "نام باشگاه", exact: true })).toHaveValue(name);
+  const branches = (await (await request.get(`${api}/branches`, { headers: auth.headers })).json()).data;
+  expect(branches.some((branch: { name: string }) => branch.name === name)).toBe(true);
+});
+
+test("renewal waits for management approval", async ({ page, request }) => {
+  const athlete = await signIn(page, request, "athlete");
+  const membership = (await (await request.get(`${api}/memberships`, { headers: athlete.headers })).json()).data[0];
+  await page.goto("/athlete/membership");
+  await page.getByRole("button", { name: "درخواست تمدید اشتراک", exact: true }).click();
+  const requested = page.waitForResponse((r) => r.url().endsWith("/renewal-request") && r.request().method() === "POST");
+  await page.getByRole("button", { name: "ارسال درخواست تمدید", exact: true }).click();
+  expect((await requested).ok()).toBeTruthy();
+  await page.reload();
+  await expect(page.getByText("درخواست تمدید ثبت شده و منتظر تأیید مدیریت است")).toBeVisible();
+  const pending = (await (await request.get(`${api}/memberships`, { headers: athlete.headers })).json()).data[0];
+  expect(pending.endDate).toBe(membership.endDate);
+  expect(pending.sessionsTotal).toBe(membership.sessionsTotal);
+  const context = await page.context().browser()!.newContext();
+  try {
+    const manager = await context.newPage();
+    await signIn(manager, request, "admin");
+    await manager.goto("http://127.0.0.1:3300/admin/notifications");
+    await expect(manager.getByText("درخواست تمدید عضویت", { exact: true }).first()).toBeVisible();
+    await manager.goto(`http://127.0.0.1:3300/admin/members/${athlete.user.id}`);
+    await manager.getByRole("button", { name: "تأیید تمدید", exact: true }).click();
+    const end = new Date(membership.endDate);
+    end.setUTCDate(end.getUTCDate() + 30);
+    await manager.getByLabel("تاریخ پایان جدید").fill(end.toISOString().slice(0, 10));
+    await manager.getByLabel("تعداد جلسات دوره جدید").fill("20");
+    const approved = manager.waitForResponse((r) => r.url().endsWith("/renew") && r.request().method() === "POST");
+    await manager.getByRole("button", { name: "ثبت تأیید مدیریت", exact: true }).click();
+    expect((await approved).ok()).toBeTruthy();
+    await page.reload();
+    await expect(page.getByText("درخواست تمدید ثبت شده و منتظر تأیید مدیریت است")).not.toBeVisible();
+    const saved = (await (await request.get(`${api}/memberships`, { headers: athlete.headers })).json()).data[0];
+    expect(saved.sessionsTotal).toBe(20);
+    expect(saved.renewalApprovedBy).toBeTruthy();
+  } finally {
+    await context.close();
+  }
 });

@@ -220,7 +220,8 @@ fails the suite otherwise.
 |---|---|---|---|
 | PATCH | `/users/{id}/role` | admin | the single way roles change (PUT strips `role`, register hardcodes `athlete`); 400 on self or unknown role |
 | DELETE | `/check-ins/{id}` | admin, receptionist | voids an erroneous record; operational rows cascade on user delete, financial/shared rows are kept |
-| POST | `/memberships/{id}/renew` | admin, receptionist, athlete (own) | `{ endDate, sessionsTotal?, resetSessionsUsed? }` — new term, reactivation, counter reset; payment recorded separately via `POST /payments` |
+| POST | `/memberships/{id}/renew` | admin only | `{ endDate, sessionsTotal?, resetSessionsUsed? }` — management approval, strictly extends the current term into the future, records `renewalApprovedAt`/`renewalApprovedBy`; payment reconciled separately |
+| POST | `/memberships/{id}/renewal-request` | athlete (own) | No body; idempotently records `renewalRequestedAt`, notifies active managers and leaves entitlement fields unchanged |
 | GET | `/readiness/history?days=14&userId=` | athlete (own), coach (own athletes), admin | newest-first `{ day, state }` rows, max 60 days |
 | POST | `/auth/register` | public | now accepts optional `branchId` (honoured only if the branch exists); athletes with no branch may set their own once via `PUT /users/{id}` |
 
@@ -423,3 +424,43 @@ Two behaviours worth knowing, both pinned by tests rather than inferred:
    server has no such guard and would store the inversion. This is the one place
    the mock is deliberately **stricter** than the API: a demo that renders a
    negative session length is worse than one that refuses the input.
+
+
+## Audit corrections — 2026-11-06
+
+- Renewal requires management approval, per the confirmed product policy. The
+  athlete UI only submits a request; admin member details approve dates/sessions.
+  Membership responses add nullable `renewalRequestedAt`, `renewalApprovedAt`,
+  and `renewalApprovedBy`. Apply Alembic revision `0003` before rollout.
+- Check-in/check-out offsets are converted to UTC before writing to the naive
+  UTC database columns. Naive input retains the existing UTC interpretation.
+- Non-finite numeric values are rejected by the shared Pydantic schema config.
+- Profile, password, workout, readiness, chat and branch settings flows use the
+  real hooks rather than local success simulations. Account creation includes
+  its initial password in `POST /users`; permission checks remain server-side.
+- The API root environment variable is an HTTPS origin, not a versioned path;
+  the client appends `/api/v1` itself.
+
+
+## Account administration validation (November 2026 audit)
+
+- `POST /users`: admin may create any supported role; reception may create athletes
+  only. Passwords follow the shared policy (8+ characters, a letter and a digit).
+  Login emails must match the same email shape as `/auth/login`; status must be
+  active, inactive, suspended or pending.
+- `PUT /users/{id}`: admin may edit any account; reception may edit athletes and
+  their own profile. Reception cannot edit other staff identity/status. Coach and
+  athlete self-edits cannot change login email. Required identity fields reject
+  explicit null before writing; nullable branch/avatar may be cleared. A supplied
+  branch must exist. Omitted fields are preserved.
+- `PATCH /users/{id}/status`: admin manages any account; reception manages athletes.
+- `PATCH /users/{id}/role`, admin password reset and delete remain admin-only.
+- `PUT /auth/profile`: firstName, lastName and phone reject explicit null; avatarUrl
+  can be cleared.
+- Manager settings lists admin/reception accounts, so promotion does not remove
+  an account from all discoverable directories.
+
+Goal creation now uses the same assignment rule as edit/progress/delete: athletes
+create for themselves; coaches create assigned to themselves or unassigned;
+admins may create any valid assignment. Reception is read-only in this domain
+and cannot create a goal through POST.

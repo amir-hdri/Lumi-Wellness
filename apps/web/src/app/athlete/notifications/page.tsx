@@ -71,8 +71,9 @@ export default function NotificationsPage() {
       <PageHeader
         title="اعلان‌ها"
         subtitle="پیام‌ها و یادآوری‌ها"
+        className="flex-col sm:flex-row"
         action={
-          <div className="flex items-center gap-3">
+          <div className="flex max-w-full flex-wrap items-center gap-3">
             {unreadCount > 0 && (
               <>
                 <Badge variant="default" className="border-transparent bg-blush-solid text-blush-foreground">{unreadCount} عدد خوانده نشده</Badge>

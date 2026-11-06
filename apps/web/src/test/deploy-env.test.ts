@@ -48,4 +48,15 @@ describe("assertDeployEnv", () => {
       })
     ).not.toThrow();
   });
+
+  it.each([
+    "not-a-url", "ftp://api.example.com", "http://api.example.com",
+    "https://localhost.:8000", "https://127.1:8000", "https://[::1]:8000",
+    "https://user:secret@api.example.com", "https://api.example.com/api/v1",
+    "https://api.example.com?token=value", "https://api.example.com#fragment",
+    " https://api.example.com ",
+  ])("rejects an unusable deployed API origin: %s", (url) => {
+    expect(() => assertDeployEnv({ ...deployBuild, NEXT_PUBLIC_API_URL: url }))
+      .toThrow(/NEXT_PUBLIC_API_URL/);
+  });
 });

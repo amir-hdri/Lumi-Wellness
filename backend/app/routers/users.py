@@ -81,11 +81,17 @@ def update_user(
     # Only self or admin/receptionist can update
     if current_user.id != user_id and current_user.role not in {"admin", "receptionist"}:
         return error_response("Insufficient permissions", 403)
+    if current_user.role == "receptionist" and current_user.id != user_id and user.role != "athlete":
+        return error_response("Only admins can edit staff accounts", 403)
+    if current_user.role not in {"admin", "receptionist"} and req.email is not None and req.email != user.email:
+        return error_response("Email changes require staff approval", 403)
     if req.email is not None and req.email != user.email:
         taken = db.query(User).filter(User.email == req.email, User.id != user_id).first()
         if taken:
             return error_response("Email already registered", 409)
     update_data = req.model_dump(exclude_unset=True, by_alias=False)
+    if req.branch_id is not None and not db.query(Branch).filter(Branch.id == req.branch_id).first():
+        return error_response("Branch not found", 404)
     # Privilege-adjacent fields are staff-only even on self-updates, with one
     # exception: a member with no branch yet may pick their own (onboarding).
     # Retracting or switching branches stays a staff action.
@@ -116,6 +122,8 @@ def update_user_status(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return error_response("User not found", 404)
+    if current_user.role == "receptionist" and user.role != "athlete":
+        return error_response("Only admins can change staff status", 403)
     user.status = req.status
     db.commit()
     db.refresh(user)
@@ -181,6 +189,8 @@ def create_user(
     allowed_roles = {"athlete", "coach", "admin", "receptionist"}
     if req.role not in allowed_roles:
         return error_response(f"Invalid role. Allowed: {', '.join(sorted(allowed_roles))}", 400)
+    if current_user.role != "admin" and req.role != "athlete":
+        return error_response("Only admins can create staff accounts", 403)
     if req.branch_id is not None:
         from app.models import Branch as _Branch
 

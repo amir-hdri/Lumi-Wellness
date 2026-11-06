@@ -1,0 +1,15 @@
+{
+  "runs": [
+    {
+      "date": "2026-11-06T01:16:15.916378+00:00",
+      "files": 348,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "token_usage_available": false,
+      "note": "Agent usage unavailable. Zero fields are compatibility placeholders, not measured consumption."
+    }
+  ],
+  "total_input_tokens": 0,
+  "total_output_tokens": 0,
+  "totals_are_measured": false
+}

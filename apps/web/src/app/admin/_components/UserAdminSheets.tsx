@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { KeyRound, Save } from "lucide-react";
@@ -9,8 +10,9 @@ import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { Sheet } from "@/components/ui/Sheet";
 import { apiErrorMessage, PASSWORD_HINT } from "@/components/auth/auth-helpers";
-import { useBranches, useSetUserPassword, useUpdateUser } from "@/hooks/use-api";
-import type { User } from "@/lib/types";
+import { useBranches, useSetUserPassword, useUpdateUser, useUpdateUserRole } from "@/hooks/use-api";
+import type { User, UserRole } from "@/lib/types";
+import { USER_ROLE } from "./admin-data";
 import { Field } from "./Field";
 import {
   identitySchema,
@@ -21,6 +23,35 @@ import {
 } from "./user-admin";
 
 const NO_BRANCH = "none";
+
+export function UserRoleSheet({ open, onOpenChange, user }: UserSheetProps) {
+  return <Sheet open={open} onOpenChange={onOpenChange} title="تغییر نقش حساب"
+    description={`نقش ${user.firstName} ${user.lastName}، سطح دسترسی این حساب را تعیین می‌کند.`}>
+    <UserRoleForm user={user} onDone={() => onOpenChange(false)} />
+  </Sheet>;
+}
+
+function UserRoleForm({ user, onDone }: { user: User; onDone: () => void }) {
+  const [role, setRole] = useState<UserRole>(user.role);
+  const mutation = useUpdateUserRole();
+  const save = async () => {
+    try {
+      await mutation.mutateAsync({ id: user.id, role });
+      toast.success("نقش حساب تغییر کرد");
+      onDone();
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "تغییر نقش ناموفق بود"));
+    }
+  };
+  return <div className="space-y-4">
+    <label htmlFor="account-role" className="block text-sm">نقش حساب</label>
+    <select id="account-role" className="h-11 w-full rounded-xl border border-border bg-card px-3"
+      value={role} onChange={(event) => setRole(event.target.value as UserRole)} disabled={mutation.isPending}>
+      {(Object.keys(USER_ROLE) as UserRole[]).map((value) => <option key={value} value={value}>{USER_ROLE[value]}</option>)}
+    </select>
+    <Button onClick={save} loading={mutation.isPending} disabled={role === user.role}>ثبت نقش جدید</Button>
+  </div>;
+}
 
 export interface UserSheetProps {
   open: boolean;
@@ -83,7 +114,7 @@ function UserEditForm({ user, onDone }: { user: User; onDone: () => void }) {
           email: data.email,
           phone: data.phone,
           status: data.status,
-          branchId: data.branchId === NO_BRANCH ? undefined : data.branchId,
+          branchId: data.branchId === NO_BRANCH ? null : data.branchId,
         },
       });
       toast.success("اطلاعات حساب به‌روزرسانی شد");

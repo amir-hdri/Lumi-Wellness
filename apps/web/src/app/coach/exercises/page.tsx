@@ -9,20 +9,40 @@ import { formatPersianNumber, cn } from "@/lib/utils";
 import { SearchInput, FilterChips, EmptyState } from "@/components/twilight/controls";
 import { PageShell, PageHeader } from "@/components/twilight/Page";
 import { Plus, Dumbbell, Pencil, Trash2 } from "lucide-react";
-import { useExercises } from "@/hooks/use-api";
+import { useExercises, useDeleteExercise } from "@/hooks/use-api";
+import { toast } from "sonner";
+import { apiErrorMessage, httpStatusOf } from "@/components/auth/auth-helpers";
+import type { Exercise } from "@/lib/types";
+import { ConfirmDialog } from "../_components/ConfirmDialog";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
+import { DIFFICULTIES, difficultyLabels } from "../_meta";
 
 const muscles = ["همه", "سینه", "پشت", "پاها", "بازو", "شکم", "سرشانه"];
-const difficulties = ["همه", "مبتدی", "متوسط", "پیشرفته"];
+const difficulties = ["all", ...DIFFICULTIES.map((item) => item.value)];
+const difficultyChipLabels = { all: "همه", ...difficultyLabels };
 
 const chipLabels = (opts: string[]): Record<string, string> =>
   Object.fromEntries(opts.map((o) => [o, o]));
 
 export default function ExerciseLibraryPage() {
   const [search, setSearch] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Exercise | null>(null);
+  const remove = useDeleteExercise();
   const [muscleFilter, setMuscleFilter] = useState("همه");
-  const [difficultyFilter, setDifficultyFilter] = useState("همه");
+  const [difficultyFilter, setDifficultyFilter] = useState("all");
   const { data, isLoading, isError, error, refetch } = useExercises();
+
+  const deleteExercise = async () => {
+    if (!deleteTarget || remove.isPending) return;
+    try {
+      await remove.mutateAsync(deleteTarget.id);
+      toast.success("حرکت حذف شد");
+      setDeleteTarget(null);
+    } catch (error) {
+      const conflict = httpStatusOf(error) === 409 || (error instanceof Error && /referenc|program|برنامه/i.test(error.message));
+      toast.error(conflict ? "این حرکت در برنامه تمرینی استفاده شده است؛ ابتدا آن را از برنامه‌ها حذف کنید." : apiErrorMessage(error, "حذف حرکت ناموفق بود"));
+    }
+  };
 
   if (isLoading) return <Loading />;
   if (isError) return <ErrorDisplay message={error?.message} onRetry={refetch} />;
@@ -32,7 +52,7 @@ export default function ExerciseLibraryPage() {
   const filtered = exercisesData.filter((ex) => {
     const matchSearch = ex.name.includes(search);
     const matchMuscle = muscleFilter === "همه" || ex.muscleGroup === muscleFilter;
-    const matchDifficulty = difficultyFilter === "همه" || ex.difficulty === difficultyFilter;
+    const matchDifficulty = difficultyFilter === "all" || ex.difficulty === difficultyFilter;
     return matchSearch && matchMuscle && matchDifficulty;
   });
 
@@ -75,7 +95,7 @@ export default function ExerciseLibraryPage() {
             options={difficulties}
             value={difficultyFilter}
             onChange={setDifficultyFilter}
-            labels={chipLabels(difficulties)}
+            labels={difficultyChipLabels}
           />
         </div>
       </div>
@@ -106,16 +126,15 @@ export default function ExerciseLibraryPage() {
                 </TableCell>
                 <TableCell>
                   <Badge variant={difficultyColor[ex.difficulty] || difficultyColor["متوسط"]}>
-                    {ex.difficulty}
+                    {difficultyLabels[ex.difficulty] ?? ex.difficulty}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="sm">
-                      <Pencil className="h-4 w-4" />
-                      ویرایش
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href={`/coach/exercises/${ex.id}`}><Pencil className="h-4 w-4" aria-hidden />ویرایش</Link>
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-destructive">
+                    <Button variant="ghost" size="sm" className="text-destructive" onClick={() => setDeleteTarget(ex)}>
                       <Trash2 className="h-4 w-4" />
                       حذف
                     </Button>
@@ -135,6 +154,9 @@ export default function ExerciseLibraryPage() {
           </div>
         )}
       </div>
+      <ConfirmDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open && !remove.isPending) setDeleteTarget(null); }}
+        title="حذف حرکت" description={`حرکت «${deleteTarget?.name ?? ""}» حذف شود؟ حرکت‌های استفاده‌شده در برنامه قابل حذف نیستند.`}
+        confirmLabel="حذف حرکت" loading={remove.isPending} onConfirm={deleteExercise} />
     </PageShell>
   );
 }

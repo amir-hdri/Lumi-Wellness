@@ -1,44 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { PageShell, PageHeader } from "@/components/twilight/Page";
 import { TwilightCard } from "@/components/twilight/controls";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
 import { Badge } from "@/components/ui/Badge";
 import { Avatar, AvatarFallback } from "@/components/ui/Avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/Select";
 import { getInitials, generateAvatarColor } from "@/lib/utils";
-import { toast } from "sonner";
 import { Save, Lock } from "lucide-react";
 
+import { useProfileForm } from "@/hooks/use-profile-form";
+import { Loading, ErrorDisplay } from "@/components/ui/DataState";
+
 export default function CoachProfilePage() {
-  const [profile, setProfile] = useState({
-    firstName: "دکتر محمد", lastName: "احمدی", email: "m.ahmadi@example.com", phone: "۰۹۱۲۱۱۱۲۲۳۳",
-    specialty: "بدنسازی و فیتنس", experience: "۸ سال", bio: "مربی حرفه‌ای بدنسازی با سابقه ۸ سال مربیگری",
-  });
-  const [password, setPassword] = useState({ current: "", newPass: "", confirm: "" });
-  const [selectedSpecialty, setSelectedSpecialty] = useState(profile.specialty);
-  const [selectedExperience, setSelectedExperience] = useState(profile.experience);
-
+  const { profile, setProfile, password, setPassword, handleSaveProfile, handleChangePassword,
+    isLoading, isError, error, isSaving, isChangingPassword } = useProfileForm();
   const fullName = `${profile.firstName} ${profile.lastName}`;
-
-  const specialties = ["بدنسازی و فیتنس", "قدرتی و حرفه‌ای", "هوازی و استقامتی", "فانکشنال", "کراس‌فیت", "یوگا و پیلاتس"];
-  const experienceOptions = ["۱-۳ سال", "۳-۵ سال", "۵-۱۰ سال", "بیش از ۱۰ سال"];
-
-  const handleSaveProfile = () => {
-    setProfile({ ...profile, specialty: selectedSpecialty, experience: selectedExperience });
-    toast.success("پروفایل با موفقیت به‌روزرسانی شد");
-  };
-
-  const handleChangePassword = () => {
-    if (!password.current || !password.newPass) return;
-    if (password.newPass !== password.confirm) { toast.error("رمز عبور و تکرار آن یکسان نیستند"); return; }
-    toast.success("رمز عبور با موفقیت تغییر کرد");
-    setPassword({ current: "", newPass: "", confirm: "" });
-  };
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorDisplay message={error?.message} />;
 
   return (
     <PageShell>
@@ -54,7 +34,6 @@ export default function CoachProfilePage() {
         <div className="mt-2">
           <Badge variant="secondary">مربی</Badge>
         </div>
-        <p className="mt-1.5 text-xs text-muted-foreground">{profile.specialty}</p>
       </div>
 
       <Tabs defaultValue="info" dir="rtl">
@@ -71,25 +50,11 @@ export default function CoachProfilePage() {
                 <Input label="نام خانوادگی" value={profile.lastName} onChange={(e) => setProfile({ ...profile, lastName: e.target.value })} />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Input label="ایمیل" type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
+                <Input label="ایمیل" type="email" value={profile.email} readOnly />
                 <Input label="تلفن" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5"><Label>تخصص</Label>
-                  <Select value={selectedSpecialty} onValueChange={setSelectedSpecialty}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{specialties.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}</SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5"><Label>سابقه</Label>
-                  <Select value={selectedExperience} onValueChange={setSelectedExperience}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{experienceOptions.map((e) => (<SelectItem key={e} value={e}>{e}</SelectItem>))}</SelectContent>
-                  </Select>
-                </div>
-              </div>
               <div className="flex justify-end pt-2">
-                <Button onClick={handleSaveProfile}><Save className="ml-2 h-4 w-4" />ذخیره تغییرات</Button>
+                <Button onClick={handleSaveProfile} disabled={isSaving}><Save className="ml-2 h-4 w-4" />ذخیره تغییرات</Button>
               </div>
             </div>
           </TwilightCard>
@@ -108,7 +73,7 @@ export default function CoachProfilePage() {
                 />
               ))}
               <div className="flex justify-end pt-2">
-                <Button onClick={handleChangePassword}><Lock className="ml-2 h-4 w-4" />تغییر رمز عبور</Button>
+                <Button onClick={handleChangePassword} disabled={isChangingPassword}><Lock className="ml-2 h-4 w-4" />تغییر رمز عبور</Button>
               </div>
             </div>
           </TwilightCard>

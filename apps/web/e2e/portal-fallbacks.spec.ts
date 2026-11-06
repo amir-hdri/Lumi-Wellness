@@ -53,15 +53,18 @@ for (const portal of PORTALS) {
     await signIn(page, portal.role);
     await page.goto(`${portal.root}/this-route-does-not-exist`);
 
-    // The portal 404 renders inside the shell — the dock must survive it.
+    // The portal 404 keeps mobile navigation and the desktop sidebar usable.
+    const nav = (page.viewportSize()?.width ?? 0) < 1024
+      ? page.getByRole("navigation", { name: "ناوبری اصلی موبایل" })
+      : page.getByRole("complementary").getByRole("navigation");
     await expect(
-      page.locator('nav[aria-label="ناوبری اصلی"]')
+      nav
     ).toBeVisible();
-    expect(await page.locator('nav[aria-label="ناوبری اصلی"] a').count()).toBeGreaterThan(0);
+    expect(await nav.getByRole("link").count()).toBeGreaterThan(0);
     await expect(page.getByRole("heading", { name: "این بخش وجود ندارد." })).toBeVisible();
 
     // And the way forward works.
-    await page.locator('nav[aria-label="ناوبری اصلی"] a[href="/' + portal.role + '"]').first().click();
+    await nav.locator('a[href="/' + portal.role + '"]').first().click();
     await expect(page).toHaveURL(new RegExp(`^.*${portal.root}/?$`));
   });
 }
@@ -71,5 +74,5 @@ test("athlete portal 404 does not throw the shell away in the page source", asyn
   await signIn(page, "athlete");
   await page.goto("/athlete/does-not-exist");
 
-  await expect(page.getByText("LUMI WELLNESS").first()).toBeVisible();
+  await expect(page.getByRole("banner").getByRole("img", { name: "Lumi Wellness" })).toBeVisible();
 });

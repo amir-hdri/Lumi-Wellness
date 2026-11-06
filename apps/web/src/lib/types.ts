@@ -35,7 +35,7 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   avatarUrl?: string;
-  branchId?: string;
+  branchId?: string | null;
   branchName?: string;
   createdAt: string;
   updatedAt: string;
@@ -95,6 +95,9 @@ export interface Membership {
   status: "active" | "expired" | "frozen" | "cancelled";
   freezeReason?: string;
   freezeEndDate?: string;
+  renewalRequestedAt?: string | null;
+  renewalApprovedAt?: string | null;
+  renewalApprovedBy?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -167,7 +170,7 @@ export interface ProgramExercise {
   order: number;
   sets: number;
   reps: string;
-  weight?: number;
+  weight?: number | null;
   restSeconds: number;
   notes?: string;
   isCompleted: boolean;

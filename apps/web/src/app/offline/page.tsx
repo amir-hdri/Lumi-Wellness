@@ -14,7 +14,7 @@ const ctaGhost =
 
 export default function OfflinePage() {
   return (
-    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-6 py-12 text-center text-foreground">
+    <main id="main" className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-background px-6 py-12 text-center text-foreground">
       <GymBackdrop className="absolute inset-0 opacity-40" />
       <div className="relative z-10 flex w-full max-w-md flex-col items-center">
         <div className="flex h-20 w-20 items-center justify-center rounded-[26px] border border-border bg-card">
@@ -36,8 +36,8 @@ export default function OfflinePage() {
             رفتن به چک‌این
           </Link>
         </div>
-        <p className="mt-8 text-xs text-muted-foreground">نکته: چک‌این‌های آفلاین هنگام اتصال همگام می‌شوند.</p>
+        <p className="mt-8 text-xs text-muted-foreground">برای ثبت ورود، ابتدا اتصال اینترنت را برقرار کنید.</p>
       </div>
-    </div>
+    </main>
   );
 }

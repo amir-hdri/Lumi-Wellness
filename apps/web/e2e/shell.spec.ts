@@ -67,6 +67,7 @@ test.describe("document shell", () => {
     // 44px is the WCAG 2.2 target-size floor and the project's stated minimum.
     // Scoped to submit buttons and text inputs: icon affordances inside a field
     // (the password reveal, for one) are exempt under 2.5.8's inline exception.
+    await expect.poll(async () => {
     const boxes = await page
       .locator('button[type="submit"]:visible, input[type="email"]:visible, input[type="password"]:visible, input[type="tel"]:visible, input[type="text"]:visible')
       .evaluateAll((nodes) =>
@@ -78,6 +79,7 @@ test.describe("document shell", () => {
 
     expect(boxes.length).toBeGreaterThan(0);
     const tooSmall = boxes.filter((box) => box.height > 0 && box.height < 44);
-    expect(tooSmall, `controls under 44px tall: ${JSON.stringify(tooSmall)}`).toEqual([]);
+    return tooSmall;
+    }, { message: "settled form controls must be at least 44px tall" }).toEqual([]);
   });
 });

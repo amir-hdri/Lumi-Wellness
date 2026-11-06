@@ -16,6 +16,7 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL,
+    actionTimeout: 15_000,
     channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
     locale: "fa-IR",
     timezoneId: "Asia/Tehran",
@@ -36,7 +37,7 @@ export default defineConfig({
       env: {
         ENVIRONMENT: "development",
         DATABASE_URL: `sqlite:///${join(tmpdir(), `gym-e2e-${Date.now()}.db`)}`,
-        SECRET_KEY: "e2e-isolated-test-key",
+        SECRET_KEY: "e2e-isolated-test-key-at-least-32-bytes",
         CORS_ORIGINS: baseURL,
         LOGIN_RATE_LIMIT: "1000",
         SEED_ADMIN_PASSWORD: "admin123",

@@ -1,11 +1,19 @@
 <!--schema:2.0.0-->
-<!--agent:opencode-->
-<!--timestamp:2026-11-01T22:15:00+03:30-->
+<!--agent:codex-->
+<!--timestamp:2026-11-06T03:51:53+03:30-->
 
 # 🎯 هدف جاری
+ممیزی و تکمیل جریان‌های پنل مدیریت و مربیان، ذخیرهٔ واقعی داده‌ها و کنترل مجوزها. سیاست تأییدشده: تمدید عضویت فقط پس از تأیید مدیر. جریان‌های محلی اصلاح و آزموده شده‌اند؛ خروجی نهایی گراف و کامیت اتمیک نشست ثبت می‌شود.
+
 توسعه و نگهداری سامانه مدیریت باشگاه و ورزشکاران (Lumi Wellness) — معماری یکپارچه Monorepo (وب Next.js 16 + بک‌اند FastAPI + بسته‌های اشتراکی Turbo). نام پروژه/ریپو در این سشن به **Lumi-Wellness** تغییر کرد (پوشهٔ محلی، ریپوی گیت‌هاب، نام packageها و نام loggerهای بک‌اند).
 
 ## ✅ کارهای انجام‌شده
+- ممیزی ۶ نوامبر: پروفایل/رمز واقعی، حساب اتمیک، تمرین و ست ذخیره‌شده، پیام واقعی، عضویت با درخواست و تأیید مدیر و migration 0003، تنظیمات شعبه و QR واقعی.
+- پنل مدیر: حساب‌های کارکنان در تنظیمات، ویرایش/نقش/رمز/حذف؛ عضویت و مالی واقعی، همهٔ وضعیت‌ها، چاپ/رسید متنی، نام پلن از عضویت و پاک‌کردن صریح شعبه.
+- پنل مربی: سازندهٔ کامل هفت‌روزه و CRUD/ترتیب/وضعیت، clone بدون سابقهٔ تکمیل، فیلتر enum؛ roster از داشبورد، لینک برنامه و ویرایش هدف، حفظ reps رشته‌ای.
+- مجوزها و اعتبارسنجی: منع ساخت/ویرایش کارکنان توسط پذیرش، منع دورزدن ایمیل profile و ساخت هدف، رد null هویت و ورودی نامعتبر/غیرمتناهی، نرمال‌سازی زمان حضور.
+- شواهد نهایی در docs/FULLSTACK_AUDIT_2026-11-06.md؛ شواهد: ۲۲۵ تست وب، ۲۰۳ تست بک‌اند + ۴ xfail، ۱۰۴ تست مرورگر mock و ۳۲ تست واقعی یکپارچه در موبایل/دسکتاپ؛ TypeScript/ESLint و بیلد محلی شبیه‌سازی Vercel موفق. گراف نهایی با snapshot سورس تطبیق داده می‌شود و خروجی منتخب همراه کامیت اتمیک نشست است.
+
 - یکپارچه‌سازی کدبیس‌های همگرا در ساختار منوریپو تحت برنچ `main`
 - استقرار فریمورک هماهنگی چند-ایجنت (Multi-Agent Sync v2.0)
 - ایجاد فایل‌های قرارداد `AGENTS.md`، `CLAUDE.md` و گیت‌هوک‌های محافظتی
@@ -34,6 +42,11 @@
   - fixture تست CORS به پیشوند `lumi-wellness` تغییر کرد و README الگوی transitional regex را توضیح می‌دهد
 
 ## 📁 فایل‌های تغییریافته
+- جزئیات این نشست: `docs/FULLSTACK_AUDIT_2026-11-06.md` و `docs/API_CONTRACT_V2.md`، `README.md`.
+- `backend/app/{models.py,schemas.py,routers/memberships.py,routers/users.py,routers/goals.py}`، migration 0003 و تست‌های هدف/عضویت/هویت/زمان/مالی.
+- صفحات و اجزای `apps/web/src/app/{admin,coach,athlete}`، chat، use-profile-form/use-api، types/client/mock و accessibility/theme؛ تست‌های RTL و e2e-real/management,coach-builder,coach-goals و ناوبری/mock.
+- خروجی‌های منتخب `graphify-out/` و `.context/STATE.md`/`.context/SESSION_LOG.md`. تغییرات اولیهٔ `.serena/`، next-env و تصاویر context متعلق به این نشست نیستند.
+
 - `apps/web/src/components/twilight/CapsuleChart.tsx`
 - `apps/web/src/components/twilight/capsule-chart-data.ts` (جدید)
 - `apps/web/src/components/twilight/capsule-chart-data.test.ts` (جدید)
@@ -55,11 +68,21 @@
 - `.context/SESSION_LOG.md`
 
 ## 🎯 تسک دقیق بعدی
+پس از کنترل نهایی و کامیت محلی، پیش‌نیاز عملیاتی باقی‌مانده، تنظیم دامنهٔ بک‌اند/CORS/Vercel و اجرای `alembic upgrade head` در دیتابیس مقصد با حساب مدیر اولیهٔ واقعی است. این نشست دادهٔ production را تغییر نمی‌دهد.
+
 ۱) نام پروژهٔ Vercel را به `lumi-wellness` تغییر دهید (داشبورد → Project → Settings → General) و روی بک‌اند `CORS_ALLOW_ORIGIN_REGEX=^https://(lumi-wellness|gym-app)-.*\.vercel\.app$` ست کنید تا هاستنام‌های preview قدیمی هم تا زمان مرگ بمانند.
 ۲) اتصال ریپو به پروژهٔ Vercel و پیکربندی محیط: Root Directory = `apps/web`، ست‌کردن `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_USE_MOCKS=false` برای Production و Preview، و ست‌کردن `CORS_ORIGINS` روی بک‌اند.
 پیشنیاز: دیپلوی شدن بک‌اند روی یک دامنهٔ مشخص (تا origin واقعی معلوم شود)؛ بدون آن `regions` و allow-list دقیق CORS قابل تعیین نیست.
 
 ## 🧠 تصمیمات فنی و چرایی
+- قطع اتصال دکمه‌ها و فرم‌ها با اجزای موجود رفع شد؛ طراحی بصری و منطق کپسولی حفظ شدند. دادهٔ ثابت با دادهٔ واقعی جایگزین شد تا موفقیت/آمار ظاهری گمراه‌کننده نباشد.
+- درخواست تمدید حق عضویت ایجاد نمی‌کند؛ only-admin approve سهمیه و مدت را تغییر می‌دهد و audit metadata دارد. generic edit/create دورهٔ بعدی دورزدن پذیرش را می‌بندد.
+- ساخت کارکنان توسط پذیرش و تغییر login کارکنان امکان افزایش مجوز/تصاحب هویت داشت؛ admin-only شد و دسترسی مجاز ادارهٔ ورزشکار برای پذیرش حفظ است.
+- null required identity می‌توانست پس از commit پاسخ 500 بسازد؛ قبل از نوشتن رد می‌شود. nullable branch/avatar قابل پاک‌شدن هستند؛ undefined برای پاک‌کردن branch کافی نبود.
+- ساخت هدف با قاعدهٔ مشترک coaching کنترل می‌شود؛ پذیرش فقط‌خواندنی و coach دیگر حق جعل assignment ندارد.
+- API ترتیب چند حرکت bulk ندارد؛ ذخیرهٔ چندمرحله‌ای در خطای جزئی با refetch و پیام صریح مشخص می‌شود و موفقیت کامل گزارش نمی‌شود. clone ناموفق فقط draft تازه را جبران می‌کند.
+- Graphify hosted در ابزارهای نشست قابل استفاده نبود و کاربر نسخهٔ محلی را صریحاً خواست. extraction اولیه حفظ و سورس نهایی دوباره استخراج می‌شود؛ fingerprint و هشدارهای integrity با خروجی می‌آیند و هزینهٔ توکن اندازه‌گیری‌نشده zero واقعی نیست.
+
 - گارد بیلد به‌جای اصلاح دستی `.env.local`: `NEXT_PUBLIC_*` در زمان build داخل باندل inline می‌شود، پس یک بیلد با mock یا localhost بدون خطای بصری تولید می‌شد و فقط در production لو می‌رفت. حالا بیلد دیپلوی با پیام واضح fail می‌شود.
 - `output: "standalone"` فقط برای Docker/خودمیزبانی: روی Vercel خروجی runtime را خود پلتفرم می‌سازد و این خروجی فقط زمان build را اضافه می‌کند (و در 16.3.0 باعث خطای adapter می‌شد).
 - CSP فقط در production: dev server برای fast-refresh به `unsafe-eval` نیاز دارد. `connect-src` فقط origin واقعی API را می‌پذیرد (به‌جای `https:` باز) تا توکن نشست به دامنهٔ ثالث نشت نکند.
@@ -74,6 +97,10 @@
 - **نام package ≠ مسیر workspace:** اسکریپت‌ها (`--workspace=apps/web`) مسیر-محور هستند، پس rename نام packageها فقط metadata را عوض می‌کند و turbo/npm scripts را نمی‌شکند.
 
 ## ⚠️ نکات حساس و موانع
+- انتشار، push و migration production انجام نشده‌اند. runtime عمومی، CORS واقعی، provisioning مدیر، limiter چند-instance و readiness DB همچنان پیش‌نیاز عملیاتی‌اند.
+- چهار xfail قرارداد تاریخی جدا از pass شمرده می‌شوند. هشدارهای وابستگی TestClient/passlib و چرخه FK users/branches در گزارش ثبت شده‌اند.
+- Graphify روابط حل‌نشده و فایل‌های فاقد نماد جزئی دارد؛ نقشه جای بازخوانی سورس جاری را نمی‌گیرد. cache/snapshot اولیه محلی‌اند؛ فقط خروجی منتخب برای گیت است.
+
 - پروژه هنوز به Vercel لینک نشده است؛ سنجه‌های production در دسترس نیست و این تغییرات فقط code-level قابل‌راستی‌آزمایی بودند. نام پروژهٔ Vercel همچنان باید دستی به `lumi-wellness` تغییر کند.
 - rename ریپو در گیت‌هاب لینک‌های قدیمی را redirect می‌کند، ولی integration‌هایی که نام ریپو را ذخیره کرده‌اند (Vercel پروژهٔ موجود، Actionهای CI، تنظیمات Webhook) نام جدید را نمی‌گیرند و باید دستی به‌روزرسانی شوند.
 - `.dockerignore` به‌دلیل در حال اجرا نبودن Docker Desktop روی این ماشین تست نشد (الگوها مطابق مستندات Docker هستند).

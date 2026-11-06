@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useParams } from "next/navigation";
-import { Phone, Mail, Calendar, Award, ChevronRight, Dumbbell, Plus, Trash2, MessageCircle, CreditCard } from "lucide-react";
+import { Phone, Mail, Calendar, Award, ChevronRight, Dumbbell, Plus, Trash2, Pencil, MessageCircle, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -21,9 +21,10 @@ import { Textarea } from "@/components/ui/Textarea";
 import { formatPersianNumber, getInitials, generateAvatarColor, formatDate, formatCurrency, calculateProgress } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { apiErrorMessage } from "@/components/auth/auth-helpers";
-import { useUser, useGoals, useTrainingPrograms, useCheckIns, useConversations, useCreateGoal, useDeleteGoal, useMemberships, usePayments } from "@/hooks/use-api";
+import { useUser, useGoals, useTrainingPrograms, useCheckIns, useConversations, useCreateGoal, useDeleteGoal, useUpdateGoal, useMemberships, usePayments } from "@/hooks/use-api";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { SessionDurationChart } from "@/components/analytics/Charts";
+import { GoalSheet, type GoalPatch } from "../../_components/GoalSheet";
 import { ConfirmDialog } from "../../_components/ConfirmDialog";
 import { MEMBER_PROGRESS_FILL } from "../../_accents";
 import { SelectField } from "../../_components/SelectField";
@@ -79,7 +80,7 @@ export default function AthleteDetailPage() {
   const { user } = useAuth();
   const coachId = user?.id;
   const { data: userData, isLoading: userLoading, isError: userError, error: userErr, refetch: refetchUser } = useUser(params.id);
-  const { data: goalsData, isLoading: goalsLoading } = useGoals(params.id);
+  const { data: goalsData, isLoading: goalsLoading, isError: goalsError, error: goalsErr, refetch: refetchGoals } = useGoals(params.id);
   const { data: programsData, isLoading: programsLoading } = useTrainingPrograms();
   const { data: checkInsData, isLoading: checkinsLoading } = useCheckIns(params.id);
   const membershipsQuery = useMemberships();
@@ -87,8 +88,11 @@ export default function AthleteDetailPage() {
   const conversationsQuery = useConversations(coachId);
   const createGoal = useCreateGoal();
   const deleteGoal = useDeleteGoal();
+  const updateGoal = useUpdateGoal();
   const [goalCreateOpen, setGoalCreateOpen] = React.useState(false);
   const [goalToDelete, setGoalToDelete] = React.useState<Goal | null>(null);
+  const [goalToEdit, setGoalToEdit] = React.useState<Goal | null>(null);
+  const canManageGoal = (goal: Goal) => user?.role === "admin" || (user?.role === "coach" && (!goal.coachId || goal.coachId === user.id));
 
   // The thread with this athlete, when one exists — the messages button
   // deep-links to it, otherwise it falls back to the inbox.
@@ -143,13 +147,24 @@ export default function AthleteDetailPage() {
   };
 
   const handleConfirmDeleteGoal = async () => {
-    if (!goalToDelete) return;
+    if (!goalToDelete || !canManageGoal(goalToDelete)) return;
     try {
       await deleteGoal.mutateAsync(goalToDelete.id);
       setGoalToDelete(null);
       toast.success("هدف شاگرد حذف شد");
     } catch (error) {
       toast.error(apiErrorMessage(error, "حذف هدف ناموفق بود"));
+    }
+  };
+
+  const handleUpdateGoal = async (patch: GoalPatch) => {
+    if (!goalToEdit || !canManageGoal(goalToEdit) || updateGoal.isPending) return;
+    try {
+      await updateGoal.mutateAsync({ id: goalToEdit.id, data: { ...patch, description: patch.description ?? "" } });
+      setGoalToEdit(null);
+      toast.success("هدف شاگرد ذخیره شد");
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "ویرایش هدف ناموفق بود"));
     }
   };
 
@@ -176,7 +191,7 @@ export default function AthleteDetailPage() {
       exercises: exercises.map((ex) => ({
         name: ex.exercise?.name || "بدون نام",
         sets: ex.sets,
-        reps: Number(ex.reps) || 0,
+        reps: ex.reps,
         weight: ex.weight || 0,
         rest: `${ex.restSeconds} ثانیه`,
       })),
@@ -265,7 +280,7 @@ export default function AthleteDetailPage() {
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium text-foreground">{ex.name}</p>
                           <p className="mt-0.5 text-[11px] text-muted-foreground">
-                            {formatPersianNumber(ex.sets)} ست × {formatPersianNumber(ex.reps)} تکرار
+                            {formatPersianNumber(ex.sets)} ست × {ex.reps} تکرار
                             {ex.weight > 0 && ` | ${formatPersianNumber(ex.weight)} کیلوگرم`}
                           </p>
                         </div>
@@ -292,6 +307,8 @@ export default function AthleteDetailPage() {
           </SectionTitle>
           {goalsLoading ? (
             <Loading message="در حال بارگذاری اهداف..." />
+          ) : goalsError ? (
+            <ErrorDisplay message={goalsErr?.message} onRetry={refetchGoals} />
           ) : athleteGoals.length === 0 ? (
             <EmptyState
               tone="blush"
@@ -313,6 +330,11 @@ export default function AthleteDetailPage() {
                     <span className="text-xs tabular-nums text-muted-foreground">
                       {formatPersianNumber(goal.currentValue)} / {formatPersianNumber(goal.targetValue)} {goal.unit}
                     </span>
+                    {canManageGoal(goal) && <>
+                    <button type="button" onClick={() => setGoalToEdit(goal)} aria-label={`ویرایش هدف ${goal.title}`}
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted" disabled={updateGoal.isPending}>
+                      <Pencil className="h-4 w-4" aria-hidden />
+                    </button>
                     <button
                       type="button"
                       onClick={() => setGoalToDelete(goal)}
@@ -322,6 +344,7 @@ export default function AthleteDetailPage() {
                     >
                       <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </button>
+                    </>}
                   </span>
                 </div>
                 <Progress value={calculateProgress(goal.currentValue, goal.targetValue)} indicatorClassName={`bg-none ${MEMBER_PROGRESS_FILL}`} className="bg-border" />
@@ -480,6 +503,9 @@ export default function AthleteDetailPage() {
         pending={createGoal.isPending}
         onSubmit={handleCreateGoal}
       />
+
+      {goalToEdit && <GoalSheet open onOpenChange={(open) => { if (!open && !updateGoal.isPending) setGoalToEdit(null); }}
+        goal={goalToEdit} pending={updateGoal.isPending} onSubmit={handleUpdateGoal} />}
 
       <ConfirmDialog
         open={goalToDelete !== null}

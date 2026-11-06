@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { formatPersianNumber, getInitials } from "@/lib/utils";
-import { toast } from "sonner";
 import { Save, Lock } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/twilight/Page";
 import { TwilightCard, CtaButton, StatCard } from "@/components/twilight/controls";
@@ -68,22 +66,15 @@ function StaffStats() {
   );
 }
 
+import { useProfileForm } from "@/hooks/use-profile-form";
+import { Loading, ErrorDisplay } from "@/components/ui/DataState";
+
 export default function AdminProfilePage() {
-  const [profile, setProfile] = useState({ firstName: "مدیر", lastName: "سیستم", email: "admin@gymapp.ir", phone: "۰۲۱-۱۲۳۴۵۶۷۸" });
-  const [password, setPassword] = useState({ current: "", newPass: "", confirm: "" });
-
+  const { profile, setProfile, password, setPassword, handleSaveProfile, handleChangePassword,
+    isLoading, isError, error, isSaving, isChangingPassword } = useProfileForm();
   const fullName = `${profile.firstName} ${profile.lastName}`;
-
-  const handleSaveProfile = () => {
-    toast.success("پروفایل با موفقیت به‌روزرسانی شد");
-  };
-
-  const handleChangePassword = () => {
-    if (!password.current || !password.newPass) return;
-    if (password.newPass !== password.confirm) { toast.error("رمز عبور و تکرار آن یکسان نیستند"); return; }
-    toast.success("رمز عبور با موفقیت تغییر کرد");
-    setPassword({ current: "", newPass: "", confirm: "" });
-  };
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorDisplay message={error?.message} />;
 
   return (
     <PageShell>
@@ -126,11 +117,11 @@ export default function AdminProfilePage() {
                 <Input label="نام خانوادگی" value={profile.lastName} onChange={(e) => setProfile({ ...profile, lastName: e.target.value })} className={inputClassName} />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Input label="ایمیل" type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} className={inputClassName} />
+                <Input label="ایمیل" type="email" value={profile.email} readOnly className={inputClassName} />
                 <Input label="تلفن" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} className={inputClassName} />
               </div>
               <div className="flex justify-end">
-                <CtaButton onClick={handleSaveProfile} className="w-auto px-6">
+                <CtaButton onClick={handleSaveProfile} disabled={isSaving} className="w-auto px-6">
                   <Save className="h-4 w-4" strokeWidth={1.75} />
                   ذخیره تغییرات
                 </CtaButton>
@@ -167,7 +158,7 @@ export default function AdminProfilePage() {
                 />
               </div>
               <div className="flex justify-end">
-                <CtaButton onClick={handleChangePassword} className="w-auto px-6">
+                <CtaButton onClick={handleChangePassword} disabled={isChangingPassword} className="w-auto px-6">
                   <Lock className="h-4 w-4" strokeWidth={1.75} />
                   تغییر رمز عبور
                 </CtaButton>

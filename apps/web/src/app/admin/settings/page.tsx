@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { Sheet } from "@/components/ui/Sheet";
 import { toast } from "sonner";
-import { Save, Building2, Phone, MapPin, Mail, Tag, Sparkles, Plus, Pencil, Trash2 } from "lucide-react";
+import { Save, Building2, Phone, MapPin, Mail, Plus, Pencil, Trash2 } from "lucide-react";
 import { PageShell, PageHeader, SectionTitle } from "@/components/twilight/Page";
 import { CtaButton, EmptyState } from "@/components/twilight/controls";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -25,6 +26,7 @@ import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { ConfirmDialog } from "../_components/ConfirmDialog";
 import { validateIranianPhone } from "@/lib/utils";
 import type { Branch } from "@/lib/types";
+import { StaffAccounts } from "../_components/StaffAccounts";
 
 /** Twilight input override (ui/Input base carries old theme tokens + a dark: variant). */
 const inputClassName =
@@ -37,6 +39,7 @@ function SettingsRow({
   value,
   onChange,
   type,
+  disabled,
 }: {
   id: string;
   icon: ReactNode;
@@ -44,6 +47,7 @@ function SettingsRow({
   value: string;
   onChange: (value: string) => void;
   type?: string;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3.5 transition-colors hover:bg-secondary">
@@ -54,7 +58,7 @@ function SettingsRow({
         </Label>
       </div>
       <div className="w-44 shrink-0 sm:w-60">
-        <Input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} className={inputClassName} />
+        <Input id={id} type={type} disabled={disabled} value={value} onChange={(e) => onChange(e.target.value)} className={inputClassName} />
       </div>
     </div>
   );
@@ -174,18 +178,7 @@ const STAFF_HINT_ID = "branch-actions-hint";
 const NON_ADMIN_HINT = "ویرایش، فعال‌سازی و حذف شعبه فقط برای مدیران فعال است.";
 
 export default function SettingsPage() {
-  const [form, setForm] = useState({
-    branchName: "باشگاه Lumi Wellness",
-    address: "تهران، خیابان ولیعصر، نبش کوچه نور",
-    phone: "۰۲۱-۱۲۳۴۵۶۷۸",
-    email: "info@gymapp.ir",
-    sessionPrice: "۱۵۰,۰۰۰",
-    personalSessionPrice: "۳۵۰,۰۰۰",
-  });
-
-  const updateField = (field: string, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const [draft, setDraft] = useState<Partial<Branch>>({});
 
   const { user } = useAuth();
   const branches = useBranches();
@@ -199,6 +192,26 @@ export default function SettingsPage() {
 
   const canEdit = user?.role === "admin";
   const branchList = branches.data?.data ?? [];
+  const primaryBranch = branchList.find((branch) => branch.id === user?.branchId) ?? branchList[0];
+  const form = {
+    branchName: draft.name ?? primaryBranch?.name ?? "",
+    address: draft.address ?? primaryBranch?.address ?? "",
+    phone: draft.phone ?? primaryBranch?.phone ?? "",
+    email: draft.email ?? primaryBranch?.email ?? "",
+  };
+  const updateField = (field: string, value: string) => {
+    setDraft((previous) => ({ ...previous, [field === "branchName" ? "name" : field]: value }));
+  };
+  const saveSettings = () => {
+    if (!primaryBranch || !canEdit || updateBranch.isPending) return;
+    if (!form.branchName.trim()) { toast.error("نام باشگاه را وارد کنید"); return; }
+    updateBranch.mutate({ id: primaryBranch.id, data: {
+      name: form.branchName.trim(), address: form.address.trim(), phone: form.phone.trim(), email: form.email.trim(),
+    } }, {
+      onSuccess: () => { setDraft({}); toast.success("تنظیمات با موفقیت ذخیره شد"); },
+      onError: (error) => toast.error(apiErrorMessage(error, "ذخیره تنظیمات ناموفق بود")),
+    });
+  };
   const disabledExplanation = canEdit ? undefined : NON_ADMIN_HINT;
 
   const confirmDelete = () => {
@@ -268,11 +281,13 @@ export default function SettingsPage() {
   return (
     <PageShell>
       <PageHeader title="تنظیمات" subtitle="مدیریت تنظیمات باشگاه" />
+      {canEdit && <StaffAccounts />}
 
       <section>
         <SectionTitle>بخش باشگاه</SectionTitle>
         <div className="mt-3 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
           <SettingsRow
+            disabled={!canEdit || !primaryBranch || updateBranch.isPending}
             id="branchName"
             icon={<Building2 className="h-4 w-4" strokeWidth={1.75} />}
             label="نام باشگاه"
@@ -280,6 +295,7 @@ export default function SettingsPage() {
             onChange={(v) => updateField("branchName", v)}
           />
           <SettingsRow
+            disabled={!canEdit || !primaryBranch || updateBranch.isPending}
             id="phone"
             icon={<Phone className="h-4 w-4" strokeWidth={1.75} />}
             label="تلفن"
@@ -287,6 +303,7 @@ export default function SettingsPage() {
             onChange={(v) => updateField("phone", v)}
           />
           <SettingsRow
+            disabled={!canEdit || !primaryBranch || updateBranch.isPending}
             id="address"
             icon={<MapPin className="h-4 w-4" strokeWidth={1.75} />}
             label="آدرس"
@@ -294,6 +311,7 @@ export default function SettingsPage() {
             onChange={(v) => updateField("address", v)}
           />
           <SettingsRow
+            disabled={!canEdit || !primaryBranch || updateBranch.isPending}
             id="email"
             icon={<Mail className="h-4 w-4" strokeWidth={1.75} />}
             label="ایمیل"
@@ -304,28 +322,12 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section>
-        <SectionTitle>بخش قیمت‌گذاری</SectionTitle>
-        <div className="mt-3 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-          <SettingsRow
-            id="sessionPrice"
-            icon={<Tag className="h-4 w-4" strokeWidth={1.75} />}
-            label="قیمت هر جلسه عادی (تومان)"
-            value={form.sessionPrice}
-            onChange={(v) => updateField("sessionPrice", v)}
-          />
-          <SettingsRow
-            id="personalSessionPrice"
-            icon={<Sparkles className="h-4 w-4" strokeWidth={1.75} />}
-            label="قیمت هر جلسه شخصی (تومان)"
-            value={form.personalSessionPrice}
-            onChange={(v) => updateField("personalSessionPrice", v)}
-          />
-        </div>
-      </section>
+      <Button asChild variant="outline" className="self-start">
+        <Link href="/admin/plans">مدیریت تعرفه‌ها و پلن‌های عضویت</Link>
+      </Button>
 
       <div className="flex justify-end">
-        <CtaButton onClick={() => toast.success("تنظیمات با موفقیت ذخیره شد")} className="w-auto px-6">
+        <CtaButton onClick={saveSettings} disabled={!canEdit || !primaryBranch || updateBranch.isPending} className="w-auto px-6">
           <Save className="h-4 w-4" strokeWidth={1.75} />
           ذخیره تنظیمات
         </CtaButton>

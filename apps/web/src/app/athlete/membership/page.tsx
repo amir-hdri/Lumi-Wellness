@@ -5,7 +5,6 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/Input";
 import {
   Dialog,
@@ -21,7 +20,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@
 import { formatPersianNumber, formatCurrency, formatDate, calculateProgress } from "@/lib/utils";
 import { CreditCard, Calendar, Award, CheckCircle, AlertTriangle, Crown, Check, ShieldCheck, RefreshCw, Receipt } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { useMemberships, usePayments, useMembershipPlans, useRenewMembership, useCreatePayment } from "@/hooks/use-api";
+import { useMemberships, usePayments, useMembershipPlans, useRequestMembershipRenewal, useCreatePayment } from "@/hooks/use-api";
 import type { Payment } from "@/lib/types";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { PageShell, PageHeader, SectionTitle, MicroLabelFa } from "@/components/twilight/Page";
@@ -39,15 +38,11 @@ export default function MembershipPage() {
   const { data: plansData, isLoading: plansLoading } = useMembershipPlans();
 
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
-  const renewMutation = useRenewMembership();
+  const renewMutation = useRequestMembershipRenewal();
   const createPaymentMutation = useCreatePayment();
 
-  // Renew dialog state (reset checkbox defaults to on)
+  // The member requests a renewal; management chooses the approved term.
   const [renewOpen, setRenewOpen] = useState(false);
-  const [renewEndDate, setRenewEndDate] = useState("");
-  const [renewSessionsTotal, setRenewSessionsTotal] = useState("");
-  const [renewResetUsed, setRenewResetUsed] = useState(true);
-  const [renewDone, setRenewDone] = useState(false);
 
   // Payment form state — amount prefills from the membership's final price
   const [payAmount, setPayAmount] = useState("");
@@ -60,7 +55,6 @@ export default function MembershipPage() {
   const membership = allMemberships.find((m) => m.userId === user?.id) || allMemberships[0];
   const payments = paymentsData?.data || [];
   const plans = plansData?.data || [];
-  const todayInput = new Date().toISOString().slice(0, 10);
 
   // Prefill the amount from the membership until the member types: derived
   // during render (no effect) so there is no cascading render.
@@ -68,30 +62,11 @@ export default function MembershipPage() {
 
   const handleRenewConfirm = () => {
     if (!membership) return;
-    if (!renewEndDate) {
-      toast.error("تاریخ پایان جدید را انتخاب کنید");
-      return;
-    }
-    if (renewEndDate < todayInput) {
-      toast.error("تاریخ پایان نمی‌تواند قبل از امروز باشد");
-      return;
-    }
-    const sessionsTotal = renewSessionsTotal === "" ? undefined : Number(renewSessionsTotal);
-    if (sessionsTotal !== undefined && (!Number.isFinite(sessionsTotal) || sessionsTotal <= 0)) {
-      toast.error("تعداد جلسات باید عدد مثبت باشد");
-      return;
-    }
     renewMutation.mutate(
-      {
-        id: membership.id,
-        endDate: new Date(renewEndDate).toISOString(),
-        ...(sessionsTotal !== undefined ? { sessionsTotal } : {}),
-        resetSessionsUsed: renewResetUsed,
-      },
+      membership.id,
       {
         onSuccess: () => {
-          toast.success("اشتراک با موفقیت تمدید شد");
-          setRenewDone(true);
+          toast.success("درخواست تمدید برای مدیریت ثبت شد");
           setRenewOpen(false);
         },
         onError: (e) => toast.error((e as Error)?.message || "تمدید اشتراک ناموفق بود"),
@@ -291,15 +266,15 @@ export default function MembershipPage() {
             </div>
           )}
 
-          {renewDone ? (
+          {membership?.renewalRequestedAt && (!membership.renewalApprovedAt || membership.renewalRequestedAt > membership.renewalApprovedAt) ? (
             <div role="status" aria-live="polite" className="flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-primary/10 p-3.5 text-center text-xs text-primary">
               <Check className="h-4 w-4" strokeWidth={1.75} />
-              <span>اشتراک شما تمدید شد؛ پس از پرداخت، اشتراک فعال می‌شود</span>
+              <span>درخواست تمدید ثبت شده و منتظر تأیید مدیریت است</span>
             </div>
           ) : (
             <CtaButton variant="orange" onClick={() => setRenewOpen(true)} className="min-h-11">
               <RefreshCw className="h-4 w-4" strokeWidth={1.75} />
-              <span>تمدید اشتراک</span>
+              <span>درخواست تمدید اشتراک</span>
             </CtaButton>
           )}
 
@@ -308,44 +283,16 @@ export default function MembershipPage() {
               <DialogHeader>
                 <DialogTitle>تمدید اشتراک</DialogTitle>
                 <DialogDescription>
-                  تاریخ پایان جدید و تعداد جلسات دوره بعد را مشخص کنید
+                  درخواست تمدید را برای بررسی مدیریت ارسال کنید
                 </DialogDescription>
               </DialogHeader>
-              <div className="flex flex-col gap-4">
-                <Input
-                  type="date"
-                  label="تاریخ پایان جدید"
-                  required
-                  value={renewEndDate}
-                  min={todayInput}
-                  onChange={(e) => setRenewEndDate(e.target.value)}
-                  className="min-h-11"
-                />
-                <Input
-                  type="number"
-                  label="تعداد جلسات دوره جدید (اختیاری)"
-                  hint="خالی بگذارید تا بدون تغییر بماند"
-                  value={renewSessionsTotal}
-                  min={1}
-                  inputMode="numeric"
-                  onChange={(e) => setRenewSessionsTotal(e.target.value)}
-                  className="min-h-11"
-                />
-                <label htmlFor="renew-reset-used" className="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
-                  <Checkbox
-                    id="renew-reset-used"
-                    checked={renewResetUsed}
-                    onCheckedChange={(v) => setRenewResetUsed(v === true)}
-                  />
-                  <span>شمارنده جلسات استفاده‌شده صفر شود</span>
-                </label>
-              </div>
+              <p className="py-4 text-sm text-muted-foreground">درخواست شما برای مدیریت ارسال می‌شود. تاریخ پایان و تعداد جلسات پس از تأیید مدیریت تغییر می‌کند.</p>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setRenewOpen(false)} disabled={renewMutation.isPending}>
                   انصراف
                 </Button>
                 <Button onClick={handleRenewConfirm} loading={renewMutation.isPending}>
-                  تأیید تمدید
+                  ارسال درخواست تمدید
                 </Button>
               </DialogFooter>
             </DialogContent>

@@ -10,36 +10,23 @@ import { expect, test } from "@playwright/test";
  */
 
 const PORTALS = [
-  {
-    root: "/athlete",
-    role: "athlete" as const,
-    // The dock is a fixed five slots; these must all fit.
-    dock: ["داشبورد", "برنامه‌های تمرینی", "ورود به باشگاه", "روند پیشرفت", "پروفایل"],
-    // Routes reachable from the drawer but not the dock.
-    drawerOnly: ["تقویم تمرینی", "اهداف", "عضویت و پرداخت", "پیام‌ها", "اعلان‌ها"],
-    // A real detail route whose dock entry must stay current while inside it.
-    deep: "/athlete/programs/some-program-id",
-  },
-  {
-    root: "/coach",
-    role: "coach" as const,
-    dock: ["داشبورد مربی", "شاگردان", "برنامه‌های تمرینی", "پیام‌ها", "پروفایل و بخش‌ها"],
-    drawerOnly: ["کتابخانه تمرینات", "الگوهای برنامه"],
-    deep: "/coach/programs/some-program-id",
-  },
-  {
-    root: "/admin",
-    role: "admin" as const,
-    dock: ["داشبورد", "اعضا", "پلن‌های اشتراک", "پرداخت‌ها", "پروفایل و بخش‌ها"],
-    drawerOnly: ["مربیان", "اطلاع‌رسانی", "تنظیمات"],
-    deep: "/admin/members/some-member-id",
-  },
+  { root: "/athlete", role: "athlete" as const,
+    dock: ["/athlete", "/athlete/programs", "/athlete/checkin", "/athlete/history", "/athlete/profile"],
+    drawerOnly: ["/athlete/calendar", "/athlete/goals", "/athlete/membership", "/athlete/messages", "/athlete/notifications"],
+    deep: "/athlete/programs/some-program-id" },
+  { root: "/coach", role: "coach" as const,
+    dock: ["/coach", "/coach/athletes", "/coach/programs", "/coach/messages", "/coach/profile"],
+    drawerOnly: ["/coach/exercises", "/coach/templates"], deep: "/coach/programs/some-program-id" },
+  { root: "/admin", role: "admin" as const,
+    dock: ["/admin", "/admin/members", "/admin/payments", "/admin/notifications", "/admin/profile"],
+    drawerOnly: ["/admin/coaches", "/admin/plans", "/admin/desk", "/admin/checkins", "/admin/settings"],
+    deep: "/admin/members/some-member-id" },
 ];
 
 /** Labels in the dock, taken from each link's accessible name. */
 async function dockLabels(page: import("@playwright/test").Page) {
-  return page.locator('nav[aria-label="ناوبری اصلی"] a').evaluateAll((nodes) =>
-    nodes.map((node) => node.getAttribute("aria-label") ?? "")
+  return page.locator('nav[aria-label="ناوبری اصلی موبایل"] a').evaluateAll((nodes) =>
+    nodes.map((node) => ({ href: node.getAttribute("href"), label: node.getAttribute("aria-label") ?? "" }))
   );
 }
 
@@ -90,23 +77,26 @@ for (const portal of PORTALS) {
   test(`${portal.root} dock holds its sections`, async ({ page }) => {
     await signIn(page, portal.role);
     await page.goto(portal.root);
-    expect(await dockLabels(page)).toEqual(portal.dock);
+    await expect(page.locator('nav[aria-label="ناوبری اصلی موبایل"] a')).toHaveCount(5);
+    const dock = await dockLabels(page);
+    expect(dock.map((link) => link.href)).toEqual(portal.dock);
+    expect(dock.every((link) => link.label.trim())).toBe(true);
   });
 
   test(`${portal.root} drawer lists every section, including dock-only ones`, async ({ page }) => {
     await signIn(page, portal.role);
     await page.goto(portal.root);
 
-    await page.getByRole("button", { name: "نمایش همه بخش‌ها" }).click();
-    const drawer = page.getByRole("dialog");
+    if ((page.viewportSize()?.width ?? 0) < 1024) await page.getByRole("button", { name: "باز کردن منو" }).click();
+    const drawer = page.getByRole("complementary");
     await expect(drawer).toBeVisible();
 
     const labels = await drawer.getByRole("link").evaluateAll((nodes) =>
-      nodes.map((node) => (node.textContent ?? "").trim())
+      nodes.map((node) => node.getAttribute("href"))
     );
 
     for (const expected of [...portal.dock, ...portal.drawerOnly]) {
-      expect(labels, `drawer is missing "${expected}"`).toContain(expected);
+      expect(labels, `sidebar is missing "${expected}"`).toContain(expected);
     }
   });
 
@@ -114,7 +104,7 @@ for (const portal of PORTALS) {
     await signIn(page, portal.role);
     await page.goto(portal.root);
 
-    const current = page.locator('nav[aria-label="ناوبری اصلی"] a[aria-current="page"]');
+    const current = page.locator('nav[aria-label="ناوبری اصلی موبایل"] a[aria-current="page"]');
     await expect(current).toHaveCount(1);
   });
 
@@ -124,28 +114,20 @@ for (const portal of PORTALS) {
     await signIn(page, portal.role);
     await page.goto(portal.deep);
 
-    const current = page.locator('nav[aria-label="ناوبری اصلی"] a[aria-current="page"]');
+    const current = page.locator('nav[aria-label="ناوبری اصلی موبایل"] a[aria-current="page"]');
     await expect(current).toHaveCount(1);
     await expect(current).toHaveAttribute("href", new RegExp(`^${portal.deep.split("/").slice(0, 3).join("/")}`));
   });
 }
 
 test("no portal route is orphaned from both nav surfaces", async ({ page }) => {
-  // Every entry declared in the portal's list must be rendered somewhere: in
-  // the dock or in the drawer. A route that fell out of both is unreachable.
   await signIn(page, "athlete");
   await page.goto("/athlete");
-  await page.getByRole("button", { name: "نمایش همه بخش‌ها" }).click();
-
-  const drawerLabels = await page
-    .getByRole("dialog")
-    .getByRole("link")
-    .evaluateAll((nodes) => nodes.map((n) => n.textContent?.trim() ?? ""));
-
+  await expect(page.locator('nav[aria-label="ناوبری اصلی موبایل"] a')).toHaveCount(5);
+  if ((page.viewportSize()?.width ?? 0) < 1024) await page.getByRole("button", { name: "باز کردن منو" }).click();
+  const sidebar = page.getByRole("complementary").getByRole("navigation");
+  const links = await sidebar.getByRole("link").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
   const dock = await dockLabels(page);
-  const combined = new Set([...dock, ...drawerLabels]);
-
-  // Ten athlete routes, five of them in the dock; all ten must be present
-  // across the two surfaces.
-  expect(combined.size).toBe(10);
+  const combined = new Set([...dock.map((link) => link.href), ...links]);
+  expect(combined).toEqual(new Set([...PORTALS[0].dock, ...PORTALS[0].drawerOnly]));
 });

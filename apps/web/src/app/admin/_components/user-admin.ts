@@ -84,7 +84,7 @@ export const PAYMENT_METHOD_OPTIONS: { value: Payment["method"]; label: string }
 ];
 
 /** The statuses `PUT /payments/{id}` accepts — `cancelled` is rejected there. */
-export const PAYMENT_EDITABLE_STATUSES = ["pending", "completed", "failed", "refunded"] as const;
+export const PAYMENT_EDITABLE_STATUSES = ["pending", "completed", "failed", "refunded", "cancelled"] as const;
 
 export const NOTIFICATION_TYPE_OPTIONS: { value: Notification["type"]; label: string }[] = [
   { value: "info", label: "اطلاعیه" },

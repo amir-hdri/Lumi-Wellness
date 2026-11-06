@@ -1,5 +1,7 @@
 "use client";
 
+import { USER_STATUS } from "../_components/admin-data";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,17 +13,15 @@ import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { useUsers, useTrainingPrograms } from "@/hooks/use-api";
 import { PageShell, PageHeader } from "@/components/twilight/Page";
 import { CtaButton, SearchInput, EmptyState } from "@/components/twilight/controls";
+import { useAuth } from "@/components/auth/AuthProvider";
 
-const statusMap: Record<string, { label: string; variant: "success" | "secondary" | "destructive" }> = {
-  active: { label: "فعال", variant: "success" },
-  inactive: { label: "غیرفعال", variant: "secondary" },
-  suspended: { label: "تعلیق شده", variant: "destructive" },
-};
+const statusMap = USER_STATUS;
 
 const thClass = "px-4 py-3 text-right text-[10px] font-semibold text-muted-foreground";
 const tdClass = "px-4 py-3 text-muted-foreground";
 
 export default function CoachesPage() {
+  const { user } = useAuth();
   const router = useRouter();
   const { data, isLoading, isError, refetch } = useUsers("coach");
   const { data: programsData } = useTrainingPrograms();
@@ -52,7 +52,7 @@ export default function CoachesPage() {
         title="مدیریت مربیان"
         subtitle="لیست تمام مربیان باشگاه"
         action={
-          <CtaButton onClick={() => router.push("/admin/coaches/new")} className="w-auto px-5">
+          user?.role === "admin" && <CtaButton onClick={() => router.push("/admin/coaches/new")} className="w-auto px-5">
             <Plus className="h-4 w-4" strokeWidth={1.75} />
             افزودن مربی جدید
           </CtaButton>

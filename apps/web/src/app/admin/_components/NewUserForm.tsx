@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { Skeleton } from "@/components/animations/Skeleton";
 import { apiErrorMessage, PASSWORD_HINT } from "@/components/auth/auth-helpers";
-import { useBranches, useCreateUser, useSetUserPassword } from "@/hooks/use-api";
+import { USE_MOCK, useBranches, useCreateUser, useSetUserPassword } from "@/hooks/use-api";
 import type { UserRole } from "@/lib/types";
 import { Field } from "./Field";
 import { Panel } from "./Panel";
@@ -19,24 +19,22 @@ import { newUserSchema, type NewUserFormData } from "./user-admin";
 const NO_BRANCH = "none";
 
 export interface NewUserFormProps {
-  role: Extract<UserRole, "athlete" | "coach">;
+  role: UserRole;
   /** List the new account belongs to, e.g. `/admin/members`. */
   listHref: string;
   submitLabel: string;
   /** Noun for the toasts, e.g. "عضو". */
   noun: string;
+  afterCreateHref?: string;
+  onCreated?: () => void;
 }
 
 /**
- * Creates an account, then sets its first password.
- *
- * Two calls rather than one because `POST /users` takes no password — the
- * credential is written by `POST /users/{id}/password`. If the second call
- * fails the account still exists, so the failure is reported as exactly that
- * and the admin is sent to the profile to retry rather than left wondering
- * whether anything was saved.
+ * POST /users creates identity and password atomically. Only the in-memory
+ * mock needs a separate credential write, because its createUser ignores the
+ * password. Report a mock credential failure accurately: the account exists.
  */
-export function NewUserForm({ role, listHref, submitLabel, noun }: NewUserFormProps) {
+export function NewUserForm({ role, listHref, submitLabel, noun, afterCreateHref, onCreated }: NewUserFormProps) {
   const router = useRouter();
   const createUser = useCreateUser();
   const setPassword = useSetUserPassword();
@@ -70,6 +68,7 @@ export function NewUserForm({ role, listHref, submitLabel, noun }: NewUserFormPr
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
+        password: data.password,
         role,
         branchId: data.branchId === NO_BRANCH ? undefined : data.branchId,
       });
@@ -86,14 +85,17 @@ export function NewUserForm({ role, listHref, submitLabel, noun }: NewUserFormPr
     }
 
     try {
-      await setPassword.mutateAsync({ id: createdId, newPassword: data.password });
+      if (USE_MOCK) {
+        await setPassword.mutateAsync({ id: createdId, newPassword: data.password });
+      }
       toast.success(`${noun} تازه ثبت شد`);
     } catch (error) {
       toast.error(
         apiErrorMessage(error, "حساب ساخته شد اما رمز عبور ثبت نشد؛ از صفحهٔ پروفایل رمز را تعیین کنید")
       );
     }
-    router.push(`${listHref}/${createdId}`);
+    onCreated?.();
+    router.push(afterCreateHref ?? `${listHref}/${createdId}`);
   };
 
   const branchOptions = branches.data?.data ?? [];

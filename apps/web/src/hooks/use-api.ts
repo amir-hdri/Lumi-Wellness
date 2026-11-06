@@ -68,7 +68,7 @@ export function useUser(id?: string) {
 export function useCreateUser() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: Partial<User>) => USE_MOCK ? mockService.createUser(data) : api.createUser(data as Record<string, unknown>),
+    mutationFn: (data: Partial<User> & { password?: string }) => USE_MOCK ? mockService.createUser(data) : api.createUser(data as Record<string, unknown>),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["users"] }); },
   });
 }
@@ -335,6 +335,7 @@ function invalidateMembership(qc: ReturnType<typeof useQueryClient>, id?: string
   if (id) qc.invalidateQueries({ queryKey: Q.membership(id) });
   qc.invalidateQueries({ queryKey: Q.dashboardStats });
   qc.invalidateQueries({ queryKey: ["analytics", "membership-distribution"] });
+  qc.invalidateQueries({ queryKey: ["athlete", "dashboard"] });
 }
 
 /** Assigns a plan to a member. Staff only — the server answers 403 otherwise. */
@@ -391,6 +392,15 @@ export function useRenewMembership() {
     mutationFn: ({ id, ...data }: { id: string; endDate: string; sessionsTotal?: number; resetSessionsUsed?: boolean }) =>
       USE_MOCK ? mockService.renewMembership(id, data) : api.renewMembership(id, data),
     onSuccess: (_res, { id }) => invalidateMembership(qc, id),
+  });
+}
+
+export function useRequestMembershipRenewal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => USE_MOCK
+      ? mockService.requestMembershipRenewal(id, requireUserId()) : api.requestMembershipRenewal(id),
+    onSuccess: (_res, id) => invalidateMembership(qc, id),
   });
 }
 
@@ -783,12 +793,13 @@ export function useUpdatePayment() {
   return useMutation({
     mutationFn: ({ id, data }: {
       id: string;
-      data: { status?: "pending" | "completed" | "failed" | "refunded"; method?: Payment["method"]; notes?: string };
+      data: { status?: Payment["status"]; method?: Payment["method"]; notes?: string };
     }) => USE_MOCK ? mockService.updatePayment(id, data) : api.updatePayment(id, data),
     onSuccess: (_res, { id }) => {
       qc.invalidateQueries({ queryKey: ["payments"] });
       qc.invalidateQueries({ queryKey: Q.payment(id) });
       qc.invalidateQueries({ queryKey: Q.dashboardStats });
+      qc.invalidateQueries({ queryKey: ["analytics"] });
     },
   });
 }
@@ -797,9 +808,7 @@ export function useUpdatePayment() {
  * Transitions a payment's status and nothing else — the one-click reconcile in
  * the admin payments table.
  *
- * Preferred over `useUpdatePayment` for that: it accepts `cancelled` (which
- * `PUT /payments/{id}` refuses with a 422) and cannot blank a field the caller
- * never meant to send.
+ * Uses PATCH to change only status; notes and method remain untouched.
  */
 export function useUpdatePaymentStatus() {
   const qc = useQueryClient();
@@ -826,7 +835,7 @@ export function useUpdatePaymentStatus() {
       qc.invalidateQueries({ queryKey: Q.payment(id) });
       // Revenue totals and the revenue trend both move when a payment settles.
       qc.invalidateQueries({ queryKey: Q.dashboardStats });
-      qc.invalidateQueries({ queryKey: ["analytics", "revenue-trend"] });
+      qc.invalidateQueries({ queryKey: ["analytics"] });
     },
   });
 }

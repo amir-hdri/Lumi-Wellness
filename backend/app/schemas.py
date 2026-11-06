@@ -16,6 +16,7 @@ class BaseSchema(BaseModel):
         from_attributes=True,
         alias_generator=to_camel,
         populate_by_name=True,
+        allow_inf_nan=False,
     )
 
 
@@ -100,7 +101,7 @@ class UserCreate(BaseSchema):
 
 
 class UserUpdate(BaseSchema):
-    email: Optional[str] = Field(default=None, max_length=255)
+    email: Optional[str] = Field(default=None, max_length=255, pattern=EMAIL_PATTERN)
     first_name: Optional[str] = Field(default=None, max_length=100)
     last_name: Optional[str] = Field(default=None, max_length=100)
     phone: Optional[str] = Field(default=None, max_length=100)
@@ -109,6 +110,20 @@ class UserUpdate(BaseSchema):
     avatar_url: Optional[str] = None
     # role is intentionally excluded — only admins can update roles via a dedicated endpoint
     # password is handled via a separate /users/{user_id}/password endpoint
+
+    @field_validator("email", "first_name", "last_name", "phone", "status", mode="before")
+    @classmethod
+    def reject_null_identity(cls, value):
+        if value is None:
+            raise ValueError("Identity fields cannot be null")
+        return value
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, value):
+        if value not in {"active", "inactive", "suspended", "pending"}:
+            raise ValueError("Invalid user status")
+        return value
 
 
 class UserStatusUpdate(BaseModel):
@@ -124,8 +139,8 @@ class UserRoleUpdate(BaseModel):
 
 class AdminUserCreate(BaseModel):
     """Schema for admins to create users with a specified role."""
-    email: str = Field(max_length=255)
-    password: str = Field(min_length=6)
+    email: str = Field(max_length=255, pattern=EMAIL_PATTERN)
+    password: str = Field(min_length=PASSWORD_MIN_LENGTH)
     first_name: str = Field(..., alias="firstName", max_length=100)
     last_name: str = Field(..., alias="lastName", max_length=100)
     phone: str = Field(default="", max_length=100)
@@ -136,6 +151,9 @@ class AdminUserCreate(BaseModel):
     branch_id: Optional[str] = Field(default=None, alias="branchId")
 
     model_config = ConfigDict(populate_by_name=True)
+
+    _check_password = field_validator("password")(validate_password_policy)
+    _check_status = field_validator("status")(UserUpdate.validate_status.__func__)
 
 
 class PasswordChangeRequest(BaseModel):
@@ -191,6 +209,13 @@ class ProfileUpdate(BaseSchema):
     last_name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     phone: Optional[str] = Field(default=None, max_length=100)
     avatar_url: Optional[str] = Field(default=None, max_length=500)
+
+    @field_validator("first_name", "last_name", "phone", mode="before")
+    @classmethod
+    def reject_null_identity(cls, value):
+        if value is None:
+            raise ValueError("Identity fields cannot be null")
+        return value
 
 
 # ---- Branch ----
@@ -286,6 +311,9 @@ class MembershipResponse(BaseSchema):
     status: str
     freeze_reason: Optional[str] = None
     freeze_end_date: Optional[datetime] = None
+    renewal_requested_at: Optional[datetime] = None
+    renewal_approved_at: Optional[datetime] = None
+    renewal_approved_by: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -333,9 +361,13 @@ class MembershipCreate(BaseSchema):
 
 
 class MembershipUpdate(BaseSchema):
+    start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
     sessions_total: Optional[int] = Field(default=None, ge=0)
     sessions_used: Optional[int] = Field(default=None, ge=0)
+    price: Optional[float] = Field(default=None, gt=0)
+    discount_amount: Optional[float] = Field(default=None, ge=0)
+    final_price: Optional[float] = Field(default=None, gt=0)
     status: Optional[str] = None
     freeze_reason: Optional[str] = None
     freeze_end_date: Optional[datetime] = None
@@ -350,6 +382,11 @@ class MembershipRenew(BaseSchema):
     end_date: datetime = Field(alias="endDate")
     sessions_total: Optional[int] = Field(default=None, ge=0, alias="sessionsTotal")
     reset_sessions_used: bool = Field(default=True, alias="resetSessionsUsed")
+
+    @field_validator("end_date")
+    @classmethod
+    def normalize_end_date(cls, value: datetime) -> datetime:
+        return value.astimezone(timezone.utc).replace(tzinfo=None) if value.tzinfo else value
 
 
 # ---- Exercise ----
@@ -581,6 +618,11 @@ class CheckInCreate(BaseSchema):
     branch_id: str
     check_in_time: Optional[datetime] = None
 
+    @field_validator("check_in_time")
+    @classmethod
+    def normalize_check_in_time(cls, value: Optional[datetime]) -> Optional[datetime]:
+        return value.astimezone(timezone.utc).replace(tzinfo=None) if value and value.tzinfo else value
+
 
 class CheckOutUpdate(BaseModel):
     check_out_time: datetime = Field(
@@ -589,6 +631,11 @@ class CheckOutUpdate(BaseModel):
     )
 
     model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("check_out_time")
+    @classmethod
+    def normalize_check_out_time(cls, value: datetime) -> datetime:
+        return value.astimezone(timezone.utc).replace(tzinfo=None) if value.tzinfo else value
 
 
 class CheckOutRequest(BaseModel):

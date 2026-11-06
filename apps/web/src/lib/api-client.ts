@@ -407,6 +407,10 @@ export class ApiClient {
     return res.data;
   }
 
+  async requestMembershipRenewal(id: string): Promise<ApiResponse<Membership>> {
+    return (await this.client.post<ApiResponse<Membership>>(`/memberships/${id}/renewal-request`)).data;
+  }
+
   // ---- Training Programs ----
   async getTrainingPrograms(params?: Record<string, unknown>): Promise<PaginatedResponse<TrainingProgram>> {
     const res = await this.client.get<PaginatedResponse<TrainingProgram>>("/training-programs", { params });
@@ -581,7 +585,7 @@ export class ApiClient {
 
   async updatePayment(
     id: string,
-    data: { status?: "pending" | "completed" | "failed" | "refunded"; method?: Payment["method"]; notes?: string }
+    data: { status?: Payment["status"]; method?: Payment["method"]; notes?: string }
   ): Promise<ApiResponse<Payment>> {
     const res = await this.client.put<ApiResponse<Payment>>(`/payments/${id}`, data);
     return res.data;

@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { PAYMENT_STATUS } from "../_components/admin-data";
 import { PageShell, PageHeader, SectionTitle } from "@/components/twilight/Page";
 import { TwilightCard, StatCard, EmptyState } from "@/components/twilight/controls";
 import { Badge } from "@/components/ui/Badge";
@@ -8,7 +11,7 @@ import { formatPersianNumber, formatCurrency, formatDateTime } from "@/lib/utils
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { usePayments } from "@/hooks/use-api";
 import { RevenueChart } from "@/components/analytics/Charts";
-import { PaymentRowActions } from "../_components/PaymentSheets";
+import { PaymentRowActions, NewPaymentSheet } from "../_components/PaymentSheets";
 import { ReceiptText } from "lucide-react";
 
 const methodLabels: Record<string, string> = {
@@ -25,17 +28,11 @@ const methodVariants: Record<string, "default" | "secondary" | "outline" | "info
   bank_transfer: "outline",
 };
 
-const statusLabels: Record<string, { label: string; variant: "success" | "warning" | "destructive" | "secondary" }> = {
-  completed: { label: "موفق", variant: "success" },
-  pending: { label: "معلق", variant: "warning" },
-  failed: { label: "ناموفق", variant: "destructive" },
-  refunded: { label: "بازگشت داده شده", variant: "secondary" },
-};
-
 const tableHeadCell = "whitespace-nowrap px-4 py-3 text-right align-middle text-[10px] font-semibold text-muted-foreground";
 const tableCell = "px-4 py-3 align-middle";
 
 export default function PaymentsPage() {
+  const [newOpen, setNewOpen] = useState(false);
   const { data, isLoading, isError, refetch } = usePayments();
   if (isLoading) return <Loading />;
   if (isError) return <ErrorDisplay onRetry={refetch} />;
@@ -47,6 +44,7 @@ export default function PaymentsPage() {
       <PageHeader
         title="پرداخت‌ها"
         subtitle="مدیریت تراکنش‌های مالی باشگاه"
+        action={<Button onClick={() => setNewOpen(true)}>ثبت پرداخت</Button>}
       />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -107,8 +105,8 @@ export default function PaymentsPage() {
                         </Badge>
                       </td>
                       <td className={tableCell}>
-                        <Badge variant={statusLabels[payment.status].variant}>
-                          {statusLabels[payment.status].label}
+                        <Badge variant={PAYMENT_STATUS[payment.status].variant}>
+                          {PAYMENT_STATUS[payment.status].label}
                         </Badge>
                       </td>
                       <td className={`${tableCell} whitespace-nowrap text-muted-foreground`}>{formatDateTime(payment.paidAt || payment.createdAt)}</td>
@@ -126,6 +124,7 @@ export default function PaymentsPage() {
           </div>
         )}
       </section>
+      <NewPaymentSheet open={newOpen} onOpenChange={setNewOpen} />
     </PageShell>
   );
 }

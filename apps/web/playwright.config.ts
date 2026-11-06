@@ -27,6 +27,7 @@ export default defineConfig({
     channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
     locale: "fa-IR",
     timezoneId: "Asia/Tehran",
+    reducedMotion: "reduce",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },

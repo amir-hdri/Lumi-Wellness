@@ -10,8 +10,6 @@
  * Local builds stay untouched: `next dev` and `npm run build` on a laptop are
  * allowed to run against the mock layer and a local API.
  */
-const LOCAL_API_HOST = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?(\/|$)/i;
-
 export function assertDeployEnv(
   /** @type {Record<string, string | undefined>} */
   env = process.env,
@@ -25,10 +23,21 @@ export function assertDeployEnv(
     );
   }
 
-  const apiUrl = (env.NEXT_PUBLIC_API_URL || "").trim();
-  if (!apiUrl || LOCAL_API_HOST.test(apiUrl)) {
+  const apiUrl = env.NEXT_PUBLIC_API_URL || "";
+  let parsed;
+  try {
+    parsed = new URL(apiUrl);
+  } catch {
+    // An invalid URL must fail the build, before it reaches Axios or CSP.
+  }
+  const host = parsed?.hostname.replace(/\.$/, "").toLowerCase();
+  if (!parsed || apiUrl !== apiUrl.trim() || parsed.protocol !== "https:" ||
+      host === "localhost" || host?.endsWith(".localhost") ||
+      host === "[::1]" || host?.startsWith("127.") ||
+      parsed.username || parsed.password || parsed.search || parsed.hash ||
+      parsed.pathname !== "/") {
     throw new Error(
-      "NEXT_PUBLIC_API_URL must point at the deployed API (set it in the Vercel project environment, or pass --build-arg NEXT_PUBLIC_API_URL=... to the Docker build).",
+      "NEXT_PUBLIC_API_URL must be the deployed HTTPS API origin, without credentials, a path, query, fragment, or surrounding whitespace (set it in Vercel or pass --build-arg NEXT_PUBLIC_API_URL=... to Docker).",
     );
   }
 }

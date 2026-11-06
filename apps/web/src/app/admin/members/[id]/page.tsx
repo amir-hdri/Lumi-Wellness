@@ -1,9 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useParams } from "next/navigation";
+import { USER_STATUS } from "../../_components/admin-data";
+
+import { useState, type ReactNode } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Phone, Mail, Calendar, Award, ChevronRight, Edit, Trash2 } from "lucide-react";
+import { Phone, Mail, Calendar, Award, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Progress } from "@/components/ui/Progress";
@@ -13,11 +15,13 @@ import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { useUser, useMemberships, useMembershipPlans, useTrainingPrograms, useUsers, useGoals, usePayments } from "@/hooks/use-api";
 import { PageShell, SectionTitle } from "@/components/twilight/Page";
 import { StatCard, TwilightCard } from "@/components/twilight/controls";
+import { UserRowActions } from "../../_components/UserRowActions";
+import { MembershipFormSheet, FreezeSheet, useUnfreezeMembershipAction } from "../../_components/MembershipSheets";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { MembershipApproval } from "../../_components/MembershipApproval";
 import { PAYMENT_METHOD } from "../../_components/admin-data";
 
-const statusMap: Record<string, { label: string; variant: "success" | "secondary" | "destructive" }> = {
-  active: { label: "فعال", variant: "success" }, inactive: { label: "غیرفعال", variant: "secondary" }, suspended: { label: "تعلیق شده", variant: "destructive" },
-};
+const statusMap = USER_STATUS;
 
 function InfoRow({ icon, label, value, ltr }: { icon: ReactNode; label: string; value: ReactNode; ltr?: boolean }) {
   return (
@@ -35,9 +39,14 @@ const thClass = "px-4 py-3 text-right text-[10px] font-semibold text-muted-foreg
 const tdClass = "px-4 py-3 text-muted-foreground";
 
 export default function MemberProfilePage() {
+  const { user: actor } = useAuth();
+  const [membershipForm, setMembershipForm] = useState<"new" | "edit" | null>(null);
+  const [freezing, setFreezing] = useState(false);
+  const unfreeze = useUnfreezeMembershipAction();
+  const router = useRouter();
   const params = useParams<{ id: string }>();
   const { data, isLoading, isError } = useUser(params.id);
-  const { data: membershipsData } = useMemberships();
+  const { data: membershipsData, isLoading: membershipsLoading } = useMemberships();
   const { data: plansData } = useMembershipPlans();
   const { data: programsData } = useTrainingPrograms();
   const { data: usersData } = useUsers();
@@ -83,11 +92,18 @@ export default function MemberProfilePage() {
             <Badge variant={statusMap[member.status].variant}>{statusMap[member.status].label}</Badge>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm"><Edit className="h-4 w-4" strokeWidth={1.75} /> ویرایش</Button>
-          <Button variant="destructive" size="sm" aria-label={`حذف ${member.firstName} ${member.lastName}`}><Trash2 className="h-4 w-4" strokeWidth={1.75} /></Button>
-        </div>
+        <UserRowActions user={member} noun="عضو" onDeleted={() => router.push("/admin/members")} />
       </div>
+
+      {membership && <MembershipApproval key={membership.id} membership={membership} />}
+      <div className="flex flex-wrap gap-3">
+        {!membership && <Button disabled={membershipsLoading} onClick={() => setMembershipForm("new")}>تخصیص پلن اشتراک</Button>}
+        {membership && actor?.role === "admin" && <Button variant="outline" onClick={() => setMembershipForm("edit")}>ویرایش اشتراک</Button>}
+        {membership?.status === "active" && <Button variant="outline" onClick={() => setFreezing(true)}>توقف اشتراک</Button>}
+        {membership?.status === "frozen" && <Button disabled={unfreeze.isPending} onClick={() => unfreeze.run(membership)}>فعال‌سازی دوباره اشتراک</Button>}
+      </div>
+      <MembershipFormSheet open={membershipForm !== null} onOpenChange={(open) => { if (!open) setMembershipForm(null); }} userId={member.id} membership={membershipForm === "edit" ? membership : undefined} />
+      {membership && <FreezeSheet open={freezing} onOpenChange={setFreezing} membership={membership} />}
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card divide-y divide-border">
         <InfoRow icon={<Phone className="h-4 w-4" strokeWidth={1.75} />} label="تلفن" value={member.phone} ltr />

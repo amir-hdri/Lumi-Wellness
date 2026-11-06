@@ -9,8 +9,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Avatar, AvatarFallback } from "@/components/ui/Avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table";
-import { getInitials, generateAvatarColor, formatDate, cn } from "@/lib/utils";
-import { useUsers } from "@/hooks/use-api";
+import { getInitials, generateAvatarColor, formatDate, formatPersianNumber, cn } from "@/lib/utils";
+import { useUsers, useCoachDashboard } from "@/hooks/use-api";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { userStatusConfig } from "../_meta";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 
 const statusFilters = ["all", "active", "inactive"] as const;
@@ -23,18 +25,19 @@ const statusFilterLabels: Record<StatusFilter, string> = {
 };
 
 function getStatusBadge(status: string) {
-  return status === "active"
-    ? { label: "فعال", variant: "success" as const }
-    : { label: "غیرفعال", variant: "secondary" as const };
+  return userStatusConfig[status as keyof typeof userStatusConfig] ?? { label: status, variant: "secondary" as const };
 }
 
 export default function AthletesPage() {
   const [search, setSearch] = React.useState("");
   const [filter, setFilter] = React.useState<StatusFilter>("all");
-  const { data, isLoading, isError, error } = useUsers("athlete");
+  const { user } = useAuth();
+  const { data, isLoading, isError, error, refetch: refetchUsers } = useUsers("athlete");
+  const dashboard = useCoachDashboard(user?.id);
+  const roster = new Map((dashboard.data?.data?.athletes ?? []).map((athlete) => [athlete.id, athlete]));
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay message={error?.message} />;
+  if (isLoading || dashboard.isLoading) return <Loading />;
+  if (isError || dashboard.isError) return <ErrorDisplay message={error?.message ?? dashboard.error?.message} onRetry={() => { void refetchUsers(); void dashboard.refetch(); }} />;
 
   const usersData = data?.data || [];
 
@@ -87,6 +90,9 @@ export default function AthletesPage() {
           <TableBody>
             {filtered.map((athlete) => {
               const name = `${athlete.firstName} ${athlete.lastName}`;
+              const summary = roster.get(athlete.id);
+              const program = summary?.currentProgram;
+              const programHref = program ? `/coach/programs/${program.id}` : `/coach/programs/new?athleteId=${encodeURIComponent(athlete.id)}`;
               return (
                 <TableRow key={athlete.id} className={cn("border-t border-border hover:bg-secondary")}>
                   <TableCell>
@@ -100,9 +106,9 @@ export default function AthletesPage() {
                     </Link>
                   </TableCell>
                   <TableCell dir="ltr" className="text-left text-foreground">{athlete.phone}</TableCell>
-                  <TableCell className="text-foreground">–</TableCell>
-                  <TableCell className="text-foreground">{athlete.lastLoginAt ? formatDate(athlete.lastLoginAt) : "–"}</TableCell>
-                  <TableCell className="text-foreground">–</TableCell>
+                  <TableCell className="text-foreground">{program?.name ?? "بدون برنامه"}</TableCell>
+                  <TableCell className="text-foreground">{summary?.lastCheckIn ? formatDate(summary.lastCheckIn) : "–"}</TableCell>
+                  <TableCell className="text-foreground">{summary ? `${formatPersianNumber(summary.progress)}٪` : "–"}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadge(athlete.status).variant}>
                       {getStatusBadge(athlete.status).label}
@@ -116,9 +122,8 @@ export default function AthletesPage() {
                           مشاهده
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="sm">
-                        <ClipboardList className="h-4 w-4" />
-                        برنامه تمرینی
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={programHref}><ClipboardList className="h-4 w-4" aria-hidden />{program ? "برنامه تمرینی" : "ساخت برنامه"}</Link>
                       </Button>
                     </div>
                   </TableCell>

@@ -1,7 +1,8 @@
 "use client";
 
+import { QRCodeSVG } from "qrcode.react";
 import { useState, useEffect, useMemo } from "react";
-import { LogIn, LogOut, Timer, QrCode, Building2 } from "lucide-react";
+import { LogIn, LogOut, Timer, Building2 } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/Select";
 import { formatDate } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -151,25 +152,10 @@ export default function CheckinPage() {
           </span>
         </div>
 
-        {/* Simulated QR graphic */}
+        {/* The desk scanner reads the authenticated member id. */}
         <div className="relative my-2 rounded-2xl border-2 border-primary/60 bg-card p-3 shadow-xl">
-          <div className="relative flex h-40 w-40 flex-col justify-between overflow-hidden rounded-xl bg-primary-foreground p-2.5">
-            <div className="grid h-full w-full grid-cols-6 grid-rows-6 gap-1 opacity-90">
-              {Array.from({ length: 36 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`rounded-xs ${(i % 2 === 0 || i % 7 === 0 || i < 6 || i > 30) ? "bg-primary" : "bg-secondary"}`}
-                />
-              ))}
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary bg-primary-foreground shadow-lg">
-                <QrCode className="h-5 w-5 text-primary" strokeWidth={1.75} />
-              </div>
-            </div>
-          </div>
+          <QRCodeSVG value={user?.id ?? ""} size={160} level="M" marginSize={1} title="کد عضویت شما" />
         </div>
-
         <div className="text-center">
           <h2 className="text-sm font-semibold text-foreground">{fullName || "ورزشکار"}</h2>
           <p className="mt-0.5 font-sans text-[11px] text-muted-foreground">

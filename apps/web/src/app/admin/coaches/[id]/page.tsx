@@ -1,13 +1,15 @@
 "use client";
 
+import { USER_STATUS } from "../../_components/admin-data";
+
 import { useMemo, useState, type ReactNode } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Phone, Mail, Calendar, ChevronRight, Edit, Trash2, Award, Plus, ClipboardList } from "lucide-react";
+import { Phone, Mail, Calendar, ChevronRight, Award, Plus, ClipboardList } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -40,9 +42,7 @@ import {
 } from "../../_components/user-admin";
 import type { TrainingProgram } from "@/lib/types";
 
-const statusMap: Record<string, { label: string; variant: "success" | "secondary" | "destructive" }> = {
-  active: { label: "فعال", variant: "success" }, inactive: { label: "غیرفعال", variant: "secondary" }, suspended: { label: "تعلیق شده", variant: "destructive" },
-};
+const statusMap = USER_STATUS;
 
 function InfoRow({ icon, label, value, ltr }: { icon: ReactNode; label: string; value: ReactNode; ltr?: boolean }) {
   return (
@@ -298,7 +298,13 @@ function AssignProgramSheet({
   );
 }
 
+import { UserRowActions } from "../../_components/UserRowActions";
+import { useAuth } from "@/components/auth/AuthProvider";
+
 export default function CoachProfilePage() {
+  const { user: actor } = useAuth();
+  const canAssign = actor?.role === "admin";
+  const router = useRouter();
   const params = useParams<{ id: string }>();
   const { data, isLoading, isError } = useUser(params.id);
   const programsQuery = useTrainingPrograms();
@@ -306,7 +312,7 @@ export default function CoachProfilePage() {
   const [assigning, setAssigning] = useState(false);
   if (isLoading) return <Loading />;
   if (isError) return <ErrorDisplay />;
-  const coach = data?.data as any;
+  const coach = data?.data;
   if (!coach) return <ErrorDisplay message="مربی یافت نشد" />;
 
   const coachName = `${coach.firstName} ${coach.lastName}`;
@@ -334,13 +340,10 @@ export default function CoachProfilePage() {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="font-serif text-2xl font-normal text-foreground">{coach.firstName} {coach.lastName}</h1>
-            <Badge variant={statusMap[coach.status].variant}>{statusMap[coach.status].label}</Badge>
+            <Badge variant={(statusMap[coach.status] ?? { variant: "secondary" as const }).variant}>{(statusMap[coach.status] ?? { label: coach.status }).label}</Badge>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm"><Edit className="h-4 w-4" strokeWidth={1.75} /> ویرایش</Button>
-          <Button variant="destructive" size="sm"><Trash2 className="h-4 w-4" strokeWidth={1.75} /></Button>
-        </div>
+        <UserRowActions user={coach} noun="مربی" onDeleted={() => router.push("/admin/coaches")} />
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card divide-y divide-border">
@@ -400,7 +403,7 @@ export default function CoachProfilePage() {
         <SectionTitle
           className="mb-3"
           action={
-            <Button size="sm" onClick={() => setAssigning(true)}>
+            canAssign && <Button size="sm" onClick={() => setAssigning(true)}>
               <Plus className="h-4 w-4" strokeWidth={1.75} />
               تخصیص برنامه
             </Button>
@@ -418,7 +421,7 @@ export default function CoachProfilePage() {
             title="برنامه‌ای ثبت نشده"
             description="نخستین برنامه این مربی را برای یک ورزشکار بسازید"
             action={
-              <Button size="sm" onClick={() => setAssigning(true)}>
+              canAssign && <Button size="sm" onClick={() => setAssigning(true)}>
                 <Plus className="h-4 w-4" strokeWidth={1.75} />
                 تخصیص برنامه
               </Button>

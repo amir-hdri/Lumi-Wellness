@@ -206,12 +206,12 @@ function ProgramExerciseFields({
         options={exerciseOptions}
         placeholder="انتخاب از کتابخانه"
         hint={
-          exerciseOptions.length === 0
+          entry ? "برای جایگزینی حرکت، این ردیف را حذف و حرکت تازه‌ای اضافه کنید." : exerciseOptions.length === 0
             ? "کتابخانه تمرینات خالی است؛ ابتدا یک حرکت بسازید."
             : undefined
         }
         error={errors.exerciseId?.message}
-        disabled={pending || exerciseOptions.length === 0}
+        disabled={pending || entry != null || exerciseOptions.length === 0}
       />
 
       <div className="grid gap-4 @sm:grid-cols-2">

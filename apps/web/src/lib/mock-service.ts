@@ -586,7 +586,19 @@ export const mockService = {
       membership.sessionsUsed = 0;
       membership.sessionsRemaining = membership.sessionsTotal;
     }
+    membership.renewalApprovedAt = nowIso();
     membership.updatedAt = nowIso();
+    return wrap(membership);
+  },
+
+  async requestMembershipRenewal(id: string, userId: string): Promise<ApiResponse<Membership>> {
+    await sleep(DELAY / 2);
+    const membership = findOrThrow(mockMemberships, id, "Membership");
+    if (membership.userId !== userId) throw new Error("امکان تمدید عضویت کاربر دیگر وجود ندارد");
+    if (!membership.renewalRequestedAt ||
+        (membership.renewalApprovedAt && membership.renewalApprovedAt >= membership.renewalRequestedAt)) {
+      membership.renewalRequestedAt = nowIso();
+    }
     return wrap(membership);
   },
 
@@ -959,7 +971,7 @@ export const mockService = {
   },
 
   async updatePayment(id: string, data: {
-    status?: "pending" | "completed" | "failed" | "refunded"; method?: Payment["method"]; notes?: string;
+    status?: Payment["status"]; method?: Payment["method"]; notes?: string;
   }): Promise<ApiResponse<Payment>> {
     await sleep(DELAY);
     const payment = findOrThrow(mockPayments, id, "Payment");

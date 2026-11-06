@@ -1,125 +1,56 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Textarea } from "@/components/ui/Textarea";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/Select";
-import { ChevronRight, Save } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/twilight/Page";
-import { TwilightCard } from "@/components/twilight/controls";
-import { useExercise } from "@/hooks/use-api";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
-
-const editSchema = z.object({
-  name: z.string().min(1, "نام حرکت را وارد کنید"),
-  muscle: z.string().min(1, "عضله هدف را انتخاب کنید"),
-  equipment: z.string().min(1, "وسیله را انتخاب کنید"),
-  difficulty: z.string().min(1, "سطح را انتخاب کنید"),
-  description: z.string().min(1, "توضیحات را وارد کنید"),
-});
-
-const muscleOptions = ["سینه", "پشت", "پاها", "بازو", "شکم", "سرشانه", "جلو بازو", "پشت بازو"];
-const equipmentOptions = ["هالتر", "دمبل", "دستگاه", "سیمکش", "بدون وسیله", "کش"];
-const difficultyOptions = ["مبتدی", "متوسط", "پیشرفته"];
+import { apiErrorMessage } from "@/components/auth/auth-helpers";
+import { useExercise, useExercises, useUpdateExercise } from "@/hooks/use-api";
+import { ExerciseForm, toExerciseFormValues, toExercisePayload, type ExerciseFormValues } from "../../_components/ExerciseForm";
 
 export default function EditExercisePage() {
-  const params = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { data, isLoading, isError, error } = useExercise(params.id);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
-    resolver: zodResolver(editSchema),
-    defaultValues: { name: "", muscle: "", equipment: "", difficulty: "", description: "" },
-  });
-
-  const exercise = data?.data;
-
-  useEffect(() => {
-    if (exercise) {
-      reset({
-        name: exercise.name,
-        muscle: exercise.muscleGroup,
-        equipment: exercise.equipment || "",
-        difficulty: exercise.difficulty,
-        description: exercise.description || "",
-      });
-    }
-  }, [exercise, reset]);
-
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorDisplay message={error?.message} />;
-  if (!exercise) return null;
-
-  const selectedMuscle = watch("muscle");
-  const selectedEquipment = watch("equipment");
-  const selectedDifficulty = watch("difficulty");
-
-  const onSubmit = async () => {
-    setIsSubmitting(true);
+  const query = useExercise(id);
+  const library = useExercises();
+  const update = useUpdateExercise();
+  const exercise = query.data?.data;
+  const exercises = library.data?.data ?? [];
+  const suggestions = {
+    categories: [...new Set(exercises.map((item) => item.category))],
+    muscleGroups: [...new Set(exercises.map((item) => item.muscleGroup))],
+    equipment: [...new Set(exercises.flatMap((item) => item.equipment ? [item.equipment] : []))],
+  };
+  const save = async (values: ExerciseFormValues) => {
+    if (update.isPending) return;
     try {
-      await new Promise((r) => setTimeout(r, 800));
+      // Empty optional text must clear a stored value on edit, whereas create
+      // intentionally omits those fields to retain the server's defaults.
+      await update.mutateAsync({ id, data: {
+        ...toExercisePayload(values),
+        nameEn: values.nameEn.trim(), equipment: values.equipment.trim(),
+        description: values.description.trim(), instructions: values.instructions.trim(),
+        tips: values.tips.trim(), videoUrl: values.videoUrl.trim(),
+      } });
       toast.success("حرکت با موفقیت به‌روزرسانی شد");
       router.push("/coach/exercises");
-    } catch {
-      toast.error("خطا در به‌روزرسانی");
-    } finally {
-      setIsSubmitting(false);
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "خطا در به‌روزرسانی حرکت"));
     }
   };
-
+  if (query.isLoading) return <Loading />;
+  if (query.isError) return <ErrorDisplay message={query.error?.message} onRetry={query.refetch} />;
+  if (!exercise) return <ErrorDisplay message="حرکت پیدا نشد" />;
   return (
     <PageShell>
-      <PageHeader
-        title="ویرایش حرکت"
-        subtitle={exercise.name}
-        action={
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/coach/exercises">
-              <ChevronRight className="h-4 w-4" />
-              بازگشت
-            </Link>
-          </Button>
-        }
-      />
-
-      <TwilightCard className="!p-5">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input label="نام حرکت" error={errors.name?.message} {...register("name")} />
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5"><Label>عضله هدف</Label>
-              <Select value={selectedMuscle} onValueChange={(v) => setValue("muscle", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{muscleOptions.map((m) => (<SelectItem key={m} value={m}>{m}</SelectItem>))}</SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5"><Label>وسیله</Label>
-              <Select value={selectedEquipment} onValueChange={(v) => setValue("equipment", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{equipmentOptions.map((e) => (<SelectItem key={e} value={e}>{e}</SelectItem>))}</SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5"><Label>سطح</Label>
-              <Select value={selectedDifficulty} onValueChange={(v) => setValue("difficulty", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{difficultyOptions.map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}</SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-1.5"><Label>توضیحات</Label>
-            <Textarea rows={4} error={errors.description?.message} {...register("description")} />
-          </div>
-          <div className="flex justify-end gap-3 pt-4">
-            <Button variant="ghost" type="button" onClick={() => router.push("/coach/exercises")}>انصراف</Button>
-            <Button type="submit" loading={isSubmitting}><Save className="ml-2 h-4 w-4" />ذخیره</Button>
-          </div>
-        </form>
-      </TwilightCard>
+      <PageHeader title="ویرایش حرکت" subtitle={exercise.name} action={
+        <Button variant="ghost" size="sm" asChild><Link href="/coach/exercises"><ChevronRight className="h-4 w-4" aria-hidden />بازگشت</Link></Button>
+      } />
+      <ExerciseForm key={`${exercise.id}:${exercise.updatedAt}`} defaultValues={toExerciseFormValues(exercise)} suggestions={suggestions}
+        submitLabel="ذخیره" pending={update.isPending} onSubmit={save} onCancel={() => router.push("/coach/exercises")} />
     </PageShell>
   );
 }

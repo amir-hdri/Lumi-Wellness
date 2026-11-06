@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { PageShell, PageHeader, SectionTitle, MicroLabelFa } from "@/components/twilight/Page";
 import { TwilightCard, RowCard, CtaButton, FilterChips, EmptyState } from "@/components/twilight/controls";
 import { toast } from "sonner";
@@ -10,6 +13,7 @@ import {
   useBranches,
   useCreateNotification,
   useUsers,
+  useNotifications,
 } from "@/hooks/use-api";
 import { apiErrorMessage } from "@/components/auth/auth-helpers";
 import { ConfirmDialog } from "../_components/ConfirmDialog";
@@ -98,6 +102,8 @@ export default function BroadcastPage() {
   // navigation without a hydration round-trip.
   const [history, setHistory] = useState<SentLogEntry[]>(loadHistory);
 
+  const { user } = useAuth();
+  const received = useNotifications(user?.id);
   const branches = useBranches();
   const users = useUsers();
   const broadcast = useBroadcastNotification();
@@ -229,6 +235,17 @@ export default function BroadcastPage() {
         title="ارسال اطلاع‌رسانی همگانی"
         subtitle="ارسال پیام به گروه خاص یا همه کاربران"
       />
+      <section className="space-y-3">
+        <SectionTitle>اعلان‌ها و درخواست‌های دریافتی</SectionTitle>
+        {received.isLoading ? <Loading /> : received.isError ? <ErrorDisplay message={received.error?.message} /> :
+          (received.data?.data ?? []).map((notification) => (
+            <div key={notification.id} className="rounded-2xl border border-border bg-card p-4">
+              <p className="text-sm font-medium">{notification.title}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{notification.message}</p>
+              {notification.actionUrl?.startsWith("/") && <Link className="mt-2 inline-block text-sm text-primary underline" href={notification.actionUrl}>بررسی درخواست</Link>}
+            </div>
+          ))}
+      </section>
 
       <section className="flex flex-col gap-3">
         <SectionTitle>پیام جدید</SectionTitle>

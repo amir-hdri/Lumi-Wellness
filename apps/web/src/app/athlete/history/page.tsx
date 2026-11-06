@@ -16,8 +16,8 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, formatCurrency, formatPersianNumber } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { useCheckIns, usePayments, useTrainingPrograms, useAthleteActivity } from "@/hooks/use-api";
-import { useReadinessHistory } from "@/hooks/use-readiness";
+import { useCheckIns, usePayments, useTrainingPrograms, useAthleteActivity, useAthleteDashboard } from "@/hooks/use-api";
+import { useReadiness, useReadinessHistory } from "@/hooks/use-readiness";
 import { AthleteActivityChart } from "@/components/analytics/Charts";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { WeeklyCapsuleChart } from "@/components/twilight/CapsuleChart";
@@ -30,6 +30,8 @@ import {
 } from "@/components/twilight/controls";
 import { cn } from "@/lib/utils";
 import { soundEngine } from "@/services/soundEngine";
+import { toast } from "sonner";
+import { apiErrorMessage } from "@/components/auth/auth-helpers";
 
 const TAB_OPTIONS = ["checkins", "workouts", "payments"] as const;
 type TabValue = (typeof TAB_OPTIONS)[number];
@@ -94,21 +96,16 @@ const MILESTONES = [
     id: "m1",
     title: "ورزشکار باانگیزه و متداوم",
     description: "ثبت ۵ روز تمرین متوالی بدون وقفه",
-    achieved: true,
-    achievedDate: "امروز",
   },
   {
     id: "m2",
     title: "مدال باشگاه صدتایی‌ها",
     description: "رسیدن به مجموع بیش از ۱۰۰ جلسه تمرین حضوری",
-    achieved: true,
-    achievedDate: "۳ روز پیش",
   },
   {
     id: "m3",
     title: "استاد اجرای لیفت‌های پایه",
     description: "رعایت اضافه بار تدریجی در حرکات اصلی",
-    achieved: false,
   },
 ];
 
@@ -140,10 +137,10 @@ export default function HistoryPage() {
   const userId = user?.id;
 
   const [tab, setTab] = useState<TabValue>("checkins");
-  const [selectedReadiness, setSelectedReadiness] = useState<string>("pumped");
-  const [readinessMessage, setReadinessMessage] = useState<string | null>(
-    "گردش خون و ذخایر گلیکوژن در بهترین حالت است. روی حجم تمرین تمرکز کنید."
-  );
+  const { query: readinessQuery, mutation: readinessMutation } = useReadiness(userId);
+  const { data: dashboardData, isLoading: statsLoading, isError: statsError } = useAthleteDashboard(userId);
+  const selectedReadiness = readinessQuery.data?.data?.state ?? null;
+  const readinessMessage = READINESS_STATES.find((item) => item.id === selectedReadiness)?.quote;
 
   const { data: checkinsData, isLoading: checkinsLoading, isError: checkinsError, error: checkinsErr } = useCheckIns(userId);
   const { data: paymentsData, isLoading: paymentsLoading, isError: paymentsError, error: paymentsErr } = usePayments(userId);
@@ -166,12 +163,20 @@ export default function HistoryPage() {
     .reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
   const handleSelectReadiness = (item: (typeof READINESS_STATES)[0]) => {
-    setSelectedReadiness(item.id);
-    setReadinessMessage(item.quote);
-    soundEngine.playBell(528);
+    if (!userId || readinessMutation.isPending || readinessQuery.isLoading || readinessQuery.isError) return;
+    readinessMutation.mutate(item.id, {
+      onSuccess: () => soundEngine.playBell(528),
+      onError: (error) => toast.error(apiErrorMessage(error, "ثبت وضعیت ناموفق بود")),
+    });
   };
 
-  if (checkinsLoading && paymentsLoading && programsLoading) return <Loading />;
+  const stats = dashboardData?.data?.stats;
+  const milestones = MILESTONES.map((milestone) => ({
+    ...milestone,
+    achieved: milestone.id === "m1" ? (stats?.longestStreak ?? 0) >= 5
+      : milestone.id === "m2" ? (stats?.totalSessions ?? 0) >= 100 : false,
+  }));
+  if (checkinsLoading || paymentsLoading || programsLoading || statsLoading) return <Loading />;
 
   return (
     <PageShell className="mx-auto max-w-4xl">
@@ -182,8 +187,8 @@ export default function HistoryPage() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-3">
-        <HistoryStatCard label="کل جلسات تمرین" value={formatPersianNumber(checkinHistory.length || 142)} suffix="جلسه" />
-        <HistoryStatCard label="استریک پیوستگی" value={formatPersianNumber(5)} suffix="روز" />
+        <HistoryStatCard label="کل جلسات تمرین" value={statsError ? "—" : formatPersianNumber(stats?.totalSessions ?? 0)} suffix="جلسه" />
+        <HistoryStatCard label="استریک پیوستگی" value={statsError ? "—" : formatPersianNumber(stats?.currentStreak ?? 0)} suffix="روز" />
         <HistoryStatCard label="مجموع پرداخت‌های موفق" value={formatCurrency(totalPaid)} className="col-span-2" />
       </div>
 
@@ -204,6 +209,9 @@ export default function HistoryPage() {
             return (
               <button
                 key={item.id}
+                type="button"
+                aria-pressed={isSelected}
+                disabled={readinessMutation.isPending || readinessQuery.isLoading || readinessQuery.isError}
                 onClick={() => handleSelectReadiness(item)}
                 className={cn(
                   "flex flex-col items-center gap-1.5 p-2.5 rounded-xl border transition-colors cursor-pointer min-w-[70px] flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
@@ -219,6 +227,8 @@ export default function HistoryPage() {
           })}
         </div>
 
+        {readinessQuery.isError && <p role="alert" className="mt-3 text-xs text-destructive">بارگذاری وضعیت امروز ناموفق بود</p>}
+        {selectedReadiness && <p role="status" className="mt-3 text-xs text-muted-foreground">وضعیت امروز شما ذخیره شده است.</p>}
         {readinessMessage && (
           <div className="mt-3 p-3 rounded-xl bg-card border border-border text-xs text-primary leading-relaxed flex items-start gap-2">
             <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
@@ -266,7 +276,7 @@ export default function HistoryPage() {
                             <td className="whitespace-nowrap py-2.5 pr-4 text-foreground">{formatDate(item.checkInTime)}</td>
                             <td className="whitespace-nowrap py-2.5 tabular-nums text-muted-foreground">{new Date(item.checkInTime).toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" })}</td>
                             <td className="whitespace-nowrap py-2.5 tabular-nums text-muted-foreground">{item.checkOutTime ? new Date(item.checkOutTime).toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" }) : "---"}</td>
-                            <td className="whitespace-nowrap py-2.5 pl-4 tabular-nums text-muted-foreground">{item.durationMinutes ? `${Math.floor(item.durationMinutes / 60)}:${String(item.durationMinutes % 60).padStart(2, "0")}` : "---"}</td>
+                            <td className="whitespace-nowrap py-2.5 pl-4 tabular-nums text-muted-foreground">{item.durationMinutes != null ? `${Math.floor(item.durationMinutes / 60)}:${String(item.durationMinutes % 60).padStart(2, "0")}` : "---"}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -391,7 +401,7 @@ export default function HistoryPage() {
       <div className="flex flex-col gap-3 mt-2">
         <SectionTitle>دستاوردها و نشان‌های افتخار</SectionTitle>
         <div className="flex flex-col gap-2.5">
-          {MILESTONES.map((m) => (
+          {milestones.map((m) => (
             <div
               key={m.id}
               className="p-3.5 rounded-2xl bg-card border border-border flex items-center justify-between"
@@ -411,7 +421,7 @@ export default function HistoryPage() {
               {m.achieved ? (
                 <div className="flex items-center gap-1 text-[11px] font-medium text-blush-foreground bg-blush-solid px-2.5 py-1 rounded-full border border-transparent">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>{m.achievedDate}</span>
+                  <span>کسب شده</span>
                 </div>
               ) : (
                 <span className="text-[11px] text-muted-foreground">در حال پیشرفت</span>

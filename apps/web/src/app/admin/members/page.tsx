@@ -1,5 +1,7 @@
 "use client";
 
+import { USER_STATUS } from "../_components/admin-data";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,23 +10,20 @@ import { Button } from "@/components/ui/Button";
 import { formatPersianNumber, formatDate } from "@/lib/utils";
 import { Plus, Users } from "lucide-react";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
-import { useUsers } from "@/hooks/use-api";
-import type { User } from "@/lib/types";
+import { useUsers, useMemberships, useMembershipPlans } from "@/hooks/use-api";
+import type { User, Membership } from "@/lib/types";
 import { PageShell, PageHeader } from "@/components/twilight/Page";
 import { CtaButton, SearchInput, FilterChips, EmptyState } from "@/components/twilight/controls";
 
 type MemberRow = User & { plan?: string };
 
-const statusMap: Record<string, { label: string; variant: "success" | "secondary" | "destructive" }> = {
-  active: { label: "فعال", variant: "success" },
-  inactive: { label: "غیرفعال", variant: "secondary" },
-  suspended: { label: "تعلیق شده", variant: "destructive" },
-};
+const statusMap = USER_STATUS;
 
-const statusFilterOptions = ["all", "active", "inactive", "suspended"] as const;
+const statusFilterOptions = ["all", "active", "inactive", "suspended", "pending"] as const;
 type StatusFilter = (typeof statusFilterOptions)[number];
 const statusFilterLabels: Record<StatusFilter, string> = {
   all: "همه",
+  pending: "در انتظار تأیید",
   active: "فعال",
   inactive: "غیرفعال",
   suspended: "تعلیق شده",
@@ -36,12 +35,24 @@ const tdClass = "px-4 py-3 text-muted-foreground";
 export default function MembersPage() {
   const router = useRouter();
   const { data, isLoading, isError, refetch } = useUsers("athlete");
+  const memberships = useMemberships();
+  const plans = useMembershipPlans();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<StatusFilter>("all");
 
   if (isLoading) return <Loading />;
   if (isError) return <ErrorDisplay onRetry={refetch} />;
-  const members: MemberRow[] = data?.data || [];
+  const latestMemberships = new Map<string, Membership>();
+  for (const membership of memberships.data?.data ?? []) {
+    const previous = latestMemberships.get(membership.userId);
+    if (!previous || membership.endDate > previous.endDate) latestMemberships.set(membership.userId, membership);
+  }
+  const members: MemberRow[] = (data?.data ?? []).map((member) => {
+    const membership = latestMemberships.get(member.id);
+    const plan = membership ? plans.data?.data?.find((item) => item.id === membership.planId)?.name ?? "پلن نامشخص"
+      : memberships.isLoading ? "در حال دریافت" : memberships.isError ? "نامشخص" : "بدون طرح";
+    return { ...member, plan };
+  });
 
   const filtered = members.filter((m) => {
     const matchSearch = `${m.firstName} ${m.lastName}`.includes(search) || m.email.includes(search) || m.phone.includes(search);

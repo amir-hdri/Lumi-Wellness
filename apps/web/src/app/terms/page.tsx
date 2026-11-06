@@ -24,7 +24,7 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main" className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:py-16">
         <Link
           href="/auth/register"

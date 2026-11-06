@@ -110,6 +110,9 @@ class Membership(Base):
     status = Column(String, default="active")
     freeze_reason = Column(String, nullable=True)
     freeze_end_date = Column(DateTime, nullable=True)
+    renewal_requested_at = Column(DateTime, nullable=True)
+    renewal_approved_at = Column(DateTime, nullable=True)
+    renewal_approved_by = Column(String, nullable=True)
     created_at = Column(DateTime, default=_utcnow_naive)
     updated_at = Column(DateTime, default=_utcnow_naive, onupdate=_utcnow_naive)
 

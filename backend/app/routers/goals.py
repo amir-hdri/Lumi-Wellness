@@ -10,8 +10,8 @@ from app.schemas import GoalCreate, GoalProgressUpdate, GoalResponse, GoalUpdate
 router = APIRouter(prefix="/api/v1/goals", tags=["Goals"])
 
 
-def _check_goal_assignment(goal: Goal, current_user: User):
-    """The single rule for acting on a goal (update / progress / delete).
+def _check_goal_assignment(goal: Goal | GoalCreate, current_user: User):
+    """The single rule for acting on a goal (create / update / progress / delete).
 
     - Athlete: only their own goal.
     - Coach: only their assigned goal, or an unassigned one (claim).
@@ -76,9 +76,9 @@ def create_goal(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # Athletes can only create goals for themselves
-    if current_user.role == "athlete" and req.athlete_id != current_user.id:
-        return error_response("Insufficient permissions", 403)
+    denied = _check_goal_assignment(req, current_user)
+    if denied:
+        return denied
     # The goal owner must be an actual athlete, and an assigned coach an
     # actual coach — previously any user id (even a coach or admin) was
     # accepted as the athlete side.

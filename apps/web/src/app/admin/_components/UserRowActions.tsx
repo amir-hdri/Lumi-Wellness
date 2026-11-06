@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
 import Link from "next/link";
 import { toast } from "sonner";
 import { KeyRound, MoreHorizontal, Pencil, ShieldCheck, Trash2, UserRound } from "lucide-react";
@@ -17,7 +18,7 @@ import { apiErrorMessage } from "@/components/auth/auth-helpers";
 import { useDeleteUser, useUpdateUserStatus } from "@/hooks/use-api";
 import type { User, UserStatus } from "@/lib/types";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { UserEditSheet, UserPasswordSheet } from "./UserAdminSheets";
+import { UserEditSheet, UserPasswordSheet, UserRoleSheet } from "./UserAdminSheets";
 import { otherStatuses } from "./user-admin";
 
 const MENU_ITEM = "min-h-11 gap-2 px-3";
@@ -42,7 +43,12 @@ export interface UserRowActionsProps {
  * only that route validates the value server-side.
  */
 export function UserRowActions({ user, detailHref, onDeleted, noun }: UserRowActionsProps) {
+  const { user: actor } = useAuth();
+  const canManage = actor?.role === "admin" && actor.id !== user.id;
+  const canEdit = actor?.role === "admin" || (actor?.role === "receptionist" && (user.role === "athlete" || actor.id === user.id));
+  const canChangeStatus = actor?.role === "admin" || (actor?.role === "receptionist" && user.role === "athlete");
   const [editing, setEditing] = useState(false);
+  const [settingRole, setSettingRole] = useState(false);
   const [settingPassword, setSettingPassword] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
@@ -91,14 +97,18 @@ export function UserRowActions({ user, detailHref, onDeleted, noun }: UserRowAct
               </Link>
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem className={MENU_ITEM} onSelect={() => setEditing(true)}>
+          {canEdit && <DropdownMenuItem className={MENU_ITEM} onSelect={() => setEditing(true)}>
             <Pencil aria-hidden className="h-4 w-4" />
             ویرایش اطلاعات
-          </DropdownMenuItem>
-          <DropdownMenuItem className={MENU_ITEM} onSelect={() => setSettingPassword(true)}>
+          </DropdownMenuItem>}
+          {canManage && <DropdownMenuItem className={MENU_ITEM} onSelect={() => setSettingPassword(true)}>
             <KeyRound aria-hidden className="h-4 w-4" />
             تعیین رمز عبور
-          </DropdownMenuItem>
+          </DropdownMenuItem>}
+          {canManage && <DropdownMenuItem className={MENU_ITEM} onSelect={() => setSettingRole(true)}>
+            <ShieldCheck aria-hidden className="h-4 w-4" />تغییر نقش
+          </DropdownMenuItem>}
+          {canChangeStatus && <>
           <DropdownMenuSeparator />
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             تغییر وضعیت
@@ -114,19 +124,21 @@ export function UserRowActions({ user, detailHref, onDeleted, noun }: UserRowAct
               {option.label}
             </DropdownMenuItem>
           ))}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
+          </>}
+          {canManage && <DropdownMenuSeparator />}
+          {canManage && <DropdownMenuItem
             className={`${MENU_ITEM} text-destructive focus:text-destructive`}
             onSelect={() => setConfirmingDelete(true)}
           >
             <Trash2 aria-hidden className="h-4 w-4" />
             حذف {noun}
-          </DropdownMenuItem>
+          </DropdownMenuItem>}
         </DropdownMenuContent>
       </DropdownMenu>
 
       <UserEditSheet open={editing} onOpenChange={setEditing} user={user} />
       <UserPasswordSheet open={settingPassword} onOpenChange={setSettingPassword} user={user} />
+      <UserRoleSheet open={settingRole} onOpenChange={setSettingRole} user={user} />
       <ConfirmDialog
         open={confirmingDelete}
         onOpenChange={setConfirmingDelete}
