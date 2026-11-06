@@ -4,3 +4,4 @@ initial-snapshot/
 .graphify*
 .needs_update
 ui-baseline-snapshot/
+ci-baseline-snapshot/

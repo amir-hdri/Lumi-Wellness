@@ -1728,10 +1728,10 @@
     "semantic_hash": "e04502cf8a0b54c4c13b234aa02c82a1"
   },
   "backend/tests/test_backend_fixes.py": {
-    "mtime": 1791576512.8784838,
-    "seen": 1793927775.908843,
-    "ast_hash": "bfe9b815e1447985b73ba2a31a605223",
-    "semantic_hash": "bfe9b815e1447985b73ba2a31a605223"
+    "mtime": 1793969471.8370593,
+    "seen": 1793974122.825269,
+    "ast_hash": "ed54a0d819abb8d574a7b0569adcd1ff",
+    "semantic_hash": "ed54a0d819abb8d574a7b0569adcd1ff"
   },
   "backend/tests/test_contract.py": {
     "mtime": 1791576512.8789623,
@@ -1782,10 +1782,10 @@
     "semantic_hash": "a161eb3dc1f8bcdbcb7a3e8f7f725f14"
   },
   "backend/tests/test_security.py": {
-    "mtime": 1791576512.8795402,
-    "seen": 1793927775.908849,
-    "ast_hash": "38cbcf296301fb914f86b5e38d9106ea",
-    "semantic_hash": "38cbcf296301fb914f86b5e38d9106ea"
+    "mtime": 1793969471.8381574,
+    "seen": 1793974122.825595,
+    "ast_hash": "7a118526448d55919a03f084950790e8",
+    "semantic_hash": "7a118526448d55919a03f084950790e8"
   },
   "package.json": {
     "mtime": 1793556843.0013685,
@@ -1848,16 +1848,16 @@
     "semantic_hash": "1ebbc34211885e3ecd4c197139da63b4"
   },
   ".context/SESSION_LOG.md": {
-    "mtime": 1793966702.425922,
-    "seen": 1793968411.443668,
-    "ast_hash": "7e4d507e7b42bd13f3af03be14a952a3",
-    "semantic_hash": "7e4d507e7b42bd13f3af03be14a952a3"
+    "mtime": 1793970834.669185,
+    "seen": 1793974122.8259661,
+    "ast_hash": "291acef9e7033b7958fb83307cd9afa5",
+    "semantic_hash": "291acef9e7033b7958fb83307cd9afa5"
   },
   ".context/STATE.md": {
-    "mtime": 1793966702.4252582,
-    "seen": 1793968411.443733,
-    "ast_hash": "8d47050cafc6a2ecb98087fda0b0fdba",
-    "semantic_hash": "8d47050cafc6a2ecb98087fda0b0fdba"
+    "mtime": 1793970834.6687021,
+    "seen": 1793974122.825985,
+    "ast_hash": "03f0233e4d056a7bf2a64d671d72dae7",
+    "semantic_hash": "03f0233e4d056a7bf2a64d671d72dae7"
   },
   ".gemini/rules/agent-sync-protocol.md": {
     "mtime": 1792073524.1135263,
@@ -2219,10 +2219,10 @@
     "ast_empty": true
   },
   "docs/ui-audit/verification.json": {
-    "mtime": 1793966622.938405,
-    "seen": 1793968411.443205,
-    "ast_hash": "162710089b2878fe627c32d99a0b21fe",
-    "semantic_hash": "162710089b2878fe627c32d99a0b21fe",
+    "mtime": 1793971532.5935464,
+    "seen": 1793974122.825802,
+    "ast_hash": "9b09fef8e445e1a779475f38d6c3c971",
+    "semantic_hash": "9b09fef8e445e1a779475f38d6c3c971",
     "ast_empty": true
   },
   "docs/ui-audit/visual-summary.json": {
@@ -2233,10 +2233,10 @@
     "ast_empty": true
   },
   "docs/UI_UX_AUDIT_2026-11-06.md": {
-    "mtime": 1793966702.426382,
-    "seen": 1793968411.443861,
-    "ast_hash": "65665f2324f4e1b4806c51da1138ca95",
-    "semantic_hash": "65665f2324f4e1b4806c51da1138ca95"
+    "mtime": 1793970834.669797,
+    "seen": 1793974122.8260028,
+    "ast_hash": "7a286ee8ca7a34a80d2cc41f556fadd2",
+    "semantic_hash": "7a286ee8ca7a34a80d2cc41f556fadd2"
   },
   "docs/superpowers/plans/2026-11-06-ui-upgrade.md": {
     "mtime": 1793965883.1768663,

@@ -47,5 +47,27 @@
     "unlabelled_controls": 0,
     "duplicate_ids": 0,
     "screenshots": 16
+  },
+  "github_pull_request": "https://github.com/amir-hdri/Lumi-Wellness/pull/22",
+  "initial_github_ci": {
+    "run_id": 42220199486,
+    "result": "failed",
+    "causes": [
+      "legacy jose imports in two tests",
+      "missing Linux native optional package entries in lockfile"
+    ]
+  },
+  "clean_dependency_verification": {
+    "backend_without_jose": {
+      "passed": 203,
+      "xfailed": 4,
+      "failed": 0
+    },
+    "original_lock_entries_unchanged": true,
+    "added_optional_entries": 95,
+    "latest_github_ci": "Read current checks on PR #22; initial run is historical evidence",
+    "npm_ci_linux_x64": "passed",
+    "required_native_packages": 5,
+    "existing_locked_packages_unchanged": true
   }
 }

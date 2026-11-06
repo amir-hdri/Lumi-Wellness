@@ -17,9 +17,9 @@ import sys
 import uuid
 from datetime import UTC, datetime, timedelta
 
+import jwt
 import pytest
 from fastapi.testclient import TestClient
-from jose import jwt
 
 SUFFIX = uuid.uuid4().hex[:8]
 SECRET = "test-only-key"

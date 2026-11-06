@@ -81,3 +81,10 @@
 ![فرم هدف در تم تاریک](ui-audit/goal-390-dark-after.png)
 
 ![کتابخانهٔ حرکات در دسکتاپ](ui-audit/exercises-1440-dark-after.png)
+
+
+## انتشار GitHub و اصلاح نصب تمیز CI
+
+شاخهٔ `codex/ui-upgrade` با کامیت شواهد `ddab9f7` و دو کامیت محصول پیشین ارسال و [PR #22](https://github.com/amir-hdri/Lumi-Wellness/pull/22) ساخته شد؛ main تا merge تغییر نمی‌کند. اجرای اول CI وابستگی‌های پنهان محیط محلی را آشکار کرد: import قدیمی `jose` در دو تست بک‌اند و نبود bindingهای Linux در lock بسته‌های Rollup/Lightning CSS/Tailwind oxide/esbuild/unrs-resolver.
+
+دو تست با `PyJWT` فعلی محصول همسان شدند؛ اجرای مجدد با ممنوع‌بودن jose، ۲۰۳ pass و ۴ xfail داد. ۹۵ ورودی بومی/اختیاری با نسخه‌های دقیق parent و integrity متادیتا تکمیل شدند؛ هیچ entry یا نسخهٔ قبلی تغییر نکرد. نتایج نصب تمیز در verification.json ثبت می‌شود و وضعیت اجرای جدید CI از PR خوانده می‌شود. این اصلاح، کد UI و تصاویر تأییدشده را تغییر نمی‌دهد؛ Graphify با همین اسناد و تست‌های نهایی تازه می‌شود.

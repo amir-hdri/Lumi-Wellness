@@ -1,8 +1,8 @@
 {
-  "indexed_at": "2026-11-06T12:33:29.987872+00:00",
-  "indexed_base_commit": "494314c0a5eea986a191cdc6714b12cd6b65afe9",
-  "source_mode": "working-tree incremental snapshot",
-  "snapshot_sha256": "c4da9dec2e73e9f4be217db1a684f1cb8bb622461a98295ff575e62a150c556a",
+  "indexed_at": "2026-11-06T14:08:42.339719+00:00",
+  "indexed_base_commit": "ddab9f70d2c3ef93ac20364ff02831f1293a7548",
+  "source_mode": "working-tree incremental snapshot after CI dependency fixes",
+  "snapshot_sha256": "670cde1c66b946b7d164f5d6cace9eb9e3e1447966b2875bf635aac8d525293d",
   "file_sha256": {
     ".github/workflows/ci.yml": "8437cba4e02ad2e8fdce65c83f974ba3df72201cafbef0c2cc6ef041e638d43a",
     "apps/web/config/deploy-env.mjs": "23b0b10e19d2b34a17895ce984b48ceb6c669d910a97cdad73a3e1fc68e0d69f",
@@ -310,7 +310,7 @@
     "backend/tests/test_attendance_timezones.py": "f87a2dd43fd712f53b6bd62021ef9ee95507781b34304b0a30e32e5d2589e387",
     "backend/tests/test_audit_regressions.py": "a9c20285243a759657d37da4cbae74c65da6a5080ced508cb521af9718fdecd6",
     "backend/tests/test_authz_fixes.py": "19fe293759b96b94b3868ce7ba23d36ada94f75e39cee5082782be954afe527b",
-    "backend/tests/test_backend_fixes.py": "26f7fd65a7879751473bfba1391033aae9abae700d1c0ed462a3cc48e1072c45",
+    "backend/tests/test_backend_fixes.py": "01aa1899f7d6b3a93cb7d3608124cceea19f3608caabaaee16df841f77cf070d",
     "backend/tests/test_contract.py": "bb4e09ac5100d077d531a1a4b0cbdee6446d32dc8592dc085724cdb5edb8c678",
     "backend/tests/test_contract_v2.py": "e542a53adf17e1288ea98851da38c3dd720dcffdb7bc03e291358cd06a8fe70c",
     "backend/tests/test_cors.py": "b951e0ab805969938a77a171859e5c7c49460313aa669f0b0d2a20d60b2ca412",
@@ -319,13 +319,13 @@
     "backend/tests/test_membership_approval.py": "b414af19d0fc0a458237e2b7ffa7a906ed7597fed848da7f76e0e210651b38a6",
     "backend/tests/test_privileged_account_edits.py": "12314cd26dddb6c4b791aa5dc207114f091b7f10ac7887d85e068c37a2c1e563",
     "backend/tests/test_route_coverage.py": "c941ed41c24a995351fd6145550a0bcb32ee0641fb3ea73f282d44b68e1c78ca",
-    "backend/tests/test_security.py": "19cdbc675f1eb747e76fe580395c0ddd5f9f3ee6f717bba7caf29338c7f35eef",
+    "backend/tests/test_security.py": "ad8fe78d4da3fb24c61fe52e4e69fecdbbe268bb09eb1dab90e5d662c5b1d257",
     "docs/ui-audit/graph-evidence.json": "34fb972d1388a268c69e80b2f8a3d9651a81c074c28fcceb67c63280683768e7",
     "docs/ui-audit/routes-1440-dark.json": "33a1cfea0d15ae72100299983bfbfce4566862689269132487826eaae87d3c68",
     "docs/ui-audit/routes-1440-light.json": "fd2f49be45fa62d6d0abde2c6de61ba92a9d393a2394199cfd6f535b89d93a27",
     "docs/ui-audit/routes-390-dark.json": "818765630f2b6f727b6d392142b19b8958ffbab5e01653e7ff440c8de7d20050",
     "docs/ui-audit/routes-390-light.json": "6c2d05a5d92e8e7a1cb1ed290f4674ddeeffacb9772a20252203a027e3cf2412",
-    "docs/ui-audit/verification.json": "3f7f08a668c0d19f3def598c9853bb7ba7e7c905ab987357ae635b0d8ce2b3ee",
+    "docs/ui-audit/verification.json": "51cf91f25008fe11c8a2d4638b509dfb2b7f8247850a3b01552d57d8675e9736",
     "docs/ui-audit/visual-summary.json": "ef791999ca517d5f85ca73e9a8b6406a8559a4acb5c9194805930f7b5e6322b3",
     "package.json": "a24d21b7e011d67a47f3c1056fe11103621336fe6d67eb846e7aaf5e4321041a",
     "scripts/agent_sync.py": "0b506cc307df874bda3fb13fc14e52d2def115d94050dda1b59131e776b746e4",
@@ -337,8 +337,8 @@
     ".agents/skills/typeui-fundamentals/typography-principles.md": "030852cd1cc9ffed33c97d9bb2323b030ad53c4bdb1231dcd6ad29dc9591743f",
     ".agents/skills/typeui-fundamentals/ui-principles.md": "b115daacd152499cdc510450caaad159cbf77d3c630fde708f788ff8e9aa4495",
     ".agents/skills/typeui-fundamentals/ux-principles.md": "1e5069b9f48a64cdd2807d2daa2d36b7f27cc248dbdec52200a309b46e899fd4",
-    ".context/SESSION_LOG.md": "087dbb3bba47d79580bc66848ddda256d8513e8e2a90af50564a11fe86cef2ca",
-    ".context/STATE.md": "8e537f69d2dc8063bc57950b9c72a37fa106ec0fd2d6705ec0920d42a6bcfab8",
+    ".context/SESSION_LOG.md": "916266957cf3b1638804600cd8f4c0ce32cd149cb14c9a57987c941d8668062a",
+    ".context/STATE.md": "b0ec5bf3b51550a914350c01a00bfebe2c1c1752a49c9fbd13dcc2a3f696692a",
     ".gemini/rules/agent-sync-protocol.md": "6810eb98e5fbc5b0999142a11991171b6fc810bb4c66ed550042db4f34946604",
     "AGENTS.md": "961e613655aad4c9bd1cfdd1c2c94111a9e2b21b876e6514ea7eaafa2543c906",
     "CLAUDE.md": "c12bb89154a8dd507cb8eab68fc2103c9d9898b25f00dedb265479da463a2bb5",
@@ -356,7 +356,7 @@
     "docs/DESIGN_SYSTEM.md": "e1872b4b7ba3f533f37e4d104f7dce01ab316f6dfe3107b241319ef5f78ae732",
     "docs/FULLSTACK_AUDIT_2026-11-06.md": "ee5588661acb7a68a7c64d98730ccf8adab77dcd9a48cf711bf805aa1d43d790",
     "docs/PERFORMANCE_AUDIT.md": "2201d3d45b138f20f6f6045ad29ba6b12c0ce9a6380c5af1050158b372b96d5c",
-    "docs/UI_UX_AUDIT_2026-11-06.md": "d8073f5110c16bf58b7b9334dc24d15bae400832b669baed1a9888996da86924",
+    "docs/UI_UX_AUDIT_2026-11-06.md": "6c9ef5186480a58a4638b59c026dab63133aaadb1c01b5ffbc15b1159f771f72",
     "docs/design-preview.html": "b2c135e553c75cc1e16e9f9f3a27cea8f30f3f7a39e3fe34116cf116cfad64df",
     "docs/superpowers/plans/2026-11-06-ui-upgrade.md": "3dfc6f969ff9edc62241cdddbb192a182c81bdc0c13110f0ee424a4f576434bf",
     "docs/superpowers/specs/2026-11-06-ui-upgrade-design.md": "9c930785f3acce31be1b24e29f8c7ebae8a3b67d8db0cc61ccd4ea36540428ae",
@@ -399,19 +399,19 @@
     "docs/ui-audit/settings-390-light-after.png": "145e37602b40b8221899654ecfe861cfdc090173c601435c82ce8aaa3c348e10"
   },
   "corpus_files": 393,
-  "corpus_words": 244922,
-  "changed_files": 115,
+  "corpus_words": 245927,
+  "changed_files": 7,
   "changed_by_type": {
-    "code": 91,
-    "document": 6,
+    "code": 4,
+    "document": 3,
     "paper": 0,
-    "image": 18,
+    "image": 0,
     "video": 0
   },
-  "graph_nodes": 3231,
-  "graph_edges": 9300,
-  "communities": 190,
-  "graph_sha256": "a971d500212cc4733da15564ebfec219a0db5d3503d13fc9cd0c114acc7ce77d",
+  "graph_nodes": 3241,
+  "graph_edges": 9308,
+  "communities": 204,
+  "graph_sha256": "8aeeb8c5eb9d113300926434980227d6c25e2a91b3a89887fdcd7c0463e580e9",
   "semantic_files_reextracted": [
     ".context/SESSION_LOG.md",
     ".context/STATE.md",
@@ -439,10 +439,10 @@
     "docs/ui-audit/settings-390-light-after.png"
   ],
   "semantic_coverage": {
-    ".context/SESSION_LOG.md": 41,
-    ".context/STATE.md": 133,
+    ".context/SESSION_LOG.md": 48,
+    ".context/STATE.md": 142,
     "docs/DESIGN_SYSTEM.md": 275,
-    "docs/UI_UX_AUDIT_2026-11-06.md": 83,
+    "docs/UI_UX_AUDIT_2026-11-06.md": 90,
     "docs/superpowers/plans/2026-11-06-ui-upgrade.md": 80,
     "docs/superpowers/specs/2026-11-06-ui-upgrade-design.md": 73,
     "docs/ui-audit/exercises-1440-dark-after.png": 0,
@@ -469,13 +469,7 @@
     "backend/pyproject.toml"
   ],
   "ast_skipped_sources": [
-    "docs/ui-audit/graph-evidence.json",
-    "docs/ui-audit/routes-1440-dark.json",
-    "docs/ui-audit/routes-1440-light.json",
-    "docs/ui-audit/routes-390-dark.json",
-    "docs/ui-audit/routes-390-light.json",
-    "docs/ui-audit/verification.json",
-    "docs/ui-audit/visual-summary.json"
+    "docs/ui-audit/verification.json"
   ],
   "code_files_with_file_node_only": [
     "@playwright/test",
@@ -649,5 +643,32 @@
     "self_loop_edges": 1,
     "undirected_same_endpoint_collapsed_edges": 0
   },
-  "historical_multiplicity_restored": false
+  "historical_multiplicity_restored": false,
+  "latest_semantic_files_reextracted": [
+    ".context/SESSION_LOG.md",
+    ".context/STATE.md",
+    "docs/UI_UX_AUDIT_2026-11-06.md"
+  ],
+  "verification_file_sha256": {
+    "package-lock.json": "f216031e0a813408c8a50059a461d0cefb71f1f242c65ac92eb0755a4c6fb529"
+  },
+  "github_pull_request": "https://github.com/amir-hdri/Lumi-Wellness/pull/22",
+  "ci_refresh": {
+    "preserved_semantic_ids": true,
+    "source_counts": {
+      "docs/UI_UX_AUDIT_2026-11-06.md": {
+        "old": 23,
+        "new": 26
+      },
+      ".context/SESSION_LOG.md": {
+        "old": 9,
+        "new": 12
+      },
+      ".context/STATE.md": {
+        "old": 32,
+        "new": 37
+      }
+    },
+    "guard_override": false
+  }
 }
