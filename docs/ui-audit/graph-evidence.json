@@ -6,7 +6,6 @@
   "indexed_file_count": 348,
   "graph_nodes": 3054,
   "graph_edges": 9306,
-  "graph_unchanged": true,
   "changed_indexed_sources_after_ui_work": [
     "apps/web/next-env.d.ts",
     "apps/web/src/app/admin/_components/NewUserForm.tsx",
@@ -77,5 +76,8 @@
   ],
   "hosted_mcp_available": false,
   "rebuild_performed": false,
-  "note": "Existing graph guided review; current source and tests verify changed files. Graph does not index the final UI changes. Benchmark is an estimate; real token usage unavailable."
+  "note": "Historical baseline comparison. The authorized final graph refresh is evidenced by graphify-out/provenance.json and GRAPH_REPORT.md; benchmark is estimated and token usage is unavailable.",
+  "phase": "initial UI audit before authorized graph refresh",
+  "graph_unchanged_at_initial_audit": true,
+  "final_graph_evidence": "graphify-out/provenance.json"
 }

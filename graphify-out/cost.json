@@ -7,9 +7,19 @@
       "output_tokens": 0,
       "token_usage_available": false,
       "note": "Agent usage unavailable. Zero fields are compatibility placeholders, not measured consumption."
+    },
+    {
+      "date": "2026-11-06T12:33:29.987872+00:00",
+      "files": 393,
+      "changed_files": 115,
+      "semantic_files": 24,
+      "input_tokens": null,
+      "output_tokens": null,
+      "token_usage_available": false,
+      "note": "Agent token usage unavailable; no measured token count."
     }
   ],
-  "total_input_tokens": 0,
-  "total_output_tokens": 0,
+  "total_input_tokens": null,
+  "total_output_tokens": null,
   "totals_are_measured": false
 }

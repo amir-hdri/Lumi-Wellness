@@ -70,11 +70,11 @@
 
 **Files:** docs/UI_UX_AUDIT_2026-11-06.md; docs/ui-audit/*; DESIGN_SYSTEM.md; .context/{STATE,SESSION_LOG}.md.
 - [x] Run full TypeScript/ESLint/Vitest, build and relevant existing/new e2e against mock and real API where feasible.
-- [ ] Inspect final light/dark/mobile/desktop screenshots, actual CTA contrast, focus, short overlays and reduced motion.
+- [x] Inspect final light/dark/mobile/desktop screenshots, actual CTA contrast, focus, short overlays and reduced motion.
 - [x] Request independent review of final diff and address actionable findings; no implementation delegation per task.
 - [x] Record per-route evidence, limitations, graph provenance/freshness and decisions; mark this checklist using actual results.
 - [x] Stage only session-owned changes and context; make local atomic commit and verify lock release.
 
 ## Execution ledger
 
-Tasks 1–5 complete. Final: TypeScript/ESLint, 240 unit tests, 112 mock browser tests and 34 real-API browser tests passed; both production builds passed. Independent review fixes are covered by regression tests. Ruling: preserve an owner-scoped session draft for browser history instead of trying to cancel Next popstate; document this behavior. Manual final screenshots are pending a new Ego space after the original space disappeared. Source/context handoff prepared for the atomic local commit; manual screenshots remain optional and pending explicit permission for a new Ego workspace.
+Tasks 1–5 complete. Final: TypeScript/ESLint, 240 unit tests, 112 mock browser tests and 34 real-API browser tests passed; both production builds passed. Independent review fixes are covered by regression tests. Ruling: preserve an owner-scoped session draft for browser history instead of trying to cancel Next popstate; document this behavior. Manual final review completed after explicit new-space permission: 216 views, zero overflow/unlabelled/duplicate IDs, 16 screenshots. Source/context handoff prepared for the atomic local commit; visual evidence is complete; user authorized graph refresh, branch push and PR creation.

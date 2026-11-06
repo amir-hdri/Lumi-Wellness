@@ -3,3 +3,4 @@ initial-snapshot/
 .semantic-staging-*/
 .graphify*
 .needs_update
+ui-baseline-snapshot/

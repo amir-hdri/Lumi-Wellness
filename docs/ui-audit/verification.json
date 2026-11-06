@@ -16,6 +16,12 @@
       "check": "Playwright real API",
       "passed": 34,
       "failed": 0
+    },
+    {
+      "check": "pytest backend",
+      "passed": 203,
+      "failed": 0,
+      "xfailed": 4
     }
   ],
   "typescript": "passed",
@@ -26,5 +32,20 @@
   ],
   "real_api_database": "isolated temporary SQLite supplied by playwright.real.config.ts",
   "production_deployment_performed": false,
-  "visual_final_review": "pending browser workspace approval"
+  "visual_final_review": {
+    "views": 216,
+    "routes": 54,
+    "widths": [
+      390,
+      1440
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "overflows": 0,
+    "unlabelled_controls": 0,
+    "duplicate_ids": 0,
+    "screenshots": 16
+  }
 }
