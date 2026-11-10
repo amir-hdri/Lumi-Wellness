@@ -58,3 +58,27 @@
 - **فایل‌های تغییریافته:** `apps/web/src/app/athlete/page.tsx`, `docs/workout-card`, `.context/STATE.md`, `.context/SESSION_LOG.md`
 - **تسک پیشنهادی بعدی:** Review the updated workout card in the local preview; public deployment prerequisites remain in docs/DEPLOYMENT_RUNBOOK.md.
 ---
+
+## [2026-11-10T11:24:15.450208] Agent: codex-exercise-design
+- **خلاصه کار:** Interrupted Design session handed off with user approval; exercise redesign remains in progress.
+- **فایل‌های تغییریافته:** `apps/web/src/app/athlete/WorkoutExerciseRow.tsx`, `apps/web/src/components/twilight/WorkoutPlayer.tsx`
+- **تسک پیشنهادی بعدی:** Resume exercise UI review, verification and authorized GitHub main integration.
+---
+
+## [2026-11-10T12:51:50.199478] Agent: codex-exercise-resume
+- **خلاصه کار:** Completed interrupted exercise redesign; 255 web, 213 backend plus 4 xfail, 112 mock and 34 real API browser tests, TypeScript/ESLint, deployment-mode build and independent review passed; 8 visual captures saved. User authorized normal main integration of this completion plus readiness and daily workout-card commits.
+- **فایل‌های تغییریافته:** `apps/web/src/app/athlete/WorkoutExerciseRow.tsx`, `apps/web/src/app/athlete/WorkoutExerciseRow.test.tsx`, `apps/web/src/app/athlete/programs/[id]/page.tsx`, `apps/web/src/components/twilight/WorkoutPlayer.tsx`, `docs/workout-exercises`, `.context/STATE.md`, `.context/SESSION_LOG.md`
+- **تسک پیشنهادی بعدی:** Verify authorized main push SHA/CI, then provision public deployment prerequisites in docs/DEPLOYMENT_RUNBOOK.md.
+---
+
+## [2026-11-10T16:15:33.549729] Agent: codex-exercise-resume
+- **خلاصه کار:** Released the failed continuation lock for the authorized handoff; final commit and GitHub integration still pending.
+- **فایل‌های تغییریافته:** none
+- **تسک پیشنهادی بعدی:** Complete the staged exercise UI commit and authorized GitHub main integration.
+---
+
+## [2026-11-10T16:27:25+03:30] Agent: codex-session-completion
+- **خلاصه کار:** Resumed the failed continuation with existing user authorization. Fresh verification: 255 web, 213 backend plus 4 expected xfails, 112 mock E2E and 34 real API E2E; TypeScript, ESLint and deployment-mode build passed. Refreshed all 8 screenshots at exact mobile/desktop viewports and corrected cropped evidence.
+- **فایل‌های تغییریافته:** `apps/web/src/app/athlete/WorkoutExerciseRow.tsx`, `apps/web/src/app/athlete/WorkoutExerciseRow.test.tsx`, `apps/web/src/app/athlete/programs/[id]/page.tsx`, `apps/web/src/components/twilight/WorkoutPlayer.tsx`, `docs/workout-exercises`, `.context/STATE.md`, `.context/SESSION_LOG.md`
+- **تسک پیشنهادی بعدی:** Commit atomically, fast-forward main including 7c7265e and 31c487e, push normally, verify GitHub SHA and final CI. Public deployment prerequisites remain in docs/DEPLOYMENT_RUNBOOK.md.
+---

@@ -4,15 +4,15 @@ import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { Checkbox } from "@/components/ui/Checkbox";
 import { Progress } from "@/components/ui/Progress";
 import { Button } from "@/components/ui/Button";
-import { formatPersianNumber, formatDate, calculateProgress, cn } from "@/lib/utils";
+import { formatPersianNumber, formatDate, calculateProgress } from "@/lib/utils";
 import { useTrainingProgram, useCompleteProgramExercise } from "@/hooks/use-api";
 import { Loading, ErrorDisplay } from "@/components/ui/DataState";
 import { PageShell, PageHeader, SectionTitle, MicroLabelFa } from "@/components/twilight/Page";
 import { TwilightCard, FilterChips } from "@/components/twilight/controls";
 import { WorkoutPlayer } from "@/components/twilight/WorkoutPlayer";
+import { WorkoutExerciseRow } from "../../WorkoutExerciseRow";
 import { apiErrorMessage } from "@/components/auth/auth-helpers";
 import { toast } from "sonner";
 
@@ -94,11 +94,11 @@ export default function ProgramDetailPage() {
       />
 
       {activeDayData && (
-        <TwilightCard className="p-0">
-          <div className="flex items-center justify-between px-4 pt-4">
+        <section aria-label={`تمرینات ${activeDayData.day}`} className="space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <SectionTitle>تمرینات {activeDayData.day}</SectionTitle>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {formatPersianNumber(activeDayCompleted)}/{formatPersianNumber(activeDayData.exercises.length)} حرکت تکمیل شده
               </span>
             </div>
@@ -107,44 +107,24 @@ export default function ProgramDetailPage() {
                 name={`${program.name} - ${selectedDay}`} exercises={activeDayData.exercises} />
             )}
           </div>
-          <div className="flex flex-col gap-2.5 p-4">
+          <div className="flex flex-col gap-3">
             {activeDayData.exercises.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">روز استراحت و ریکاوری عضلات</p>
             ) : (
-              activeDayData.exercises.map((exercise) => {
-                const isCompleted = exercise.isCompleted;
-                return (
-                  <div
-                    key={exercise.id}
-                    className={cn(
-                      "flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-colors",
-                      isCompleted && "opacity-50"
-                    )}
-                  >
-                    <Checkbox
-                      checked={isCompleted}
-                      aria-label={`علامت‌گذاری ${exercise.exercise?.name || exercise.exerciseId} به‌عنوان انجام‌شده`}
-                      disabled={complete.isPending}
-                      onCheckedChange={(checked) => complete.mutate({ programId: program.id, exerciseId: exercise.id, completed: checked === true }, {
-                        onError: (error) => toast.error(apiErrorMessage(error, "ثبت تمرین ناموفق بود")),
-                      })}
-                      className="data-[state=checked]:border-blush-solid data-[state=checked]:bg-blush-solid data-[state=checked]:text-blush-foreground"
-                    />
-                    <div className={cn("flex-1", isCompleted && "line-through text-muted-foreground")}>
-                      <p className="text-sm font-medium text-foreground">{exercise.exercise?.name || exercise.exerciseId}</p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">
-                        {formatPersianNumber(exercise.sets)} × {exercise.reps}
-                        {exercise.weight ? ` - ${formatPersianNumber(exercise.weight)} کیلوگرم` : ""}
-                        {" - "}
-                        {formatPersianNumber(exercise.restSeconds)} ثانیه استراحت
-                      </p>
-                    </div>
-                  </div>
-                );
-              })
+              activeDayData.exercises.map((exercise) => (
+                <WorkoutExerciseRow
+                  key={exercise.id}
+                  exercise={exercise}
+                  checked={exercise.isCompleted}
+                  disabled={complete.isPending}
+                  onCheckedChange={(checked) => complete.mutate({ programId: program.id, exerciseId: exercise.id, completed: checked }, {
+                    onError: (error) => toast.error(apiErrorMessage(error, "ثبت تمرین ناموفق بود")),
+                  })}
+                />
+              ))
             )}
           </div>
-        </TwilightCard>
+        </section>
       )}
 
     </PageShell>

@@ -29,13 +29,14 @@ const exercise: ProgramExercise = {
   isCompleted: false,
 };
 
-function ControlledRow({ onChange }: { onChange: (checked: boolean) => void }) {
+function ControlledRow({ onChange, disabled = false }: { onChange: (checked: boolean) => void; disabled?: boolean }) {
   const [checked, setChecked] = useState(false);
 
   return (
     <WorkoutExerciseRow
       exercise={exercise}
       checked={checked}
+      disabled={disabled}
       onCheckedChange={(nextChecked) => {
         setChecked(nextChecked);
         onChange(nextChecked);
@@ -64,5 +65,27 @@ describe("WorkoutExerciseRow", () => {
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenLastCalledWith(true);
+  });
+
+  it("keeps the exercise unchanged while saving", async () => {
+    const onChange = vi.fn();
+    render(<ControlledRow onChange={onChange} disabled />);
+
+    await userEvent.click(screen.getByText("پرس سینه"));
+
+    expect(screen.getByRole("checkbox")).toBeDisabled();
+    expect(screen.getByRole("checkbox")).not.toBeChecked();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("marks and unmarks the exercise with the keyboard", async () => {
+    render(<ControlledRow onChange={() => {}} />);
+
+    await userEvent.tab();
+    expect(screen.getByRole("checkbox")).toHaveFocus();
+    await userEvent.keyboard(" ");
+    expect(screen.getByRole("checkbox")).toBeChecked();
+    await userEvent.keyboard(" ");
+    expect(screen.getByRole("checkbox")).not.toBeChecked();
   });
 });

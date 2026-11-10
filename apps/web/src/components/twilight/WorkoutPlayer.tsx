@@ -1,16 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  CheckCircle2,
-  Pause,
-  Play,
-  RotateCcw,
-  Sparkles,
-  Timer,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { Sheet } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
@@ -22,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { GymBackdrop } from "./GymBackdrop";
+import { Progress } from "@/components/ui/Progress";
 import { useCompleteProgramExercise } from "@/hooks/use-api";
 import { formatPersianNumber } from "@/lib/utils";
 import type { ProgramExercise } from "@/lib/types";
@@ -184,9 +175,8 @@ export function WorkoutPlayer({
           setOpen(true);
         }}
         disabled={!exercises.length}
-        className="w-full !rounded-xl !text-xs"
+        className="w-full rounded-xl px-5 text-sm sm:w-auto"
       >
-        <Play className="h-3.5 w-3.5" />
         شروع جلسه تمرین
       </Button>
       <Sheet
@@ -194,40 +184,33 @@ export function WorkoutPlayer({
         onOpenChange={setOpen}
         title={name}
         description="اجرای تمرین و ثبت ست‌ها"
-        hideTitle
-        hero={
-          <>
-            <GymBackdrop />
-            <div className="absolute inset-0 bg-gradient-to-t from-scrim to-transparent" />
-            <span className="absolute end-4 top-4 z-20 flex items-center gap-1.5 rounded-full border border-border bg-scrim/60 px-3 py-1 text-xs tabular-nums text-primary">
-              <Timer className="h-3.5 w-3.5" />
-              {formatPersianNumber(Math.floor(elapsed / 60))}:
-              {formatPersianNumber(elapsed % 60).padStart(2, "۰")}
-            </span>
-          </>
-        }
+        className="sm:max-w-lg"
       >
         {exercise && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5 py-1">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                <span>حرکت {formatPersianNumber(index + 1)} از {formatPersianNumber(exercises.length)}</span>
+                <span className="tabular-nums" aria-label="زمان جلسه" dir="ltr">
+                  {formatPersianNumber(Math.floor(elapsed / 60))}:{formatPersianNumber(elapsed % 60).padStart(2, "۰")}
+                </span>
+              </div>
+              <Progress value={exercises.length ? done / exercises.length * 100 : 0} aria-label="پیشرفت جلسه تمرین" className="h-1" indicatorClassName="bg-none bg-blush-solid" />
+            </div>
             <div>
-              <p className="mb-1.5 text-[10px] font-semibold text-primary">
-                حرکت {formatPersianNumber(index + 1)} از{" "}
-                {formatPersianNumber(exercises.length)}
-              </p>
-              <h2 className="font-sans text-2xl font-medium leading-snug">
+              <h2 className="break-words font-serif text-2xl font-medium leading-relaxed text-foreground">
                 {exercise.exercise?.name ?? "حرکت تمرینی"}
               </h2>
-              <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
-                <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
                 {exercise.notes ||
                   exercise.exercise?.tips ||
                   "حرکت را با کنترل و مطابق برنامه مربی اجرا کنید."}
               </p>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-4">
-              <div>
-                <p className="text-[10px] text-muted-foreground">ست جاری</p>
-                <p className="mt-0.5 text-xl">
+            <div className="grid grid-cols-3 gap-3 rounded-2xl bg-muted/50 p-4">
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">ست جاری</p>
+                <p className="mt-2 text-base font-medium leading-7 text-foreground">
                   ست{" "}
                   {formatPersianNumber(
                     Math.min((exercise.actualSets ?? 0) + 1, exercise.sets),
@@ -235,23 +218,27 @@ export function WorkoutPlayer({
                   از {formatPersianNumber(exercise.sets)}
                 </p>
               </div>
-              <div className="text-end">
-                <p className="text-[10px] text-muted-foreground">تکرار هدف</p>
-                <p className="mt-0.5 text-xl text-blush">{exercise.reps}</p>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">تکرار هدف</p>
+                <p className="mt-2 text-lg font-medium leading-7 text-foreground" dir="ltr">{exercise.reps}</p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">وزنه</p>
+                <p className="mt-2 text-base font-medium leading-7 text-foreground">{exercise.weight ? `${formatPersianNumber(exercise.weight)} کیلو` : "بدون وزنه"}</p>
               </div>
             </div>
             {rest > 0 && (
-              <div className="space-y-3 rounded-2xl border border-primary/40 bg-secondary p-3.5">
+              <div className="space-y-3 rounded-2xl border border-border bg-muted/40 p-4">
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <p className="text-xs font-semibold">
                       زمان استراحت و تنفس عمیق
                     </p>
-                    <p className="mt-1 text-[10px] text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       آب بنوشید و برای ست بعد آماده شوید
                     </p>
                   </div>
-                  <span className="text-lg font-bold tabular-nums text-primary">
+                  <span className="shrink-0 text-xl font-medium tabular-nums text-foreground">
                     {formatPersianNumber(rest)} ثانیه
                   </span>
                 </div>
@@ -261,13 +248,9 @@ export function WorkoutPlayer({
                     onClick={() =>
                       setRestUntil(restUntil ? null : Date.now() + rest * 1000)
                     }
-                    className="ring-focus flex min-h-11 min-w-11 items-center justify-center rounded-full border border-border p-3"
+                    className="ring-focus inline-flex min-h-11 items-center rounded-xl border border-border bg-card px-4 text-xs"
                   >
-                    {restUntil ? (
-                      <Pause className="h-4 w-4" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
+                    {restUntil ? "توقف تایمر" : "ادامه تایمر"}
                   </button>
                   <button
                     onClick={clearRest}
@@ -294,16 +277,15 @@ export function WorkoutPlayer({
               </div>
             ) : (
               <Button
-                className="w-full !rounded-xl !text-xs"
+                className="w-full rounded-xl text-sm"
                 onClick={recordSet}
                 loading={complete.isPending}
                 disabled={exercise.isCompleted || rest > 0}
               >
-                <CheckCircle2 className="h-4 w-4" />
                 {exercise.isCompleted ? "حرکت تکمیل شد" : "ثبت ست انجام‌شده"}
               </Button>
             )}
-            <div className="flex items-center justify-between text-xs">
+            <div className="grid grid-cols-3 items-center gap-2 border-t border-border pt-3 text-xs">
               <button
                 onClick={() => {
                   setIndex(Math.max(0, index - 1));
@@ -311,7 +293,7 @@ export function WorkoutPlayer({
                 }}
                 disabled={index === 0}
                 aria-label="حرکت قبلی"
-                className="ring-focus flex min-h-11 items-center rounded-lg px-3 py-2 disabled:opacity-40"
+                className="ring-focus flex min-h-11 items-center justify-center rounded-xl border border-border px-2 py-2 disabled:opacity-40"
               >
                 حرکت قبلی
               </button>
@@ -319,13 +301,9 @@ export function WorkoutPlayer({
                 onClick={toggleSound}
                 aria-label={sound ? "قطع صدای تایمر" : "فعال کردن صدای تایمر"}
                 aria-pressed={sound}
-                className="ring-focus flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-muted-foreground"
+                className="ring-focus flex min-h-11 items-center justify-center rounded-xl border border-border px-2 py-2 text-muted-foreground"
               >
-                {sound ? (
-                  <Volume2 className="h-4 w-4" />
-                ) : (
-                  <VolumeX className="h-4 w-4" />
-                )}
+                {sound ? "صدا روشن" : "صدا خاموش"}
               </button>
               <button
                 onClick={() => {
@@ -334,12 +312,12 @@ export function WorkoutPlayer({
                 }}
                 disabled={index >= exercises.length - 1}
                 aria-label="حرکت بعدی"
-                className="ring-focus flex min-h-11 items-center rounded-lg px-3 py-2 disabled:opacity-40"
+                className="ring-focus flex min-h-11 items-center justify-center rounded-xl border border-border px-2 py-2 disabled:opacity-40"
               >
                 حرکت بعدی
               </button>
             </div>
-            <p className="text-center text-[10px] text-muted-foreground" aria-live="polite">
+            <p className="text-center text-xs leading-6 text-muted-foreground" aria-live="polite">
               {sound ? "صدای پایان استراحت روشن است" : "صدای پایان استراحت خاموش است — فقط روی همین دستگاه ذخیره می‌شود"}
             </p>
             {exercise.isCompleted && (
@@ -349,7 +327,6 @@ export function WorkoutPlayer({
                 aria-label="شروع دوباره این حرکت"
                 className="ring-focus mx-auto flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-xs text-muted-foreground"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
                 شروع دوباره این حرکت
               </button>
             )}
