@@ -3,6 +3,8 @@
 <!--timestamp:2026-11-10T09:27:05+03:30-->
 
 # 🎯 هدف جاری
+ادامهٔ ۱۰ نوامبر: کارت «برنامه تمرینی امروز» در داشبورد ورزشکار طبق درخواست کاربر با تم هماهنگ شد؛ اصلاح نمایشی و callbackهای تمرین محفوظ است.
+
 مرور آماده‌سازی انتشار ۱۰ نوامبر تکمیل شد: اصلاحات PWA/دیتابیس/مدیر اولیه/کوئری درآمد و صفحهٔ اصلی مینیمال طبق درخواست جدید کاربر روی codex/deployment-readiness. انتشار عمومی به API واقعی و پروژهٔ Vercel نیاز دارد؛ این نشست deployment/push/merge ندارد.
 
 شاخه و هر سه کامیت به GitHub ارسال شده‌اند و PR #22 باز است: https://github.com/amir-hdri/Lumi-Wellness/pull/22 . این ادامه، شکست CI نصب تمیز را با یکسان‌سازی واردکردن JWT در تست‌ها و تکمیل lockfile بسته‌های بومی برطرف و گراف/شواهد را برای همین اصلاح به‌روز می‌کند.
@@ -14,6 +16,8 @@
 توسعه و نگهداری سامانه مدیریت باشگاه و ورزشکاران (Lumi Wellness) — معماری یکپارچه Monorepo (وب Next.js 16 + بک‌اند FastAPI + بسته‌های اشتراکی Turbo). نام پروژه/ریپو در این سشن به **Lumi-Wellness** تغییر کرد (پوشهٔ محلی، ریپوی گیت‌هاب، نام packageها و نام loggerهای بک‌اند).
 
 ## ✅ کارهای انجام‌شده
+- کارت از پس‌زمینهٔ تیرهٔ ثابت/ارتفاع اجباری/سایهٔ سنگین به TwilightCard با surface/border/text همان تم منتقل شد؛ پیشرفت blush، دکمهٔ متنی و عنوان responsive. TypeScript/ESLint موفق و مرور light/dark در موبایل ۳۹۰ و دسکتاپ ۱۴۴۰ بدون سرریز انجام شد.
+
 - نشست ۱۰ نوامبر: ۲۵۳ تست وب، ۲۱۳ تست بک‌اند + ۴ xfail، ۱۱۲ تست مرورگر mock و ۳۴ تست API واقعی؛ TypeScript/ESLint و بیلد deploy-mode موفق. گزارش docs/DEPLOYMENT_READINESS_2026-11-10.md و runbook همراه تصاویر جدید ثبت شدند.
 - عبارت تبلیغاتی و آیکون دکمه‌های اصلی حذف؛ چیدمان خلوت‌تر، ادعاهای تمدید/مربی اصلاح، اسکرول مخفی با حفظ عملکرد و viewport فیت/scale=1 طبق درخواست کاربر. worker توسعه و نشان‌های ابزار توسعه غیرفعال؛ PWA تولید محفوظ.
 
@@ -56,6 +60,8 @@
   - fixture تست CORS به پیشوند `lumi-wellness` تغییر کرد و README الگوی transitional regex را توضیح می‌دهد
 
 ## 📁 فایل‌های تغییریافته
+- ادامهٔ کارت: apps/web/src/app/athlete/page.tsx، docs/workout-card/{REVIEW.md,تصاویر قبل/بعد} و وضعیت/لاگ. تغییرهای قدیمی .serena و next-env و تصاویر context وارد کامیت نیستند.
+
 - نشست ۱۰ نوامبر: CI/README، guard/config و صفحه/استایل/layout/providers وب، PwaRegister و PortalLayout، sw.js و og-image.png، تست worker/guard و انتظار فرم E2E؛ عملیات readiness و bootstrap مدیر بک‌اند، main/Dockerfile/گزارش درآمد و تست‌های استقرار/بودجهٔ کوئری؛ گزارش/راهنمای استقرار، ExecPlan و تصاویر جدید. فایل‌های قبلی کاربر و declaration تولیدشده خارج از کامیت‌اند.
 
 - اصلاح CI همین PR: backend/tests/{test_backend_fixes,test_security}.py، package-lock.json، وضعیت/لاگ، گزارش و verification UI و خروجی افزایشی Graphify. کد محصول و تصاویر تأییدشده تغییر ندارند.
@@ -89,6 +95,8 @@
 - `.context/SESSION_LOG.md`
 
 ## 🎯 تسک دقیق بعدی
+کارت جدید در پیش‌نمایش محلی برای کاربر باز است. پیش‌نیازهای انتشار عمومی طبق docs/DEPLOYMENT_RUNBOOK.md همچنان باقی‌اند.
+
 برای انتشار واقعی، backend پایدار با HTTPS/SMTP/CORS و دیتابیس mountشده فراهم، migrations و bootstrap_admin اجرا، پروژهٔ lumi-wellness در Vercel با Root=apps/web و دو origin واقعی تنظیم شود. runbook دقیق در docs/DEPLOYMENT_RUNBOOK.md است؛ SHA و CI عمومی این نشست هنوز push نشده‌اند.
 
 اصلاح نصب تمیز و گراف این ادامه را اتمیک ثبت و به PR #22 ارسال کنید؛ اجرای جدید GitHub CI و برابری SHA را کنترل کنید. merge و production هنوز مرحلهٔ مجزای مجازنشده‌اند. نتایج جاری CI از خود PR خوانده می‌شوند.
@@ -102,6 +110,8 @@
 پیشنیاز: دیپلوی شدن بک‌اند روی یک دامنهٔ مشخص (تا origin واقعی معلوم شود)؛ بدون آن `regions` و allow-list دقیق CORS قابل تعیین نیست.
 
 ## 🧠 تصمیمات فنی و چرایی
+- زمینهٔ همواره‌تیرهٔ کارت در تم روشن، رنگ‌های theme-invariant و سایهٔ زیاد باعث ناهماهنگی بودند. reuse کارت مشترک و semantic tokens به‌جای پس‌زمینهٔ ثابت، داده/رفتار فعلی را حفظ و ظاهر را در هر دو تم یکپارچه کرد. آیکون دکمه مطابق ترجیح قبلی کاربر حذف شد.
+
 - worker فقط navigation را خصوصی می‌دانست؛ GETهای RSC/prefetch وارد cache عمومی می‌شدند. منع در همهٔ شاخه‌ها، احترام private/no-store و cache whitelist مشکل را با تست رفتاری رفع کرد.
 - health فقط liveness باقی ماند؛ ready revision واقعی Alembic و اتصال SQL را می‌سنجد و 503 بدون اطلاعات اتصال می‌دهد. bootstrap مستقل از seed و بدون تغییر حساب موجود است.
 - درآمد روزانه/ماهانه به‌جای ۳۰/۶ رفت‌وبرگشت، یک projection محدوده‌دار دارد؛ label/zero/totals/filter با تست حفظ شد.
@@ -137,6 +147,8 @@
 - **نام package ≠ مسیر workspace:** اسکریپت‌ها (`--workspace=apps/web`) مسیر-محور هستند، پس rename نام packageها فقط metadata را عوض می‌کند و turbo/npm scripts را نمی‌شکند.
 
 ## ⚠️ نکات حساس و موانع
+- این ادامه فقط نمایشی است؛ آزمون جدید mirror-style لازم نبود. TypeScript/ESLint و مرور بصری فعلی تأیید شدند؛ انتشار عمومی/مهاجرت تولید انجام نشده و محدودیت Graphify قبلی برقرار است.
+
 - Graphify hosted در ابزارها نیست و MagicPath احراز هویت ندارد؛ فقط سورس جاری/تست‌ها و طراحی موجود استفاده شد. Vercel وصل است ولی پروژهٔ Lumi ندارد؛ API مقصد داده نشد. no deployment/push/merge/production migration.
 - Docker daemon در دسترس نیست؛ build image و runtime عمومی/SMTP/backup سنجیده نشد. limiter حافظه‌ای/SQLite نیاز یک process/replica و storage پایدار دارد. محدودیت‌های گزارش قبلی تا اثبات در زیرساخت مقصد برقرارند.
 

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { toast } from "sonner";
 import {
   Dumbbell,
-  Clock,
   Calendar,
   Trophy,
   TrendingUp,
@@ -14,7 +13,6 @@ import {
   QrCode,
   History,
   Wind,
-  Play,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Progress } from "@/components/ui/Progress";
@@ -27,7 +25,6 @@ import { ReadinessWidget } from "./_components/ReadinessWidget";
 import { SessionDurationChart } from "@/components/analytics/Charts";
 import { PageShell, MicroLabelFa, SectionTitle } from "@/components/twilight/Page";
 import { TwilightCard, RowCard, CtaButton, EmptyState } from "@/components/twilight/controls";
-import { GymBackdrop } from "@/components/twilight/GymBackdrop";
 import { GymWorkoutPlayerModal } from "@/components/twilight/GymWorkoutPlayerModal";
 import { BreathingModal } from "@/components/twilight/BreathingModal";
 
@@ -138,40 +135,36 @@ export default function AthleteDashboard() {
       </div>
 
       {/* Hero: today's program */}
-      <div className="relative cursor-default overflow-hidden rounded-[26px] border border-logo-ink-inverse/10 shadow-2xl">
-        <div className="h-[270px] w-full">
-          <GymBackdrop />
-        </div>
-        <div className="absolute inset-0 z-10 flex flex-col justify-between p-6">
-          <div>
-            <MicroLabelFa className="mb-2 text-cream-fixed">برنامه تمرینی پیشنهادی امروز</MicroLabelFa>
-            <h2 className="max-w-[290px] font-serif text-[26px] font-medium leading-snug tracking-tight text-logo-ink-inverse">
+      <TwilightCard className="rounded-[1.75rem] p-5 sm:p-6">
+        <div className="flex min-w-0 items-start justify-between gap-4">
+          <div className="min-w-0">
+            <MicroLabelFa className="text-muted-foreground">برنامه تمرینی امروز</MicroLabelFa>
+            <h2 className="mt-2 break-words font-serif text-xl font-medium leading-relaxed tracking-tight text-foreground sm:text-2xl">
               {dashboardData?.currentProgram?.name ?? "قدرت و هایپرتروفی بالاتنه"}
             </h2>
-            <p className="mt-2.5 max-w-[290px] text-xs leading-relaxed text-logo-ink-inverse/90">
+            <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground">
               {todayExercises.length > 0
                 ? `${formatPersianNumber(todayExercises.length)} حرکت فعال در برنامه امروز`
                 : "برنامه اضافه بار تدریجی با تمرکز روی حرکات پایه و عضلات میان‌تنه."}
             </p>
           </div>
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-1.5 text-xs font-medium text-logo-ink-inverse">
-              <Clock className="h-3.5 w-3.5 text-cream-fixed" strokeWidth={1.75} aria-hidden />
-              <span>
-                {formatPersianNumber(Math.round(completionPercent))}٪ تکمیل
-              </span>
-            </div>
-            <CtaButton
-              variant="cream"
-              onClick={() => setIsPlayerOpen(true)}
-              className="w-auto shrink-0 px-5"
-            >
-              <Play className="w-3.5 h-3.5 fill-current text-primary-foreground" />
-              <span>اجرای تمرین</span>
-            </CtaButton>
-          </div>
         </div>
-      </div>
+        <div className="mt-5">
+          <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+            <span className="text-muted-foreground">پیشرفت امروز</span>
+            <span className="font-medium tabular-nums text-blush">{formatPersianNumber(Math.round(completionPercent))}٪</span>
+          </div>
+          <Progress value={completionPercent} className="h-1.5" indicatorClassName="bg-none bg-blush-solid" />
+        </div>
+        <div className="mt-5 flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs leading-6 text-muted-foreground">
+            {formatPersianNumber(completedExercises)} از {formatPersianNumber(todayExercises.length)} حرکت تکمیل شده
+          </p>
+          <CtaButton variant="cream" onClick={() => setIsPlayerOpen(true)} className="sm:w-auto sm:min-w-36">
+            اجرای تمرین
+          </CtaButton>
+        </div>
+      </TwilightCard>
 
       {/* Category circles — pastel washes cycling blush / cream / primary with matching ink */}
       <div className="no-scrollbar flex items-center justify-between gap-3 overflow-x-auto py-1">

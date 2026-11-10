@@ -52,3 +52,9 @@
 - **فایل‌های تغییریافته:** `apps/web`, `backend`, `docs`, `execplan`, `.github/workflows/ci.yml`, `README.md`
 - **تسک پیشنهادی بعدی:** Provision the public backend and Lumi Vercel project using docs/DEPLOYMENT_RUNBOOK.md; verify real HTTPS/CORS/SMTP/backups before deployment.
 ---
+
+## [2026-11-10T10:24:15.157330] Agent: codex-workout-card
+- **خلاصه کار:** Aligned today workout card with shared light/dark theme; text-only CTA; TypeScript and ESLint passed; mobile/desktop visual fit verified.
+- **فایل‌های تغییریافته:** `apps/web/src/app/athlete/page.tsx`, `docs/workout-card`, `.context/STATE.md`, `.context/SESSION_LOG.md`
+- **تسک پیشنهادی بعدی:** Review the updated workout card in the local preview; public deployment prerequisites remain in docs/DEPLOYMENT_RUNBOOK.md.
+---
