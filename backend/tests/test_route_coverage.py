@@ -24,6 +24,7 @@ API_CLIENT = REPO_ROOT / "apps" / "web" / "src" / "lib" / "api-client.ts"
 INFRASTRUCTURE = {
     ("GET", "/"),
     ("GET", "/health"),
+    ("GET", "/ready"),
     ("GET", "/docs"),
     ("GET", "/docs/oauth2-redirect"),
     ("GET", "/redoc"),

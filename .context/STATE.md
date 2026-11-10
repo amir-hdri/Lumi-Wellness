@@ -1,8 +1,10 @@
 <!--schema:2.0.0-->
-<!--agent:codex-ui-->
-<!--timestamp:2026-11-06T16:43:54+03:30-->
+<!--agent:codex-release-->
+<!--timestamp:2026-11-10T09:27:05+03:30-->
 
 # 🎯 هدف جاری
+مرور آماده‌سازی انتشار ۱۰ نوامبر تکمیل شد: اصلاحات PWA/دیتابیس/مدیر اولیه/کوئری درآمد و صفحهٔ اصلی مینیمال طبق درخواست جدید کاربر روی codex/deployment-readiness. انتشار عمومی به API واقعی و پروژهٔ Vercel نیاز دارد؛ این نشست deployment/push/merge ندارد.
+
 شاخه و هر سه کامیت به GitHub ارسال شده‌اند و PR #22 باز است: https://github.com/amir-hdri/Lumi-Wellness/pull/22 . این ادامه، شکست CI نصب تمیز را با یکسان‌سازی واردکردن JWT در تست‌ها و تکمیل lockfile بسته‌های بومی برطرف و گراف/شواهد را برای همین اصلاح به‌روز می‌کند.
 
 ارتقای کامل رابط وب طبق طرح تأییدشدهٔ کاربر: اجزای مشترک، خوانایی/RTL/تم‌ها، فرم هدف، اعلان، رسید، ناوبری و فهرست‌ها. پیاده‌سازی در 494314c ثبت شده و آزمون‌ها موفق‌اند؛ این ادامه، بستهٔ شواهد و گراف را برای انتشار شاخه و PR تکمیل می‌کند. مرور بصری نهایی با ۲۱۶ مشاهده و ۱۶ تصویر تکمیل شد؛ کاربر بازسازی گراف محلی، push شاخه و ساخت PR را تأیید کرده است.
@@ -12,6 +14,9 @@
 توسعه و نگهداری سامانه مدیریت باشگاه و ورزشکاران (Lumi Wellness) — معماری یکپارچه Monorepo (وب Next.js 16 + بک‌اند FastAPI + بسته‌های اشتراکی Turbo). نام پروژه/ریپو در این سشن به **Lumi-Wellness** تغییر کرد (پوشهٔ محلی، ریپوی گیت‌هاب، نام packageها و نام loggerهای بک‌اند).
 
 ## ✅ کارهای انجام‌شده
+- نشست ۱۰ نوامبر: ۲۵۳ تست وب، ۲۱۳ تست بک‌اند + ۴ xfail، ۱۱۲ تست مرورگر mock و ۳۴ تست API واقعی؛ TypeScript/ESLint و بیلد deploy-mode موفق. گزارش docs/DEPLOYMENT_READINESS_2026-11-10.md و runbook همراه تصاویر جدید ثبت شدند.
+- عبارت تبلیغاتی و آیکون دکمه‌های اصلی حذف؛ چیدمان خلوت‌تر، ادعاهای تمدید/مربی اصلاح، اسکرول مخفی با حفظ عملکرد و viewport فیت/scale=1 طبق درخواست کاربر. worker توسعه و نشان‌های ابزار توسعه غیرفعال؛ PWA تولید محفوظ.
+
 - PR #22 و تطبیق remote/local SHA برای ddab9f7 تأیید شد. دو آزمون از python-jose قدیمی به PyJWT فعلی منتقل شدند؛ در اجرای بدون jose، ۲۰۳ تست pass و ۴ xfail موفق‌اند. ۹۵ ورودی native و وابستگی اختیاری از متادیتای نسخه‌های دقیق موجود به lock افزوده شدند؛ همهٔ entryهای قبلی بدون تغییرند.
 - بستهٔ بازبینی GitHub: ۵۴ مسیر در ۲ عرض و ۲ تم (۲۱۶ مشاهده)، ۱۶ تصویر، ماتریس‌های مسیر و گزارش نهایی؛ اجرای مجدد بک‌اند ۲۰۳ pass و ۴ xfail مورد انتظار. خروجی گراف محلی در graphify-out با نسخهٔ نهایی فایل‌ها تطبیق می‌یابد و معیار قطعی زمان/هش آن provenance.json است.
 - نشست UI: خواندن سشن قبلی و گزارش‌های Graphify، تطبیق هر ۳۴۸ هش اولیه، طرح تأییدشده و بررسی مستقل. اصلاح شناسه/ARIA، focus/لمس/مرز ورودی، CTA و تصویر hero، تایپوگرافی، safe area/اسکرول modal و Radix، فرم هدف/وضعیت تکمیل/پیش‌نویس نشست، اعلان با صفحه‌کلید، چاپ/رسید متنی، URL و صفحه‌بندی فهرست‌های فعال و مسیر پذیرش.
@@ -51,6 +56,8 @@
   - fixture تست CORS به پیشوند `lumi-wellness` تغییر کرد و README الگوی transitional regex را توضیح می‌دهد
 
 ## 📁 فایل‌های تغییریافته
+- نشست ۱۰ نوامبر: CI/README، guard/config و صفحه/استایل/layout/providers وب، PwaRegister و PortalLayout، sw.js و og-image.png، تست worker/guard و انتظار فرم E2E؛ عملیات readiness و bootstrap مدیر بک‌اند، main/Dockerfile/گزارش درآمد و تست‌های استقرار/بودجهٔ کوئری؛ گزارش/راهنمای استقرار، ExecPlan و تصاویر جدید. فایل‌های قبلی کاربر و declaration تولیدشده خارج از کامیت‌اند.
+
 - اصلاح CI همین PR: backend/tests/{test_backend_fixes,test_security}.py، package-lock.json، وضعیت/لاگ، گزارش و verification UI و خروجی افزایشی Graphify. کد محصول و تصاویر تأییدشده تغییر ندارند.
 - ادامهٔ انتشار: شواهد نهایی docs/ui-audit، گزارش UI و وضعیت/لاگ؛ graph.json، graph.html، GRAPH_REPORT.md، manifest، community-labels، benchmark، cost، graph-health و provenance در graphify-out. cache، sidecar و snapshot محلی وارد Git نمی‌شوند.
 - نشست UI: apps/web/src/app (صفحات مدیر/مربی/ورزشکار و عمومی/فرم‌ها)، components/{ui,layout,twilight,animations}، hooks/use-{url-state,pagination,unsaved-changes}، lib/payment-receipt و mock-service، آزمون‌های UI و e2e، docs/superpowers و docs/UI_UX_AUDIT_2026-11-06.md و docs/ui-audit، DESIGN_SYSTEM و .context.
@@ -82,6 +89,8 @@
 - `.context/SESSION_LOG.md`
 
 ## 🎯 تسک دقیق بعدی
+برای انتشار واقعی، backend پایدار با HTTPS/SMTP/CORS و دیتابیس mountشده فراهم، migrations و bootstrap_admin اجرا، پروژهٔ lumi-wellness در Vercel با Root=apps/web و دو origin واقعی تنظیم شود. runbook دقیق در docs/DEPLOYMENT_RUNBOOK.md است؛ SHA و CI عمومی این نشست هنوز push نشده‌اند.
+
 اصلاح نصب تمیز و گراف این ادامه را اتمیک ثبت و به PR #22 ارسال کنید؛ اجرای جدید GitHub CI و برابری SHA را کنترل کنید. merge و production هنوز مرحلهٔ مجزای مجازنشده‌اند. نتایج جاری CI از خود PR خوانده می‌شوند.
 
 بستهٔ این کامیت برای ارسال شاخهٔ codex/ui-upgrade و PR به main آماده می‌شود. پس از کنترل نهایی گراف و کامیت اتمیک، push بدون force، ساخت PR و تطبیق SHA شاخه انجام می‌شود؛ merge در main مجاز نیست. بعد از اتمام، برای انتشار همان پیش‌نیازهای دامنهٔ API، CORS، Vercel و migration سشن قبل باقی‌اند.
@@ -93,6 +102,11 @@
 پیشنیاز: دیپلوی شدن بک‌اند روی یک دامنهٔ مشخص (تا origin واقعی معلوم شود)؛ بدون آن `regions` و allow-list دقیق CORS قابل تعیین نیست.
 
 ## 🧠 تصمیمات فنی و چرایی
+- worker فقط navigation را خصوصی می‌دانست؛ GETهای RSC/prefetch وارد cache عمومی می‌شدند. منع در همهٔ شاخه‌ها، احترام private/no-store و cache whitelist مشکل را با تست رفتاری رفع کرد.
+- health فقط liveness باقی ماند؛ ready revision واقعی Alembic و اتصال SQL را می‌سنجد و 503 بدون اطلاعات اتصال می‌دهد. bootstrap مستقل از seed و بدون تغییر حساب موجود است.
+- درآمد روزانه/ماهانه به‌جای ۳۰/۶ رفت‌وبرگشت، یک projection محدوده‌دار دارد؛ label/zero/totals/filter با تست حفظ شد.
+- تغییر UI بر اساس درخواست صریح همین نشست است. قفل viewport طبق ترجیح صریح کاربر است؛ تأیید کامل دسترس‌پذیری/دستگاه واقعی ادعا نمی‌شود. نتیجه‌های تصویری با cache توسعهٔ کهنه بازخوانی شدند؛ worker در dev پاک می‌شود تا ویرایش واقعی دیده شود.
+
 - CI محیط تمیز داشت ولی venv محلی jose اضافی داشت؛ واردکردن قدیمی در دو فایل تست جمع‌آوری را متوقف می‌کرد. کتابخانهٔ اعلام‌شده و مصرف‌شدهٔ محصول PyJWT است، بنابراین تست‌ها با همان کتابخانه همسان شدند و خطا با ممنوع‌کردن jose بازتولید/رفع شد.
 - lock موجود فقط bindingهای Mac این پنج بسته را داشت: Rollup، Lightning CSS، Tailwind oxide، esbuild و unrs-resolver. nativeهای همهٔ پلتفرم‌ها و closure لازم از نسخه‌های دقیق parent ساخته شدند؛ افزودن bindingها و integrity بدون تغییر همهٔ entryهای قدیمی، به‌جای ارتقای بی‌دلیل dependency یا دورزدن npm ci انتخاب شد.
 - نشست UI: بازنویسی هدف به دلیل دادهٔ دیررس/ذخیرهٔ ناقص و حذف بی‌عمل بود؛ فرم مشترک و تست رفتاری جایگزین شدند. انتقال وضعیت فقط هنگام تغییر عددی حفظ و metadata وضعیت را بی‌دلیل تغییر نمی‌دهد.
@@ -123,6 +137,9 @@
 - **نام package ≠ مسیر workspace:** اسکریپت‌ها (`--workspace=apps/web`) مسیر-محور هستند، پس rename نام packageها فقط metadata را عوض می‌کند و turbo/npm scripts را نمی‌شکند.
 
 ## ⚠️ نکات حساس و موانع
+- Graphify hosted در ابزارها نیست و MagicPath احراز هویت ندارد؛ فقط سورس جاری/تست‌ها و طراحی موجود استفاده شد. Vercel وصل است ولی پروژهٔ Lumi ندارد؛ API مقصد داده نشد. no deployment/push/merge/production migration.
+- Docker daemon در دسترس نیست؛ build image و runtime عمومی/SMTP/backup سنجیده نشد. limiter حافظه‌ای/SQLite نیاز یک process/replica و storage پایدار دارد. محدودیت‌های گزارش قبلی تا اثبات در زیرساخت مقصد برقرارند.
+
 - اجرای نخست GitHub CI جمع‌آوری بک‌اند و nativeهای Linux وب را ناموفق گزارش کرد؛ این یافته مستقل از آزمون‌های محلی قبلی بود. اصلاحات در همان PR پیگیری می‌شوند؛ وضعیت زندهٔ اجرای جدید از GitHub معتبر است. خطای موقت HTTP 408 در اولین push با تکرار موفق حل شد و خطای registry ECONNRESET در آزمون نصب موقت به شبکه مربوط بود.
 - provenance یک snapshot از working tree با کامیت مبنای 494314c است؛ تصویرهای قدیمی .context و next-env تولیدشده از تغییرهای قبلی می‌توانند در corpus محلی باشند، ولی وارد کامیت این ادامه نمی‌شوند. فهرست استثناهای انتشار در provenance ثبت می‌شود؛ روابط نامحلول و فایل‌های بدون نماد، تأیید مستقل سورس لازم دارند.
 - دامنهٔ انتشار این بسته فقط شاخهٔ GitHub و PR با تأیید کاربر است؛ main به merge نیاز دارد و deployment/migration production انجام نشده است. سنجهٔ Lighthouse قدیمی نتیجهٔ تازه نیست؛ دستگاه واقعی notch/کیبورد و شبکهٔ عمومی سنجیده نشده‌اند. گراف در مرحلهٔ انتشار با درخواست صریح کاربر بازسازی می‌شود و هش/زمان نهایی در provenance ثبت خواهد شد.

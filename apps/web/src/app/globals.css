@@ -189,20 +189,27 @@
     color: var(--color-foreground);
   }
 
-  /* Reference scrollbar: 6px, theme-aware thumb */
+  /* Keep touch/wheel/keyboard scrolling without visible scrollbar furniture. */
+  * {
+    scrollbar-width: none;
+  }
+
+  html {
+    width: 100%;
+    min-height: 100%;
+    scrollbar-gutter: auto;
+  }
+
+  body {
+    width: 100%;
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--color-muted-foreground) 35%, transparent);
-    border-radius: 9999px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in srgb, var(--color-muted-foreground) 55%, transparent);
+    display: none;
+    width: 0;
+    height: 0;
   }
 
   :focus-visible {
@@ -303,7 +310,7 @@ body[data-pwa-banner="visible"] #main {
 }
 
 /* Keep text inputs readable without triggering the mobile Safari focus zoom. */
-@media (max-width: 767px) and (pointer: coarse) {
+@media (max-width: 767px) {
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select {
     font-size: 1rem !important;
   }

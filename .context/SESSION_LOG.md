@@ -46,3 +46,9 @@
 - **انتشار انجام‌شده:** کامیت ddab9f7 همراه دو کامیت قبلی در codex/ui-upgrade ارسال و PR #22 ساخته/به چت متصل شد؛ SHA remote برابر محلی و main همچنان e911fa2 است.
 - **CI و دلیل اصلاح:** محیط تمیز دو import قدیمی jose را نداشت؛ تست‌ها با PyJWT محصول همسان شدند. در آزمون بدون jose، ۲۰۳ pass و ۴ xfail ثبت شد. lock فقط nativeهای Mac چند بسته را داشت؛ ۹۵ binding/وابستگی اختیاری از نسخه‌های دقیق فعلی اضافه و همهٔ entryهای قبلی حفظ شدند. نصب تمیز Linux و اجرای جدید CI شواهد اعتبار این اصلاح‌اند؛ نتایج جاری از PR خوانده می‌شوند.
 - **گراف/اتمام:** اسناد نهایی این ادامه دوباره کامل خوانده می‌شوند و AST تست‌ها، manifest، گزارش/HTML و provenance افزایشی تازه می‌شوند؛ سپس کامیت اتمیک و push به همان PR. merge/production انجام نمی‌شود و تغییرهای اولیه همچنان جدا هستند.
+
+## [2026-11-10T09:27:05.248467] Agent: codex-release
+- **خلاصه کار:** Deployment readiness fixes and minimal responsive landing verified: 253 web, 213 backend plus 4 xfail, 112 mock E2E, 34 real API E2E; production-mode build passes.
+- **فایل‌های تغییریافته:** `apps/web`, `backend`, `docs`, `execplan`, `.github/workflows/ci.yml`, `README.md`
+- **تسک پیشنهادی بعدی:** Provision the public backend and Lumi Vercel project using docs/DEPLOYMENT_RUNBOOK.md; verify real HTTPS/CORS/SMTP/backups before deployment.
+---

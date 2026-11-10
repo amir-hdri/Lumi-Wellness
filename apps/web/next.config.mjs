@@ -62,6 +62,7 @@ const STATIC_ASSET_CACHE = [
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  devIndicators: false,
   distDir: process.env.NEXT_BUILD_DIR || ".next",
   // `standalone` is a self-hosting (Docker) output. Vercel builds its own
   // runtime output, and the extra copy only adds build time.

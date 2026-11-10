@@ -10,7 +10,7 @@ import { RouteTitle } from "@/components/layout/RouteTitle";
 
 // Devtools are dev-only: keep them out of the production chunk graph.
 const ReactQueryDevtools =
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_SHOW_DEVTOOLS !== "true"
     ? () => null
     : lazy(() =>
         import("@tanstack/react-query-devtools").then((m) => ({ default: m.ReactQueryDevtools }))

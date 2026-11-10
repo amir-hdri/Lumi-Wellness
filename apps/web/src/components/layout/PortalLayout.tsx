@@ -21,14 +21,14 @@ export function PortalLayout({ children, navItems, dockItems, dockId }: PortalLa
 
   return (
     <TooltipProvider>
-      <div className="flex min-h-screen overflow-x-hidden bg-background">
+      <div className="flex min-h-dvh overflow-x-hidden bg-background">
         <Sidebar
           items={navItems}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
         <div data-portal-content className="flex min-w-0 flex-1 flex-col lg:ms-[280px]">
-          <div className="relative flex min-h-screen flex-col">
+          <div className="relative flex min-h-dvh flex-col">
             <Header
               onMenuToggle={() => setSidebarOpen((prev) => !prev)}
             />

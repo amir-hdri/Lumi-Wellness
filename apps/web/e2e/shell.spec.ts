@@ -63,6 +63,7 @@ test.describe("document shell", () => {
 
   test("keeps primary form controls at a thumb-friendly size", async ({ page }) => {
     await page.goto("/auth/login");
+    await expect(page.locator('button[type="submit"]')).toBeVisible();
 
     // 44px is the WCAG 2.2 target-size floor and the project's stated minimum.
     // Scoped to submit buttons and text inputs: icon affordances inside a field

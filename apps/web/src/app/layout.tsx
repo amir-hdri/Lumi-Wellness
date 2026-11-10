@@ -56,13 +56,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fa_IR",
-    url: "https://gymapp.ir",
+    url: "/",
     siteName: "Lumi Wellness",
     title: "Lumi Wellness | مدیریت هوشمند باشگاه ورزشی",
     description: "پلتفرم جامع مدیریت باشگاه، مربیان و ورزشکاران",
     images: [
       {
-        url: "/og-image.svg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Lumi Wellness - مدیریت باشگاه ورزشی",
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lumi Wellness | مدیریت هوشمند باشگاه ورزشی",
     description: "پلتفرم جامع مدیریت باشگاه، مربیان و ورزشکاران",
-    images: ["/og-image.svg"],
+    images: ["/og-image.png"],
   },
   icons: {
     icon: [
@@ -99,7 +99,9 @@ export const viewport: Viewport = {
   ],
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

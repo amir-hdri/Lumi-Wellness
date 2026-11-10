@@ -36,7 +36,7 @@ infrastructure, not product naming, and changing them means a DNS/mail cutover.
 - **Models:** User, Branch, MembershipPlan, Membership, Exercise,
   TrainingProgram, ProgramExercise, Goal, CheckIn, Payment, Notification,
   Conversation, Message
-- **Auth:** JWT access/refresh tokens (python-jose), bcrypt hashing,
+- **Auth:** JWT access/refresh tokens (PyJWT), bcrypt hashing,
   `require_roles()` dependency; staff-only QR check-in; ownership checks on
   dashboards
 - **Routers:** auth, users, branches, membership-plans, memberships, exercises,
@@ -107,7 +107,7 @@ app logs a warning when it falls back to them.
 
 ```bash
 npm install
-npm run dev          # starts apps/web via turbo
+npm run dev          # starts the apps/web workspace
 ```
 
 Set `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:8000`) in
@@ -192,9 +192,11 @@ Production *and* Preview):
 
 `NEXT_PUBLIC_*` values are inlined into the bundle at build time, so changing
 one requires a rebuild. The build fails on purpose when `NEXT_PUBLIC_USE_MOCKS`
-is `true`, or when `NEXT_PUBLIC_API_URL` is missing, is not an HTTPS origin, or points at loopback. Credentials, paths (including `/api/v1`), queries, fragments and surrounding whitespace are rejected
+is `true`, or when `NEXT_PUBLIC_API_URL` or `NEXT_PUBLIC_APP_URL` is missing, is not an HTTPS origin, or points at loopback. Credentials, paths (including `/api/v1`), queries, fragments and surrounding whitespace are rejected
 (`apps/web/config/deploy-env.mjs`) — a mock or localhost build must never
-reach production.
+reach production. Share metadata uses that frontend origin and a PNG image.
+
+Before first production startup, follow [the deployment runbook](docs/DEPLOYMENT_RUNBOOK.md): migrate a persistent database, create a real administrator with `python -m app.bootstrap_admin`, and verify `/ready`. `/health` checks process liveness; `/ready` checks database connectivity and the current migration revision. Demo seeds never run in production. The current backend rate limiter is process-local, so this release supports one backend process/replica with persistent SQLite storage; horizontal scaling needs a shared limiter and separately verified database migration.
 
 The API is a separate project and has to allow the frontend origins:
 `CORS_ORIGINS=https://gymapp.ir,https://www.gymapp.ir`. Preview deployments get

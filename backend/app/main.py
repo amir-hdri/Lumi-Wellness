@@ -26,6 +26,7 @@ from app.routers import (
     users,
 )
 from app.seed import seed_database
+from app.operations import check_database
 
 
 @asynccontextmanager
@@ -100,6 +101,24 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/health")
 def health():
     return success_response(data={"status": "ok", "version": "1.0.0"}, message="healthy")
+
+
+@app.get("/ready")
+def ready():
+    try:
+        with engine.connect() as connection:
+            available = check_database(connection, require_migrations=settings.is_production)
+    except Exception:
+        available = False
+    if not available:
+        return JSONResponse(
+            status_code=503, headers={"Cache-Control": "no-store"},
+            content={"success": False, "error": "Database is not ready", "statusCode": 503},
+        )
+    return JSONResponse(
+        headers={"Cache-Control": "no-store"},
+        content=success_response(data={"status": "ready"}, message="ready"),
+    )
 
 
 @app.get("/")

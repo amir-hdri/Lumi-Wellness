@@ -5,6 +5,7 @@ const deployBuild = {
   VERCEL: "1",
   NEXT_PUBLIC_API_URL: "https://api.gymapp.ir",
   NEXT_PUBLIC_USE_MOCKS: "false",
+  NEXT_PUBLIC_APP_URL: "https://lumi.example.com",
 };
 
 describe("assertDeployEnv", () => {
@@ -48,6 +49,18 @@ describe("assertDeployEnv", () => {
       })
     ).not.toThrow();
   });
+
+  it("requires the real frontend origin in a deployment build", () => {
+    expect(() => assertDeployEnv({ ...deployBuild, NEXT_PUBLIC_APP_URL: undefined }))
+      .toThrow(/NEXT_PUBLIC_APP_URL/);
+  });
+
+  it.each(["http://localhost:3000", "https://example.com/path", " https://example.com "])(
+    "rejects invalid deployment metadata origins: %s", (url) => {
+      expect(() => assertDeployEnv({ ...deployBuild, NEXT_PUBLIC_APP_URL: url }))
+        .toThrow(/NEXT_PUBLIC_APP_URL/);
+    },
+  );
 
   it.each([
     "not-a-url", "ftp://api.example.com", "http://api.example.com",

@@ -11,6 +11,24 @@ export function PwaRegister() {
   const [showInstall, setShowInstall] = useState(false);
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== "production") {
+      // A worker from a previous local production preview can keep serving
+      // stale dev chunks/styles after hot reload. Development needs the network.
+      if ("serviceWorker" in navigator) {
+        void navigator.serviceWorker.getRegistration("/").then(async (registration) => {
+          const script = registration?.active?.scriptURL;
+          if (script === new URL("/sw.js", window.location.origin).href) {
+            await registration?.unregister();
+            if ("caches" in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.filter(key => key.startsWith("lumi-shell-")).map(key => caches.delete(key)));
+            }
+          }
+        }).catch(() => {});
+      }
+      return;
+    }
+
     const onBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);

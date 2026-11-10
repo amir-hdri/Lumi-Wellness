@@ -1,5 +1,5 @@
 /* Lumi Wellness service worker — offline shell, network-first navigation */
-const VERSION = "v3";
+const VERSION = "v4";
 const CACHE = `lumi-shell-${VERSION}`;
 const OFFLINE_URL = "/offline";
 const PRECACHE = [
@@ -15,7 +15,7 @@ const PRECACHE = [
 /* Portal routes render per-account data. Never cache them: on a shared device
    the cached shell would be served to the next person, and offline they should
    get the offline page rather than a stale dashboard. */
-const PRIVATE_PREFIXES = ["/athlete", "/coach", "/admin"];
+const PRIVATE_PREFIXES = ["/athlete", "/coach", "/admin", "/auth"];
 
 function isPrivate(url) {
   return PRIVATE_PREFIXES.some((prefix) => url.pathname === prefix || url.pathname.startsWith(`${prefix}/`));
@@ -38,7 +38,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(keys.filter((key) => key.startsWith("lumi-shell-") && key !== CACHE).map((key) => caches.delete(key))))
       .then(() => self.clients.claim())
       .then(() => self.clients.matchAll({ type: "window" }))
       .then((clients) => {
@@ -48,7 +48,7 @@ self.addEventListener("activate", (event) => {
 });
 
 function isApiRequest(url) {
-  return url.pathname.startsWith("/api/") || url.pathname.startsWith("/v1/");
+  return url.pathname === "/api" || url.pathname.startsWith("/api/") || url.pathname === "/v1" || url.pathname.startsWith("/v1/");
 }
 
 function isNavigate(request) {
@@ -57,7 +57,10 @@ function isNavigate(request) {
 
 /** Only store real, same-origin success responses. */
 function isCacheable(response) {
-  return Boolean(response) && response.ok && response.type === "basic";
+  const policy = response?.headers.get("cache-control") || "";
+  return Boolean(response) && response.ok && response.type === "basic" &&
+    !/\b(no-store|private)\b/i.test(policy) &&
+    !response.headers.get("content-type")?.includes("text/x-component");
 }
 
 self.addEventListener("fetch", (event) => {
@@ -67,6 +70,11 @@ self.addEventListener("fetch", (event) => {
   // Only handle same-origin GET. Cross-origin (including the API on its own
   // host) falls through to the network untouched.
   if (request.method !== "GET" || url.origin !== location.origin) return;
+
+  // Next's client navigation/prefetch uses ordinary GETs, not navigations.
+  // Keep account pages, reset links and RSC payloads out of every cache branch.
+  if (request.headers.has("authorization") || request.headers.get("RSC") === "1" ||
+      url.searchParams.has("_rsc") || (isPrivate(url) && !isNavigate(request))) return;
 
   // Same-origin API (reverse-proxied deployments): network-only.
   if (isApiRequest(url)) {
@@ -105,6 +113,12 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
+
+  // Cache only public static assets, never arbitrary same-origin data reads.
+  if (!url.pathname.startsWith("/_next/static/") &&
+      !url.pathname.startsWith("/_next/image") &&
+      !PRECACHE.includes(url.pathname) &&
+      !/\.(png|jpg|jpeg|webp|avif|svg|ico|woff2?|ttf)$/i.test(url.pathname)) return;
 
   // Static assets: stale-while-revalidate.
   event.respondWith(

@@ -18,7 +18,14 @@ jobs:
       - run: npm run type-check --workspace=apps/web
       - run: npm run lint --workspace=apps/web
       - run: npm run test --workspace=apps/web
-      - run: npm run build --workspace=apps/web
+      - name: Build with deployment guards and real API mode
+        run: npm run build --workspace=apps/web
+        env:
+          VERCEL: "1"
+          NEXT_PUBLIC_USE_MOCKS: "false"
+          # Validation-only origins; CI does not publish this artifact.
+          NEXT_PUBLIC_API_URL: https://api.example.com
+          NEXT_PUBLIC_APP_URL: https://lumi.example.com
 
   e2e:
     runs-on: ubuntu-latest

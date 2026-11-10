@@ -6,10 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { CtaButton } from "@/components/twilight/CtaButton";
 import { GymBackdrop } from "@/components/twilight/GymBackdrop";
-import { MicroLabel } from "@/components/twilight/Type";
 import { LumiWordmark } from "@/components/auth/AuthLayout";
-import { Activity, Users, MessageCircle, Calendar, Heart, Sparkles, ChevronDown, ArrowLeft, Star, CheckCircle2 } from "lucide-react";
-import { Reveal } from "@/components/animations/ScrollReveal";
+import { CheckCircle2 } from "lucide-react";
 
 function LandingNavigation() {
   return (
@@ -39,67 +37,21 @@ function LandingNavigation() {
 
 function FeaturesSection() {
   const features = [
-    {
-      icon: Activity,
-      title: "برنامه تمرینی هوشمند",
-      desc: "برنامه‌های تمرینی شخصی‌سازی شده متناسب با هدف شما",
-    },
-    {
-      icon: Heart,
-      title: "پیگیری سلامت",
-      desc: "مانیتورینگ عملکرد، وزن و پیشرفت روزانه",
-    },
-    {
-      icon: Users,
-      title: "مربی اختصاصی",
-      desc: "ارتباط مستقیم با مربیان متخصص و با تجربه",
-    },
-    {
-      icon: Calendar,
-      title: "مدیریت اشتراک",
-      desc: "تمدید خودکار، یادآوری و گزارش هزینه‌ها",
-    },
-    {
-      icon: MessageCircle,
-      title: "چت و اعلانات",
-      desc: "ارتباط سریع با باشگاه و دریافت اخبار و تخفیف‌ها",
-    },
-    {
-      icon: Sparkles,
-      title: "محیط زنانه اختصاصی",
-      desc: "فضای اختصاصی و حرفه‌ای ویژه بانوان عزیز",
-    },
+    { title: "برنامه تمرینی شخصی", desc: "تمرین‌های هر روز و هدف‌های قابل پیگیری، در یک برنامه روشن." },
+    { title: "ارتباط با مربی", desc: "برنامه‌ات را با مربی مرور کن و بازخورد تمرین را همان‌جا دریافت کن." },
+    { title: "مدیریت عضویت", desc: "وضعیت عضویت، حضور و پرداخت‌ها را ببین و درخواست تمدید ثبت کن." },
   ];
 
   return (
-    <section id="experience" className="cv-below-fold relative px-4 py-20">
-      <div className="mx-auto max-w-6xl">
-        <Reveal direction="none" className="mb-14 text-center">
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-blush/30 bg-blush/10 px-4 py-1.5 text-sm font-medium text-blush">
-            <Sparkles className="h-4 w-4" strokeWidth={1.75} />
-            تجربه‌ای ساخته‌شده برای تمرین
-          </span>
-          <h2 className="mt-2 font-serif text-3xl font-normal text-foreground md:text-4xl">
-            از برنامه تا پیشرفت، کنار تو
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted-foreground">
-            هر روز دقیقاً بدان چه تمرینی داری، مربی چه بازخوردی داده و چقدر به هدفت نزدیک شده‌ای.
-          </p>
-        </Reveal>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, i) => (
-            <Reveal key={f.title} delay={i * 0.08}>
-              <div className="group h-full rounded-2xl border border-border bg-card p-5 transition-[color,background-color,border-color,opacity,transform] duration-300 hover:-translate-y-1 hover:border-border">
-                <div className={i % 2 === 0
-                  ? "mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-blush/30 bg-blush/10 text-blush"
-                  : "mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-cream/40 bg-cream/20 text-primary"}>
-                  <f.icon className="h-[22px] w-[22px]" strokeWidth={1.75} />
-                </div>
-                <h3 className="mb-1.5 text-[15px] font-semibold tracking-tight text-foreground">{f.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-              </div>
-            </Reveal>
+    <section id="experience" className="cv-below-fold scroll-mt-28 border-t border-border px-5 py-14 sm:py-20">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="font-serif text-2xl font-normal text-foreground sm:text-3xl">از برنامه تا پیشرفت</h2>
+        <div className="mt-8 grid gap-8 md:grid-cols-3 md:gap-10">
+          {features.map((feature) => (
+            <div key={feature.title}>
+              <h3 className="text-base font-semibold text-foreground">{feature.title}</h3>
+              <p className="mt-3 max-w-sm text-sm leading-7 text-muted-foreground">{feature.desc}</p>
+            </div>
           ))}
         </div>
       </div>
@@ -109,86 +61,30 @@ function FeaturesSection() {
 
 function WeeklyExperienceSection() {
   const sessions = [
-    { day: "شنبه", title: "قدرت پایین‌تنه", meta: "45 دقیقه · مربی مهسا", active: true },
-    { day: "دوشنبه", title: "پیلاتس و تعادل", meta: "35 دقیقه · استودیو 2" },
-    { day: "چهارشنبه", title: "هوازی ریتمیک", meta: "40 دقیقه · گروه بانوان" },
+    { day: "شنبه", title: "قدرت پایین‌تنه", duration: "۴۵ دقیقه" },
+    { day: "دوشنبه", title: "پیلاتس و تعادل", duration: "۳۵ دقیقه" },
+    { day: "چهارشنبه", title: "هوازی", duration: "۴۰ دقیقه" },
   ];
   return (
-    <section id="schedule" className="cv-below-fold px-4 py-20">
-      <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[.9fr_1.1fr]">
-        <div className="rounded-[26px] border border-border bg-card p-6 text-foreground sm:p-8">
-          <p className="text-xs font-medium text-primary">برنامه همین هفته</p>
-          <h2 className="mt-3 font-serif text-[22px] font-normal leading-tight md:text-2xl">تمرین‌هایی که با زندگی تو هماهنگ‌اند.</h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">برنامه را ببین، حضور را ثبت کن و بازخورد مربی را همان‌جا دریافت کن.</p>
-          <div className="mt-7 space-y-3">
+    <section id="schedule" className="cv-below-fold scroll-mt-28 px-5 pb-16 sm:pb-24">
+      <div className="mx-auto grid max-w-5xl gap-8 border-t border-border pt-12 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <p className="text-xs font-medium text-muted-foreground">نمونهٔ برنامه هفتگی</p>
+          <h2 className="mt-3 font-serif text-2xl font-normal text-foreground">هر روز، یک قدم مشخص</h2>
+          <div className="mt-6 divide-y divide-border">
             {sessions.map((session) => (
-              <div key={session.day} className={`flex items-center gap-4 rounded-xl border p-4 ${session.active ? "border-blush/30 bg-blush/10" : "border-border bg-card"}`}>
-                <div className="w-14 text-xs font-bold text-foreground">{session.day}</div>
-                <div className="h-9 w-px bg-border" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-foreground">{session.title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground" dir="rtl">{session.meta}</p>
-                </div>
-                <CheckCircle2 className={`h-5 w-5 ${session.active ? "text-blush" : "text-muted-foreground"}`} strokeWidth={1.75} />
+              <div key={session.day} className="flex items-center gap-3 py-4 text-sm">
+                <span className="w-16 shrink-0 text-muted-foreground">{session.day}</span>
+                <span className="flex-1 font-medium text-foreground">{session.title}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">{session.duration}</span>
               </div>
             ))}
           </div>
         </div>
-        <div id="coaches" className="rounded-[26px] border border-border bg-card p-6 sm:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium text-primary">مربی همراه، نه فقط برنامه</p>
-              <h2 className="mt-3 font-serif text-[22px] font-normal text-foreground md:text-2xl">مهسا احمدی</h2>
-              <p className="mt-1 text-sm text-muted-foreground">مربی قدرت و تناسب اندام بانوان</p>
-            </div>
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-gradient-to-br from-secondary to-card">
-              <span className="font-serif text-sm text-primary">م‌ا</span>
-            </div>
-          </div>
-          <blockquote className="mt-6 rounded-xl border border-border bg-card p-4 text-sm leading-7 text-muted-foreground">
-            «هر برنامه بر اساس توان امروز تو نوشته می‌شود، نه یک نسخه آماده برای همه.»
-          </blockquote>
-          <div className="mt-6 grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-xl bg-card p-3"><p className="text-sm font-bold text-foreground">+8 سال</p><p className="mt-1 text-xs text-muted-foreground">تجربه</p></div>
-            <div className="rounded-xl bg-card p-3"><p className="text-sm font-bold text-foreground">+120</p><p className="mt-1 text-xs text-muted-foreground">ورزشکار</p></div>
-            <div className="rounded-xl bg-card p-3"><p className="flex items-center justify-center gap-1 text-sm font-bold text-foreground">4.9 <Star className="h-4 w-4 fill-primary text-primary" /></p><p className="mt-1 text-xs text-muted-foreground">رضایت</p></div>
-          </div>
-          <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm">
-            <MessageCircle className="h-5 w-5 text-primary" strokeWidth={1.75} />
-            <span className="flex-1 text-sm text-muted-foreground">میانگین پاسخ‌گویی مربی کمتر از 2 ساعت</span>
-            <ArrowLeft className="h-4 w-4 text-primary" strokeWidth={1.75} />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StatsSection() {
-  const stats = [
-    { icon: Users, value: "مربی همراه", label: "برای مسیر تمرین تو" },
-    { icon: Activity, value: "برنامه شخصی", label: "متناسب با توان امروزت" },
-    { icon: Heart, value: "پیشرفت روشن", label: "با هدف‌های قابل پیگیری" },
-    { icon: Sparkles, value: "تمرین منظم", label: "با ثبت فعالیت و حضور" },
-  ];
-
-  return (
-    <section className="cv-below-fold relative px-4 py-16">
-      <div className="mx-auto max-w-5xl">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {stats.map((stat, i) => (
-            <Reveal key={stat.label} delay={i * 0.08}>
-              <div className="flex flex-col items-center justify-between rounded-2xl border border-border bg-card p-4 text-center">
-                <div className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-cream/40 bg-cream/20">
-                  <stat.icon className="h-5 w-5 text-primary" strokeWidth={1.75} />
-                </div>
-                <div className="font-sans text-base font-medium leading-7 text-foreground md:text-lg">
-                  {stat.value}
-                </div>
-                <p className="mt-1 text-xs font-medium leading-6 text-muted-foreground">{stat.label}</p>
-              </div>
-            </Reveal>
-          ))}
+        <div id="coaches" className="scroll-mt-28 lg:pt-7">
+          <h2 className="font-serif text-2xl font-normal text-foreground">مربی همراه مسیر تو</h2>
+          <p className="mt-4 max-w-md text-sm leading-8 text-muted-foreground">برنامهٔ واقعی تو را مربی بر اساس هدف و توانت تنظیم می‌کند. تمرین‌ها، پیام‌ها و پیشرفتت در حساب شخصی‌ات کنار هم قرار می‌گیرند.</p>
+          <Link href="/auth/register" className="ring-focus mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline">ساخت حساب ورزشکار</Link>
         </div>
       </div>
     </section>
@@ -197,81 +93,18 @@ function StatsSection() {
 
 function HeroSection() {
   return (
-    <section id="top" className="relative flex min-h-[92svh] items-center px-4 py-16 lg:py-28">
+    <section id="top" className="relative flex min-h-[68svh] items-center px-5 py-16 sm:py-20">
       <GymBackdrop className="absolute inset-0" />
-
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr] lg:gap-14">
-        <div className="text-right">
-          {/*
-           * Above-fold hero content paints statically (no entrance Reveal):
-           * the H1/CTA row is the LCP element and every millisecond of
-           * animation delay lands directly on the score.
-           */}
-          <p className="mb-6 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-blush-fixed/30 bg-blush-fixed/10 px-4 py-1.5 text-xs font-medium text-blush-fixed sm:text-sm">
-            <Sparkles className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
-            بهترین پلتفرم مدیریت باشگاه بانوان
-          </p>
-
-          <h1 className="mb-5 font-serif text-[2.1rem] font-medium leading-[1.5] tracking-tight text-logo-ink-inverse sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="block">حرکت، قدرت،</span>
-            <span className="block text-blush-fixed">نسخه بهتر تو</span>
-          </h1>
-
-          <p className="mb-8 max-w-xl text-[15px] leading-8 text-logo-ink-inverse/85 md:text-lg">
-            Lumi Wellness، باشگاه دیجیتال اختصاصی بانوان برای برنامه تمرینی شخصی، ارتباط مستقیم با مربی و دیدن پیشرفت واقعی در هر روز.
-          </p>
-
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-start">
-            <CtaButton asChild className="w-full sm:w-auto sm:min-w-40"><Link href="/auth/login">
-              <Heart className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-              ورود اعضا
-            </Link></CtaButton>
-            <CtaButton asChild variant="orange" className="w-full sm:w-auto sm:min-w-40"><Link href="/auth/register">
-              <Sparkles className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-              ثبت‌نام ورزشکار
-            </Link></CtaButton>
-          </div>
+      <div className="relative z-10 mx-auto w-full max-w-3xl text-center">
+        <h1 className="font-serif text-[2.25rem] font-medium leading-[1.5] tracking-tight text-logo-ink-inverse sm:text-5xl lg:text-6xl">
+          <span className="block">حرکت، قدرت،</span>
+          <span className="block text-blush-fixed">نسخه بهتر تو</span>
+        </h1>
+        <p className="mx-auto mt-6 max-w-lg text-sm leading-8 text-logo-ink-inverse/85 sm:text-base">برنامه تمرینی شخصی، ارتباط با مربی و پیگیری پیشرفت؛ همه در <span dir="ltr" className="inline-block whitespace-nowrap">Lumi Wellness</span>.</p>
+        <div className="mx-auto mt-8 flex max-w-sm flex-col gap-3 sm:flex-row sm:justify-center">
+          <CtaButton asChild className="sm:w-auto sm:min-w-40"><Link href="/auth/register">ثبت‌نام ورزشکار</Link></CtaButton>
+          <CtaButton asChild variant="outline" className="border-logo-ink-inverse/30 bg-transparent text-logo-ink-inverse shadow-none hover:bg-logo-ink-inverse/10 sm:w-auto sm:min-w-40"><Link href="/auth/login">ورود اعضا</Link></CtaButton>
         </div>
-
-        <div className="relative mx-auto w-full max-w-[30rem]">
-          {/* Soft blush radial glow behind the dark-signature hero card (both themes) */}
-          <div aria-hidden="true" className="pointer-events-none absolute -inset-10 rounded-full bg-blush-fixed/15 blur-3xl" />
-          {/* Reference hero card: GymBackdrop + content overlay */}
-          <div className="relative overflow-hidden rounded-[26px] border border-logo-ink-inverse/10 shadow-2xl shadow-scrim/50">
-            <div className="h-[380px] w-full">
-              <GymBackdrop />
-            </div>
-            <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-8">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cream-fixed">
-                  نمونهٔ پیشرفت روزانه
-                </p>
-                <p className="mt-2 font-serif text-4xl font-medium text-logo-ink-inverse" dir="ltr">۷۸٪</p>
-                <p className="mt-1 text-xs text-logo-ink-inverse/70">فعالیت روزانه تکمیل شده</p>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  ["حرکت", "380 کالری"],
-                  ["تمرین", "42 دقیقه"],
-                  ["تداوم", "5 روز"],
-                ].map(([label, value]) => (
-                  <div key={label} className="rounded-2xl border border-logo-ink-inverse/10 bg-scrim/30 p-3 backdrop-blur-sm">
-                    <span className="mb-2 block h-1.5 w-6 rounded-full bg-primary" />
-                    <p className="text-xs text-logo-ink-inverse/70">{label}</p>
-                    <p className="mt-1 text-xs font-bold text-logo-ink-inverse">{value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="absolute -bottom-6 -right-4 rounded-2xl border border-border bg-card px-4 py-3 text-right shadow-2xl shadow-scrim/50">
-            <p className="text-xs text-muted-foreground">همراه با مربی</p>
-            <p className="mt-1 text-xs font-bold text-foreground">برنامه اختصاصی تو</p>
-          </div>
-        </div>
-      </div>
-      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce">
-        <ChevronDown className="h-6 w-6 text-muted-foreground/40" strokeWidth={1.75} />
       </div>
     </section>
   );
@@ -325,7 +158,6 @@ export default function HomePage() {
     <main id="main" className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <LandingNavigation />
       <HeroSection />
-      <StatsSection />
       <FeaturesSection />
       <WeeklyExperienceSection />
 
@@ -340,13 +172,9 @@ export default function HomePage() {
               <p className="mt-3 max-w-[28ch] text-sm leading-7 text-muted-foreground">
                 پلتفرم مدیریت هوشمند باشگاه بانوان — برنامه تمرینی، حضور و پیشرفت در یک وب‌اپ سریع.
               </p>
-              <div className="mt-4 flex items-center gap-2">
-                <a href="https://instagram.com/gymapp.ir" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام" className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
-                </a>
-                <a href="https://t.me/gymapp_ir" target="_blank" rel="noopener noreferrer" aria-label="تلگرام" className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 5 4 12l5 2 8-7-5 8 2 4 3-13z"/></svg>
-                </a>
+              <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                <a href="https://instagram.com/gymapp.ir" target="_blank" rel="noopener noreferrer" className="ring-focus inline-flex min-h-11 items-center hover:text-foreground">اینستاگرام</a>
+                <a href="https://t.me/gymapp_ir" target="_blank" rel="noopener noreferrer" className="ring-focus inline-flex min-h-11 items-center hover:text-foreground">تلگرام</a>
               </div>
             </div>
             <div>
@@ -370,13 +198,12 @@ export default function HomePage() {
               <h3 className="text-sm font-semibold text-foreground">دسترسی سریع</h3>
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/auth/login" className="hover:text-foreground">ورود اعضا</Link></li>
-                <li><span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-primary">● وب‌اپ نصب‌پذیر (PWA)</span></li>
+                <li><span className="text-xs">وب‌اپ نصب‌پذیر</span></li>
               </ul>
             </div>
           </div>
           <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row">
-            <p>© 1404 Lumi Wellness — تمامی حقوق محفوظ است</p>
-            <MicroLabel>BUILT FOR MOBILE · v1.0</MicroLabel>
+            <p>© Lumi Wellness — تمامی حقوق محفوظ است</p>
           </div>
         </div>
       </footer>

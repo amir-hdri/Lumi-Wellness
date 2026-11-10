@@ -23,7 +23,12 @@ export function assertDeployEnv(
     );
   }
 
-  const apiUrl = env.NEXT_PUBLIC_API_URL || "";
+  assertPublicOrigin("NEXT_PUBLIC_API_URL", env.NEXT_PUBLIC_API_URL);
+  assertPublicOrigin("NEXT_PUBLIC_APP_URL", env.NEXT_PUBLIC_APP_URL);
+}
+
+function assertPublicOrigin(name, value) {
+  const apiUrl = value || "";
   let parsed;
   try {
     parsed = new URL(apiUrl);
@@ -33,11 +38,11 @@ export function assertDeployEnv(
   const host = parsed?.hostname.replace(/\.$/, "").toLowerCase();
   if (!parsed || apiUrl !== apiUrl.trim() || parsed.protocol !== "https:" ||
       host === "localhost" || host?.endsWith(".localhost") ||
-      host === "[::1]" || host?.startsWith("127.") ||
+      host === "[::1]" || host === "[::]" || host === "0.0.0.0" || host?.startsWith("127.") ||
       parsed.username || parsed.password || parsed.search || parsed.hash ||
       parsed.pathname !== "/") {
     throw new Error(
-      "NEXT_PUBLIC_API_URL must be the deployed HTTPS API origin, without credentials, a path, query, fragment, or surrounding whitespace (set it in Vercel or pass --build-arg NEXT_PUBLIC_API_URL=... to Docker).",
+      `${name} must be the deployed HTTPS origin, without credentials, a path, query, fragment, or surrounding whitespace (set it in Vercel or pass it as a Docker build argument).`,
     );
   }
 }

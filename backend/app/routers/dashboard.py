@@ -148,43 +148,33 @@ def revenue_data(
     current_user: User = Depends(require_roles("admin", "coach", "receptionist")),
 ):
     today = _utcnow_naive().replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    values = []
-
     if period == "daily":
-        for i in range(30):
-            day = today - timedelta(days=29 - i)
-            labels.append(day.strftime("%Y-%m-%d"))
-            total = (
-                db.query(func.coalesce(func.sum(Payment.amount), 0))
-                .filter(
-                    Payment.status == "completed",
-                    func.date(Payment.created_at) == day.date(),
-                )
-                .scalar()
-            )
-            values.append(float(total))
+        buckets = [today - timedelta(days=29 - i) for i in range(30)]
+        labels = [day.strftime("%Y-%m-%d") for day in buckets]
+        window_end = today + timedelta(days=1)
+        label_format = "%Y-%m-%d"
     else:
-        for i in range(months):
-            first = _shift_months(today.replace(day=1), -(months - 1 - i))
-            labels.append(first.strftime("%Y-%m"))
-            first_of_month = first.replace(day=1)
-            if first_of_month.month == 12:
-                next_month = first_of_month.replace(year=first_of_month.year + 1, month=1)
-            else:
-                next_month = first_of_month.replace(month=first_of_month.month + 1)
-            total = (
-                db.query(func.coalesce(func.sum(Payment.amount), 0))
-                .filter(
-                    Payment.status == "completed",
-                    Payment.created_at >= first_of_month,
-                    Payment.created_at < next_month,
-                )
-                .scalar()
-            )
-            values.append(float(total))
+        buckets = [_shift_months(today.replace(day=1), -(months - 1 - i)) for i in range(months)]
+        labels = [month.strftime("%Y-%m") for month in buckets]
+        window_end = _shift_months(today.replace(day=1), 1)
+        label_format = "%Y-%m"
 
-    return success_response(data={"labels": labels, "values": values})
+    # One range-bounded read, rather than one round trip per chart bucket.
+    # Project scalar columns to avoid loading payment/user relationship graphs.
+    rows = (
+        db.query(Payment.created_at, Payment.amount)
+        .filter(
+            Payment.status == "completed",
+            Payment.created_at >= buckets[0],
+            Payment.created_at < window_end,
+        )
+        .all()
+    )
+    totals = dict.fromkeys(labels, 0.0)
+    for created_at, amount in rows:
+        label = created_at.strftime(label_format)
+        totals[label] += float(amount or 0)
+    return success_response(data={"labels": labels, "values": [totals[label] for label in labels]})
 
 
 @router.get("/athlete/{athlete_id}")
