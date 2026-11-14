@@ -1,0 +1,53 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lumi_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=b8f37a6b29d4e5f18c0a3e7d9b2c4e6a8f1b3d5e7c9a2f4b6d8e0a1c3e5f7a9b
+      - ENVIRONMENT=production
+      - SEED_DEMO_DATA=false
+      - CORS_ORIGINS=http://87.107.109.185:3000,http://localhost:3000,http://vm6489-13390.vpsmarket.org:3000
+      - DATABASE_URL=sqlite:///./gymapp.db
+    volumes:
+      - ./backend/gymapp.db:/srv/backend/gymapp.db
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - lumi_net
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://87.107.109.185:8000
+        NEXT_PUBLIC_APP_URL: http://87.107.109.185:3000
+        NEXT_PUBLIC_USE_MOCKS: "false"
+        ALLOW_HTTP_DEPLOY: "true"
+    container_name: lumi_web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - ALLOW_HTTP_DEPLOY=true
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    depends_on:
+      - backend
+    networks:
+      - lumi_net
+
+networks:
+  lumi_net:
+    driver: bridge

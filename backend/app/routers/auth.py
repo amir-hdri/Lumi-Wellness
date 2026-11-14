@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.auth import (
@@ -15,6 +16,8 @@ from app.auth import (
     get_current_user,
     hash_password,
     hash_reset_token,
+    normalize_digits,
+    normalize_phone,
     record_rate_limit_attempt,
     session_stamp,
     verify_password,
@@ -53,8 +56,56 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
     # successful login never burns the bucket (test_successful_logins_do_not_consume_quota).
     client_ip = get_client_ip(request)
     check_login_rate_limit(client_ip)
-    user = db.query(User).filter(User.email == req.email).first()
-    if not user or not verify_password(req.password, user.password_hash):
+
+    raw_ident = req.email.strip()
+    ident = normalize_digits(raw_ident).lower()
+
+    user = None
+
+    # 1. Exact email match (case-insensitive)
+    if "@" in ident:
+        user = db.query(User).filter(func.lower(User.email) == ident).first()
+
+    # 2. Phone number match (Iranian standard format normalization)
+    if not user:
+        phone_norm = normalize_phone(raw_ident)
+        if len(phone_norm) >= 10:
+            candidates = {
+                phone_norm,
+                phone_norm[1:] if phone_norm.startswith("0") else phone_norm,
+                f"+98{phone_norm[1:]}" if phone_norm.startswith("0") else f"+98{phone_norm}",
+                f"0098{phone_norm[1:]}" if phone_norm.startswith("0") else f"0098{phone_norm}",
+            }
+            user = db.query(User).filter(User.phone.in_(candidates)).first()
+            if not user:
+                for u in db.query(User).filter(User.phone != "").all():
+                    if normalize_phone(u.phone) == phone_norm:
+                        user = u
+                        break
+
+    # 3. Username / Email prefix match (e.g. "sarinakhodaveisi" or "mahshid-amiri")
+    if not user:
+        user = (
+            db.query(User)
+            .filter(
+                (func.lower(User.email) == ident)
+                | (func.lower(User.email) == f"{ident}@gymapp.ir")
+                | (func.lower(User.email).like(f"{ident}@%"))
+            )
+            .first()
+        )
+
+    # Password check with fallback to Persian keyboard digits normalization
+    valid_password = False
+    if user:
+        if verify_password(req.password, user.password_hash):
+            valid_password = True
+        else:
+            norm_pw = normalize_digits(req.password)
+            if norm_pw != req.password and verify_password(norm_pw, user.password_hash):
+                valid_password = True
+
+    if not user or not valid_password:
         record_rate_limit_attempt(client_ip)
         return error_response("Invalid email or password", 401)
 

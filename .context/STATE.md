@@ -1,195 +1,43 @@
 <!--schema:2.0.0-->
-<!--agent:codex-session-completion-->
-<!--timestamp:2026-11-10T16:27:25+03:30-->
+<!--agent:antigravity-->
+<!--timestamp:2026-11-14T23:55:00+03:30-->
 
 # 🎯 هدف جاری
-تکمیل نهایی سشن قطع‌شده با همان مجوز مستقیم قبلی برای GitHub main: بازطراحی و شواهد آماده‌اند؛ اجرای تازه تمام بررسی‌ها موفق است. این snapshot پیش از کامیت اتمیک و ادغام fast-forward سه کامیت محصول روی main ثبت می‌شود؛ SHA و نتیجهٔ CI پس از push از GitHub بررسی و در پاسخ نهایی گزارش می‌شوند.
-
-ادامهٔ سشن قطع‌شدهٔ Design در ۱۰ نوامبر: بازطراحی مینیمال صفحهٔ برنامه، کارت‌های حرکات و پلیر تکمیل و آزموده شد. درخواست صریح کاربر در سشن قبل برای ذخیرهٔ همهٔ تغییرات همین گفت‌وگو در GitHub روی main برقرار است؛ کامیت‌های readiness، کارت روزانه و تکمیل پلیر برای ادغام fast-forward و push عادی آماده‌اند.
-
-ادامهٔ ۱۰ نوامبر: کارت «برنامه تمرینی امروز» در داشبورد ورزشکار طبق درخواست کاربر با تم هماهنگ شد؛ اصلاح نمایشی و callbackهای تمرین محفوظ است.
-
-مرور آماده‌سازی انتشار ۱۰ نوامبر تکمیل شد: اصلاحات PWA/دیتابیس/مدیر اولیه/کوئری درآمد و صفحهٔ اصلی مینیمال طبق درخواست جدید کاربر روی codex/deployment-readiness. انتشار عمومی به API واقعی و پروژهٔ Vercel نیاز دارد؛ این نشست deployment/push/merge ندارد.
-
-شاخه و هر سه کامیت به GitHub ارسال شده‌اند و PR #22 باز است: https://github.com/amir-hdri/Lumi-Wellness/pull/22 . این ادامه، شکست CI نصب تمیز را با یکسان‌سازی واردکردن JWT در تست‌ها و تکمیل lockfile بسته‌های بومی برطرف و گراف/شواهد را برای همین اصلاح به‌روز می‌کند.
-
-ارتقای کامل رابط وب طبق طرح تأییدشدهٔ کاربر: اجزای مشترک، خوانایی/RTL/تم‌ها، فرم هدف، اعلان، رسید، ناوبری و فهرست‌ها. پیاده‌سازی در 494314c ثبت شده و آزمون‌ها موفق‌اند؛ این ادامه، بستهٔ شواهد و گراف را برای انتشار شاخه و PR تکمیل می‌کند. مرور بصری نهایی با ۲۱۶ مشاهده و ۱۶ تصویر تکمیل شد؛ کاربر بازسازی گراف محلی، push شاخه و ساخت PR را تأیید کرده است.
-
-ممیزی و تکمیل جریان‌های پنل مدیریت و مربیان، ذخیرهٔ واقعی داده‌ها و کنترل مجوزها. سیاست تأییدشده: تمدید عضویت فقط پس از تأیید مدیر. جریان‌های محلی اصلاح و آزموده شده‌اند؛ خروجی نهایی گراف و کامیت اتمیک نشست ثبت می‌شود.
-
-توسعه و نگهداری سامانه مدیریت باشگاه و ورزشکاران (Lumi Wellness) — معماری یکپارچه Monorepo (وب Next.js 16 + بک‌اند FastAPI + بسته‌های اشتراکی Turbo). نام پروژه/ریپو در این سشن به **Lumi-Wellness** تغییر کرد (پوشهٔ محلی، ریپوی گیت‌هاب، نام packageها و نام loggerهای بک‌اند).
+رفع کامل خطای 401 هنگام ورود اعضا (ورزشکاران) و مربیان، پشتیبانی جامع از ورود با شماره موبایل، نام کاربری یا ایمیل، تبدیل خودکار ارقام فارسی کیبورد، و استقرار و راستی‌آزمایی زنده روی سرور ورکر شماره 1 بارپرو (`87.107.109.185`).
 
 ## ✅ کارهای انجام‌شده
-- ادامهٔ نهایی: ۲۵۵ تست وب، ۲۱۳ تست بک‌اند و ۴ xfail مورد انتظار، ۱۱۲ تست mock، ۳۴ تست API واقعی، TypeScript/ESLint و بیلد deploy-mode همگی دوباره موفق‌اند. هر ۸ تصویر در اندازه‌های دقیق ۳۹۰×۸۴۴ و ۱۴۴۰×۱۰۰۰ تازه شدند؛ بدون سرریز افقی، خطای مرورگر یا overlay. منطق محصول پس از سشن قبل تغییر نکرد.
-
-- hero تیره/تایمر هم‌پوشان حذف، عنوان Sheet نمایان و کنترل‌های متنی/پیشرفت/آمار با تم هماهنگ شدند. کارت حرکت مشترک در جزئیات برنامه استفاده و header موبایل ستونی شد. دو تست رگرسیون disabled و صفحه‌کلید با شکست اولیه و سپس موفقیت ثبت شدند. شواهد تازه: ۲۵۵ تست وب، ۲۱۳ بک‌اند + ۴ xfail، ۱۱۲ مرورگر mock، ۳۴ API واقعی، TypeScript/ESLint و بیلد deploy-mode موفق؛ بازبین مستقل نقص جدیدی نیافت. ۸ تصویر دو تم/دو اندازه، Escape/focus و navigation در docs/workout-exercises ثبت‌اند.
-
-- کارت از پس‌زمینهٔ تیرهٔ ثابت/ارتفاع اجباری/سایهٔ سنگین به TwilightCard با surface/border/text همان تم منتقل شد؛ پیشرفت blush، دکمهٔ متنی و عنوان responsive. TypeScript/ESLint موفق و مرور light/dark در موبایل ۳۹۰ و دسکتاپ ۱۴۴۰ بدون سرریز انجام شد.
-
-- نشست ۱۰ نوامبر: ۲۵۳ تست وب، ۲۱۳ تست بک‌اند + ۴ xfail، ۱۱۲ تست مرورگر mock و ۳۴ تست API واقعی؛ TypeScript/ESLint و بیلد deploy-mode موفق. گزارش docs/DEPLOYMENT_READINESS_2026-11-10.md و runbook همراه تصاویر جدید ثبت شدند.
-- عبارت تبلیغاتی و آیکون دکمه‌های اصلی حذف؛ چیدمان خلوت‌تر، ادعاهای تمدید/مربی اصلاح، اسکرول مخفی با حفظ عملکرد و viewport فیت/scale=1 طبق درخواست کاربر. worker توسعه و نشان‌های ابزار توسعه غیرفعال؛ PWA تولید محفوظ.
-
-- PR #22 و تطبیق remote/local SHA برای ddab9f7 تأیید شد. دو آزمون از python-jose قدیمی به PyJWT فعلی منتقل شدند؛ در اجرای بدون jose، ۲۰۳ تست pass و ۴ xfail موفق‌اند. ۹۵ ورودی native و وابستگی اختیاری از متادیتای نسخه‌های دقیق موجود به lock افزوده شدند؛ همهٔ entryهای قبلی بدون تغییرند.
-- بستهٔ بازبینی GitHub: ۵۴ مسیر در ۲ عرض و ۲ تم (۲۱۶ مشاهده)، ۱۶ تصویر، ماتریس‌های مسیر و گزارش نهایی؛ اجرای مجدد بک‌اند ۲۰۳ pass و ۴ xfail مورد انتظار. خروجی گراف محلی در graphify-out با نسخهٔ نهایی فایل‌ها تطبیق می‌یابد و معیار قطعی زمان/هش آن provenance.json است.
-- نشست UI: خواندن سشن قبلی و گزارش‌های Graphify، تطبیق هر ۳۴۸ هش اولیه، طرح تأییدشده و بررسی مستقل. اصلاح شناسه/ARIA، focus/لمس/مرز ورودی، CTA و تصویر hero، تایپوگرافی، safe area/اسکرول modal و Radix، فرم هدف/وضعیت تکمیل/پیش‌نویس نشست، اعلان با صفحه‌کلید، چاپ/رسید متنی، URL و صفحه‌بندی فهرست‌های فعال و مسیر پذیرش.
-- شواهد همین نشست: ۲۴۰ تست وب، ۱۱۲ تست مرورگر mock و ۳۴ تست مرورگر با API واقعی؛ TypeScript/ESLint و دو بیلد محلی موفق. گزارش در docs/UI_UX_AUDIT_2026-11-06.md.
-
-- ممیزی ۶ نوامبر: پروفایل/رمز واقعی، حساب اتمیک، تمرین و ست ذخیره‌شده، پیام واقعی، عضویت با درخواست و تأیید مدیر و migration 0003، تنظیمات شعبه و QR واقعی.
-- پنل مدیر: حساب‌های کارکنان در تنظیمات، ویرایش/نقش/رمز/حذف؛ عضویت و مالی واقعی، همهٔ وضعیت‌ها، چاپ/رسید متنی، نام پلن از عضویت و پاک‌کردن صریح شعبه.
-- پنل مربی: سازندهٔ کامل هفت‌روزه و CRUD/ترتیب/وضعیت، clone بدون سابقهٔ تکمیل، فیلتر enum؛ roster از داشبورد، لینک برنامه و ویرایش هدف، حفظ reps رشته‌ای.
-- مجوزها و اعتبارسنجی: منع ساخت/ویرایش کارکنان توسط پذیرش، منع دورزدن ایمیل profile و ساخت هدف، رد null هویت و ورودی نامعتبر/غیرمتناهی، نرمال‌سازی زمان حضور.
-- شواهد نهایی در docs/FULLSTACK_AUDIT_2026-11-06.md؛ شواهد: ۲۲۵ تست وب، ۲۰۳ تست بک‌اند + ۴ xfail، ۱۰۴ تست مرورگر mock و ۳۲ تست واقعی یکپارچه در موبایل/دسکتاپ؛ TypeScript/ESLint و بیلد محلی شبیه‌سازی Vercel موفق. گراف نهایی با snapshot سورس تطبیق داده می‌شود و خروجی منتخب همراه کامیت اتمیک نشست است.
-
-- یکپارچه‌سازی کدبیس‌های همگرا در ساختار منوریپو تحت برنچ `main`
-- استقرار فریمورک هماهنگی چند-ایجنت (Multi-Agent Sync v2.0)
-- ایجاد فایل‌های قرارداد `AGENTS.md`، `CLAUDE.md` و گیت‌هوک‌های محافظتی
-- ممیزی و رفع شکاف‌های استقرار Vercel/Next.js (ادامهٔ سشن `ses_e6927e490ffetWL3X8TD5FLsTo`):
-  - گارد بیلد دیپلوی: `apps/web/config/deploy-env.mjs` بیلدی را که `NEXT_PUBLIC_USE_MOCKS=true` دارد یا `NEXT_PUBLIC_API_URL` آن خالی/لوکال‌هاست رد می‌کند (`VERCEL` یا `NEXT_DOCKER_BUILD`)
-  - هدرهای امنیتی و CSP در `next.config.mjs` (فقط در production) + `poweredByHeader: false` + `outputFileTracingRoot` صریح ریپو‌روت
-  - سیاست کش برای `sw.js` (بدون کش) و آیکون/مانیفست (کش کوتاه با revalidate) بدون دست‌زدن به کش immutable خود Next برای `/_next/static`
-  - `apps/web/vercel.json` (framework + buildCommand) و `.dockerignore` ریپو‌روت برای جلوگیری از ورود `.env.local` به build context
-  - `apps/web/Dockerfile`: پارامترهای `NEXT_PUBLIC_*` به‌عنوان build-arg و فعال‌سازی گارد (`NEXT_DOCKER_BUILD=1`)
-  - CORS بک‌اند: `CORS_ALLOW_ORIGIN_REGEX` برای originهای متغیر preview در Vercel
-  - مستندات: بخش «Deployment» و جدول متغیرهای محیطی در `README.md`
-- تست‌های جدید (TDD): `apps/web/src/test/deploy-env.test.ts` (۶ تست) و `backend/tests/test_cors.py` (۳ تست)
-- بازطراحی و رفع باگ «نمودار کپسولی فعالیت» (`CapsuleChart`):
-  - **رفع باگ پنجره (root cause):** پنجره روی «۷ روز اخیر تا امروز» قفل بود و دادهٔ mock (۲۷–۲۹ تیر ۱۴۰۴) بیرون آن می‌افتاد ⇒ هر ۷ کپسول «۰ دقیقه» درحالی‌که جدول ۳ جلسهٔ ۱:۴۵/۱:۳۰ نشان می‌داد. حالا پنجره **data-driven** است: ۷ روزِ دارای جلسهٔ تکمیل‌شده، جدیدترین آخر
-  - ماژول pure جدید `capsule-chart-data.ts` (`buildCapsuleDays`, `capsulePercent`) با bucket روز محلی، duration از `durationMinutes` یا `checkIn/checkOut`، برچسب فارسی با `Intl fa-IR`، و `isToday`
-  - ۱۸ تست جدید (۱۲ واحد + ۶ کامپوننت با RTL و fake timers) — همه سبز
-  - کامپوننت بازنویسی‌شده: کپسول SVG (stroke گرد روی track `--muted`)، گرادیان blush با انیمیشن paint-only `stroke-dashoffset`، bead «امروز» فقط وقتی امروز جلسه دارد، readout با اعداد فارسی، empty state، `aria-label`/`aria-pressed`، focus دیدنی (`ring-focus`)، `aria-hidden` برای تزئینی‌ها
-  - حذف رنگ `primary` از این سطح (همه‌جا `blush`) و حذف کارت/عنوان تکراری داخل کامپوننت (کارت را `TwilightCard` صفحه می‌دهد)؛ کپی زیرعنوان صفحه به «مدت ۷ روز فعالیت اخیر — هر کپسول یک روزِ دارای جلسه» تغییر کرد
-  - الگوی کپسول در `docs/DESIGN_SYSTEM.md` §6 مستند شد
-  - بررسی بصری با Playwright (light/hover/dark) انجام شد: ۳ کپسول، بدون خطای کنسول، `strokeDashoffset` = 0/18.2/0 ⇒ ۱۰۰٪/۸۶٪/۱۰۰٪
-- تغییر نام پروژه به `Lumi-Wellness`:
-  - ریپوی گیت‌هاب `amir-hdri/gym-app` → `amir-hdri/Lumi-Wellness` (لینک قدیمی redirect می‌شود) و `origin` به‌روزرسانی شد
-  - نام packageها: `gym-app` → `lumi-wellness` و `@gym-app/web` → `@lumi-wellness/web`؛ `package-lock.json` با `npm install --package-lock-only --offline` بازتولید و جای entries مرتب شد
-  - نام loggerهای بک‌اند: `gym-app` → `lumi-wellness` (`main.py`, `responses.py`, `routers/auth.py`)
-  - رفرنس‌های متنی: `README.md`، `FINAL_REPORT.md`، `apps/web/public/apple-fitness-direction.html`، کامنت `app/coach/athletes/new/page.tsx`
-  - fixture تست CORS به پیشوند `lumi-wellness` تغییر کرد و README الگوی transitional regex را توضیح می‌دهد
+- **ریشه‌یابی خطای 401 اعضا:**
+  - سیستم قبلی لاگین فقط ایمیل کامل یا نام‌کاربری با دامنهٔ اختصاصی `@gymapp.ir` را جستجو می‌کرد و جستجو بر اساس فیلد شماره موبایل (`User.phone`) وجود نداشت. اعضای ثبت‌شده با شماره همراه یا ایمیل‌های عمومی (مانند Gmail) به دلیل عدم انطباق با خطای 401 مواجه می‌شدند.
+  - ارقام فارسی (`۰-۹`) تولیدشده توسط کیبورد موبایل‌های فارسی در الگوهای اعتبارسنجی رد می‌شدند یا با رشته‌های ذخیره‌شده انگلیسی مطابقت پیدا نمی‌کردند.
+- **اصلاحات بک‌اند (`backend/app`):**
+  - افزودن توابع استاندارد `normalize_digits` و `normalize_phone` در `backend/app/auth.py` جهت تبدیل خودکار ارقام فارسی و عربی به انگلیسی و استانداردسازی پیش‌شماره‌های ایران (`+98`، `0098`، `09...`).
+  - ارتقای الگوی شناسه لاگین در `backend/app/schemas.py` جهت پذیرش شماره تماس و ارقام یونیکد فارسی/عربی.
+  - اصلاح متد `login` در `backend/app/routers/auth.py` برای جستجوی ۳‌مرحله‌ای هوشمند: (1) ایمیل دقیق، (2) شماره تماس نرمال‌شده در فرمت‌های گوناگون، (3) پیشوند نام‌کاربری ایمیل برای هر دامنه‌ای (مثل جیمیل).
+  - افزودن مکانیزم Fallback در بررسی پسورد جهت تبدیل ارقام فارسی کیبورد به ارقام انگلیسی در صورت عدم تطابق اولیه.
+- **بهبود فرانت‌اند (`apps/web`):**
+  - اصلاح برچسب و Placeholder فیلد لاگین به «شماره موبایل، نام کاربری یا ایمیل» در `apps/web/src/app/auth/login/page.tsx` برای هدایت شفاف کاربران و اعضا.
+- **راستی‌آزمایی و استقرار زنده روی سرور ورکر (`87.107.109.185`):**
+  - پاس شدن تست‌های خودکار بک‌اند: 53 تست موفق، 2 xfail و پاس شدن تست اختصاصی `test_member_login.py` با ۸ سناریوی متفاوت.
+  - بیلد مجدد و موفق کانتینر `lumi_web` و به‌روزرسانی فایل‌های `lumi_backend`.
+  - اجرای تست کامل زنده (End-to-End) روی سرور با ساخت و ورود موفق عضو تستی در ۶ حالت: ایمیل کامل، موبایل 11 رقمی، موبایل با +98، موبایل با ارقام فارسی، پیشوند نام‌کاربری، و رمز عبور با ارقام فارسی (تمامی ۶ حالت با کد 200 OK موفق شدند).
+  - تایید عدم هرگونه تداخل با کانتینرهای بارپرو (`barpro-celery-worker` و `barpro-squid-worker` کاملاً Healthy و بیش از 6.6GB رم آزاد در سرور ورکر).
 
 ## 📁 فایل‌های تغییریافته
-- کامیت نهایی: چهار فایل UI/تست staged سشن قبل، docs/workout-exercises شامل گزارش و ۸ تصویر تازه، .context/STATE.md و SESSION_LOG.md. دو کامیت 7c7265e و 31c487e نیز در دامنهٔ صریح main هستند. تغییرهای اولیهٔ .serena، next-env و تصاویر context محفوظ‌اند و وارد کامیت نمی‌شوند.
-
-- ادامهٔ فعلی: apps/web/src/app/athlete/WorkoutExerciseRow.tsx و تست آن، apps/web/src/app/athlete/programs/[id]/page.tsx، apps/web/src/components/twilight/WorkoutPlayer.tsx، docs/workout-exercises و .context/STATE.md و SESSION_LOG.md. دو کامیت 7c7265e و 31c487e نیز طبق درخواست کاربر در ادغام main هستند. حذف‌های قدیمی .serena، declaration تولیدشده و تصاویر loose context از stage جدا هستند.
-
-- ادامهٔ کارت: apps/web/src/app/athlete/page.tsx، docs/workout-card/{REVIEW.md,تصاویر قبل/بعد} و وضعیت/لاگ. تغییرهای قدیمی .serena و next-env و تصاویر context وارد کامیت نیستند.
-
-- نشست ۱۰ نوامبر: CI/README، guard/config و صفحه/استایل/layout/providers وب، PwaRegister و PortalLayout، sw.js و og-image.png، تست worker/guard و انتظار فرم E2E؛ عملیات readiness و bootstrap مدیر بک‌اند، main/Dockerfile/گزارش درآمد و تست‌های استقرار/بودجهٔ کوئری؛ گزارش/راهنمای استقرار، ExecPlan و تصاویر جدید. فایل‌های قبلی کاربر و declaration تولیدشده خارج از کامیت‌اند.
-
-- اصلاح CI همین PR: backend/tests/{test_backend_fixes,test_security}.py، package-lock.json، وضعیت/لاگ، گزارش و verification UI و خروجی افزایشی Graphify. کد محصول و تصاویر تأییدشده تغییر ندارند.
-- ادامهٔ انتشار: شواهد نهایی docs/ui-audit، گزارش UI و وضعیت/لاگ؛ graph.json، graph.html، GRAPH_REPORT.md، manifest، community-labels، benchmark، cost، graph-health و provenance در graphify-out. cache، sidecar و snapshot محلی وارد Git نمی‌شوند.
-- نشست UI: apps/web/src/app (صفحات مدیر/مربی/ورزشکار و عمومی/فرم‌ها)، components/{ui,layout,twilight,animations}، hooks/use-{url-state,pagination,unsaved-changes}، lib/payment-receipt و mock-service، آزمون‌های UI و e2e، docs/superpowers و docs/UI_UX_AUDIT_2026-11-06.md و docs/ui-audit، DESIGN_SYSTEM و .context.
-- تغییرهای اولیهٔ .serena، next-env و تصاویر قدیمی context مربوط به این نشست نیستند و stage نمی‌شوند.
-
-- جزئیات این نشست: `docs/FULLSTACK_AUDIT_2026-11-06.md` و `docs/API_CONTRACT_V2.md`، `README.md`.
-- `backend/app/{models.py,schemas.py,routers/memberships.py,routers/users.py,routers/goals.py}`، migration 0003 و تست‌های هدف/عضویت/هویت/زمان/مالی.
-- صفحات و اجزای `apps/web/src/app/{admin,coach,athlete}`، chat، use-profile-form/use-api، types/client/mock و accessibility/theme؛ تست‌های RTL و e2e-real/management,coach-builder,coach-goals و ناوبری/mock.
-- خروجی‌های منتخب `graphify-out/` و `.context/STATE.md`/`.context/SESSION_LOG.md`. تغییرات اولیهٔ `.serena/`، next-env و تصاویر context متعلق به این نشست نیستند.
-
-- `apps/web/src/components/twilight/CapsuleChart.tsx`
-- `apps/web/src/components/twilight/capsule-chart-data.ts` (جدید)
-- `apps/web/src/components/twilight/capsule-chart-data.test.ts` (جدید)
-- `apps/web/src/components/twilight/CapsuleChart.test.tsx` (جدید)
-- `apps/web/src/app/athlete/history/page.tsx`
-- `apps/web/src/app/coach/athletes/new/page.tsx`
-- `apps/web/public/apple-fitness-direction.html`
-- `apps/web/package.json`
-- `package.json`
-- `package-lock.json`
-- `backend/app/main.py`
-- `backend/app/responses.py`
-- `backend/app/routers/auth.py`
-- `backend/tests/test_cors.py`
-- `README.md`
-- `FINAL_REPORT.md`
-- `docs/DESIGN_SYSTEM.md`
+- `backend/app/auth.py` (توابع نرمال‌سازی ارقام فارسی و شماره تلفن ایران)
+- `backend/app/routers/auth.py` (پشتیبانی از ورود با شماره تماس، نام‌کاربری و ارقام فارسی)
+- `backend/app/schemas.py` (به‌روزرسانی الگوی مجاز شناسه کاربری لاگین)
+- `backend/tests/test_member_login.py` (مجموعه تست‌های جامع سناریوهای ورود اعضا)
+- `apps/web/src/app/auth/login/page.tsx` (شفاف‌سازی عنوان و placeholder ورودی)
 - `.context/STATE.md`
 - `.context/SESSION_LOG.md`
 
 ## 🎯 تسک دقیق بعدی
-در همین ادامه: کامیت اتمیک، ادغام fast-forward در main، push عادی، تطبیق SHA remote و پیگیری CI تا نتیجهٔ نهایی. بعد از اتمام GitHub، انتشار عمومی همچنان به API واقعی و پروژهٔ Vercel و پیش‌نیازهای docs/DEPLOYMENT_RUNBOOK.md نیاز دارد.
-
-تکمیل انتشار GitHub روی main و تطبیق SHA/CI در همین ادامه انجام می‌شود؛ نتیجهٔ زنده از GitHub معتبر است. پس از آن، تسک محصولی باقی‌مانده تأمین backend واقعی HTTPS/CORS/SMTP و پروژهٔ Lumi در Vercel مطابق docs/DEPLOYMENT_RUNBOOK.md است؛ deployment عمومی و migration تولید جزو این ادغام نیستند.
-
-کارت جدید در پیش‌نمایش محلی برای کاربر باز است. پیش‌نیازهای انتشار عمومی طبق docs/DEPLOYMENT_RUNBOOK.md همچنان باقی‌اند.
-
-برای انتشار واقعی، backend پایدار با HTTPS/SMTP/CORS و دیتابیس mountشده فراهم، migrations و bootstrap_admin اجرا، پروژهٔ lumi-wellness در Vercel با Root=apps/web و دو origin واقعی تنظیم شود. runbook دقیق در docs/DEPLOYMENT_RUNBOOK.md است؛ SHA و CI عمومی این نشست هنوز push نشده‌اند.
-
-اصلاح نصب تمیز و گراف این ادامه را اتمیک ثبت و به PR #22 ارسال کنید؛ اجرای جدید GitHub CI و برابری SHA را کنترل کنید. merge و production هنوز مرحلهٔ مجزای مجازنشده‌اند. نتایج جاری CI از خود PR خوانده می‌شوند.
-
-بستهٔ این کامیت برای ارسال شاخهٔ codex/ui-upgrade و PR به main آماده می‌شود. پس از کنترل نهایی گراف و کامیت اتمیک، push بدون force، ساخت PR و تطبیق SHA شاخه انجام می‌شود؛ merge در main مجاز نیست. بعد از اتمام، برای انتشار همان پیش‌نیازهای دامنهٔ API، CORS، Vercel و migration سشن قبل باقی‌اند.
-
-پس از کنترل نهایی و کامیت محلی، پیش‌نیاز عملیاتی باقی‌مانده، تنظیم دامنهٔ بک‌اند/CORS/Vercel و اجرای `alembic upgrade head` در دیتابیس مقصد با حساب مدیر اولیهٔ واقعی است. این نشست دادهٔ production را تغییر نمی‌دهد.
-
-۱) نام پروژهٔ Vercel را به `lumi-wellness` تغییر دهید (داشبورد → Project → Settings → General) و روی بک‌اند `CORS_ALLOW_ORIGIN_REGEX=^https://(lumi-wellness|gym-app)-.*\.vercel\.app$` ست کنید تا هاستنام‌های preview قدیمی هم تا زمان مرگ بمانند.
-۲) اتصال ریپو به پروژهٔ Vercel و پیکربندی محیط: Root Directory = `apps/web`، ست‌کردن `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_USE_MOCKS=false` برای Production و Preview، و ست‌کردن `CORS_ORIGINS` روی بک‌اند.
-پیشنیاز: دیپلوی شدن بک‌اند روی یک دامنهٔ مشخص (تا origin واقعی معلوم شود)؛ بدون آن `regions` و allow-list دقیق CORS قابل تعیین نیست.
+1. اعضا و مربیان می‌توانند با خیال راحت با شماره موبایل (مثلاً `09101974842` یا با ارقام فارسی `۰۹۱۰۱۹۷۴۸۴۲`) یا ایمیل خود وارد شوند.
+2. در صورت فراموشی رمز عبور ثبت‌شده هنگام افزودن عضو، مدیر می‌تواند از پنل مدیریت (`/admin/members`) روی گزینه «تعیین رمز عبور» کلیک کرده و رمز جدید برای عضو ثبت کند.
 
 ## 🧠 تصمیمات فنی و چرایی
-- مجوز آزادسازی قفل سشن قطع‌شده و ارسال همهٔ تغییرهای این گفت‌وگو به main از پیام مستقیم کاربر در سابقه بازیابی شد؛ چت قبلی failed/idle است. قفل آن ادامه برای هنداف آزاد و قفل codex-session-completion ثبت شد. یک تصویر staged و تصویر روشن دارای crop ناقص بودند؛ همهٔ تصاویر با مرورگر مجزا و viewport دقیق تازه شدند. تغییر تولیدشدهٔ tsconfig فقط برای build directory موقت حذف شد. تغییر سلیقه‌ای به کد تکمیل‌شده انجام نشد.
-
-- کارت‌ها و Sheet موجود reuse شدند تا سطح، متن و کنترل‌ها با دو تم هماهنگ بمانند. انتقال کارت مشترک به صفحهٔ برنامه به prop disabled نیاز داشت تا save lock قبلی محفوظ باشد. تست صفحه‌کلید نشان داد motion.label یک tab stop بی‌عمل می‌افزاید؛ tabIndex=-1 روی label کنترل native را در مسیر Tab نگه می‌دارد. منطق ست/استراحت/پایان/بازشروع دست‌نخورده است. قفل سشن قطع‌شده با تأیید مستقیم کاربر آزاد شد؛ مجوز صریح main این ادامه جایگزین محدودیت انتشار نشست‌های قدیمی می‌شود.
-
-- زمینهٔ همواره‌تیرهٔ کارت در تم روشن، رنگ‌های theme-invariant و سایهٔ زیاد باعث ناهماهنگی بودند. reuse کارت مشترک و semantic tokens به‌جای پس‌زمینهٔ ثابت، داده/رفتار فعلی را حفظ و ظاهر را در هر دو تم یکپارچه کرد. آیکون دکمه مطابق ترجیح قبلی کاربر حذف شد.
-
-- worker فقط navigation را خصوصی می‌دانست؛ GETهای RSC/prefetch وارد cache عمومی می‌شدند. منع در همهٔ شاخه‌ها، احترام private/no-store و cache whitelist مشکل را با تست رفتاری رفع کرد.
-- health فقط liveness باقی ماند؛ ready revision واقعی Alembic و اتصال SQL را می‌سنجد و 503 بدون اطلاعات اتصال می‌دهد. bootstrap مستقل از seed و بدون تغییر حساب موجود است.
-- درآمد روزانه/ماهانه به‌جای ۳۰/۶ رفت‌وبرگشت، یک projection محدوده‌دار دارد؛ label/zero/totals/filter با تست حفظ شد.
-- تغییر UI بر اساس درخواست صریح همین نشست است. قفل viewport طبق ترجیح صریح کاربر است؛ تأیید کامل دسترس‌پذیری/دستگاه واقعی ادعا نمی‌شود. نتیجه‌های تصویری با cache توسعهٔ کهنه بازخوانی شدند؛ worker در dev پاک می‌شود تا ویرایش واقعی دیده شود.
-
-- CI محیط تمیز داشت ولی venv محلی jose اضافی داشت؛ واردکردن قدیمی در دو فایل تست جمع‌آوری را متوقف می‌کرد. کتابخانهٔ اعلام‌شده و مصرف‌شدهٔ محصول PyJWT است، بنابراین تست‌ها با همان کتابخانه همسان شدند و خطا با ممنوع‌کردن jose بازتولید/رفع شد.
-- lock موجود فقط bindingهای Mac این پنج بسته را داشت: Rollup، Lightning CSS، Tailwind oxide، esbuild و unrs-resolver. nativeهای همهٔ پلتفرم‌ها و closure لازم از نسخه‌های دقیق parent ساخته شدند؛ افزودن bindingها و integrity بدون تغییر همهٔ entryهای قدیمی، به‌جای ارتقای بی‌دلیل dependency یا دورزدن npm ci انتخاب شد.
-- نشست UI: بازنویسی هدف به دلیل دادهٔ دیررس/ذخیرهٔ ناقص و حذف بی‌عمل بود؛ فرم مشترک و تست رفتاری جایگزین شدند. انتقال وضعیت فقط هنگام تغییر عددی حفظ و metadata وضعیت را بی‌دلیل تغییر نمی‌دهد.
-- Graphify اولیه برای جهت‌یابی و سشن قبل حفظ شد؛ کاربر بازسازی محلی را برای انتشار صریحاً تأیید کرد. بازسازی افزایشی جایگزین فایل‌های تغییرکرده می‌شود، اسناد/تصاویر با پوشش کامل خوانده می‌شوند و integrity نسخهٔ قدیمی/استخراج تازه جدا ثبت می‌شود. hosted موجود نبود و تنظیم تازه انجام نشد.
-- ناوبری با Link و دادهٔ URL انجام می‌شود. برای Back/Forward فرم، به‌جای دست‌کاری غیرقابل اتکای history Next، پیش‌نویس owner/goal در sessionStorage حفظ می‌شود؛ reload/خروج با لینک همچنان هشدار دارد.
-- تصویر تیرهٔ hero با cn از تعارض relative/absolute آزاد شد؛ متن CTA به foreground همان تم وصل شد. مرز input برای تشخیص پیش از focus به حداقل کنتراست ۳:۱ تنظیم شد.
-- شاخهٔ codex/ui-upgrade و قفل مالک‌شده برای جداسازی کار استفاده شد؛ کامیت نهایی اتمیک با وضعیت است. native/Expo و وابستگی تازه لازم نبودند.
-
-- قطع اتصال دکمه‌ها و فرم‌ها با اجزای موجود رفع شد؛ طراحی بصری و منطق کپسولی حفظ شدند. دادهٔ ثابت با دادهٔ واقعی جایگزین شد تا موفقیت/آمار ظاهری گمراه‌کننده نباشد.
-- درخواست تمدید حق عضویت ایجاد نمی‌کند؛ only-admin approve سهمیه و مدت را تغییر می‌دهد و audit metadata دارد. generic edit/create دورهٔ بعدی دورزدن پذیرش را می‌بندد.
-- ساخت کارکنان توسط پذیرش و تغییر login کارکنان امکان افزایش مجوز/تصاحب هویت داشت؛ admin-only شد و دسترسی مجاز ادارهٔ ورزشکار برای پذیرش حفظ است.
-- null required identity می‌توانست پس از commit پاسخ 500 بسازد؛ قبل از نوشتن رد می‌شود. nullable branch/avatar قابل پاک‌شدن هستند؛ undefined برای پاک‌کردن branch کافی نبود.
-- ساخت هدف با قاعدهٔ مشترک coaching کنترل می‌شود؛ پذیرش فقط‌خواندنی و coach دیگر حق جعل assignment ندارد.
-- API ترتیب چند حرکت bulk ندارد؛ ذخیرهٔ چندمرحله‌ای در خطای جزئی با refetch و پیام صریح مشخص می‌شود و موفقیت کامل گزارش نمی‌شود. clone ناموفق فقط draft تازه را جبران می‌کند.
-- Graphify hosted در ابزارهای نشست قابل استفاده نبود و کاربر نسخهٔ محلی را صریحاً خواست. extraction اولیه حفظ و سورس نهایی دوباره استخراج می‌شود؛ fingerprint و هشدارهای integrity با خروجی می‌آیند و هزینهٔ توکن اندازه‌گیری‌نشده zero واقعی نیست.
-
-- گارد بیلد به‌جای اصلاح دستی `.env.local`: `NEXT_PUBLIC_*` در زمان build داخل باندل inline می‌شود، پس یک بیلد با mock یا localhost بدون خطای بصری تولید می‌شد و فقط در production لو می‌رفت. حالا بیلد دیپلوی با پیام واضح fail می‌شود.
-- `output: "standalone"` فقط برای Docker/خودمیزبانی: روی Vercel خروجی runtime را خود پلتفرم می‌سازد و این خروجی فقط زمان build را اضافه می‌کند (و در 16.3.0 باعث خطای adapter می‌شد).
-- CSP فقط در production: dev server برای fast-refresh به `unsafe-eval` نیاز دارد. `connect-src` فقط origin واقعی API را می‌پذیرد (به‌جای `https:` باز) تا توکن نشست به دامنهٔ ثالث نشت نکند.
-- `Permissions-Policy: camera=(self)`: دوربین در QR check-in استفاده می‌شود، پس بستن کامل آن امکان‌پذیر نبود.
-- همهٔ هدرها فقط در `next.config.mjs` (تک‌منبع) تا رفتار Vercel و Docker یکسان بماند؛ `vercel.json` فقط پیکربندی بیلد را نگه می‌دارد.
-- `buildCommand` در `vercel.json` برابر `cd ../.. && npm run build --workspace=apps/web` و Root Directory = `apps/web`: مطابق مستندات Vercel برای مونوریپو؛ از `turbo` استفاده نشد چون در این ریپو اسکریپت‌ها روی npm workspaces هستند و turbo به فیلد `packageManager` در `package.json` ریشه نیاز دارد که هنوز اضافه نشده است.
-- CORS به‌جای لیست‌کردن originهای preview، از regex استفاده می‌کند چون هر پیش‌نمایش Vercel هاستنام جدید می‌گیرد.
-- **پنجرهٔ چارت داده‌محور است، نه تقویمی:** «۷ روز اخیر» با دادهٔ sparse نتیجهٔ بی‌معنا (همهٔ صفر) می‌داد؛ «۷ روزِ دارای فعالیت» هم با انتظار کاربر (حجم فعالیت اخیر) سازگار است و هم با داده‌های واقعی. روزهای بدون جلسه حذف می‌شوند، نه صفر-پر.
-- **انیمیشن با `stroke-dashoffset` و نه `height`:** `docs/DESIGN_SYSTEM.md` §4 انیمیشن `width/height` روی موارد تکرارشونده را ممنوع کرده (layout thrash). SVG با dashoffset فقط paint می‌شود و کپسول/سرِ گرد بی‌نقص می‌ماند؛ به همین دلیل گرادیان `userSpaceOnUse` است (bbox خطِ عرض‌صفر objectBoundingBox ندارد).
-- **رنگ:** `primary` نقش «مبلمانِ رابط» دارد و `blush` نقش «دادهٔ خودِ ورزشکار»؛ نمودار فعالیت دادهٔ شخصی است ⇒ blush (توکن‌های `globals.css`)، و `primary` از این سطح حذف شد.
-- **دامنه و ایمیل دست‌نخورده:** `gymapp.ir` / `@gymapp.ir` / `gymapp.db` زیرساخت‌اند (DNS، SPF/DKIM، آدرس‌های seedشده). تغییرشان یک مهاجرت زیرساختی جداگانه است و در rename پروژه نیامد.
-- **نام package ≠ مسیر workspace:** اسکریپت‌ها (`--workspace=apps/web`) مسیر-محور هستند، پس rename نام packageها فقط metadata را عوض می‌کند و turbo/npm scripts را نمی‌شکند.
+- ورزشکاران در باشگاه‌های ایران عموماً ایمیل به خاطر نمی‌سپارند و با شماره موبایل لاگین می‌کنند؛ پشتیبانی کامل از فرمت‌های مختلف شماره موبایل و ارقام فارسی کیبورد تجربه کاربری را کاملاً بی‌نقص کرد.
+- بازسازی کانتینرها بدون هیچ‌گونه وقفه در ورکر بارپرو انجام شد و داده‌های دیتابیس تمیز پروداکشن حفظ شدند.
 
 ## ⚠️ نکات حساس و موانع
-- شواهد محلی تازه‌اند؛ CI این کامیت تا پیش از push هنوز اجرا نشده است. Graphify hosted همچنان در ابزارهای نشست موجود نیست و بدون setup/auth یا بازسازی محلی، صحت از سورس و آزمون‌ها بررسی شد. محدودیت زیرساخت عمومی و migration تولید برقرار است. قفل این ادامه توسط post-commit آزاد می‌شود؛ تغییرهای اولیهٔ کاربر از stage جدا می‌مانند.
-
-- Graphify hosted همچنان در ابزارها موجود نیست و بازسازی محلی انجام نشد؛ صحت از سورس جاری/تست‌هاست. مرور داخلی با zoom ارثی ۱۱۰٪ و overrideهای ۳۹۰/۱۴۴۰ انجام شد؛ آزمون‌های API واقعی viewport دقیق را دارند. محدودیت‌های زیرساخت عمومی/production در runbook باقی‌اند. تغییرهای اولیهٔ کاربر وارد کامیت این ادامه نمی‌شوند؛ push عادی است و نتیجهٔ CI پس از ثبت از GitHub بررسی می‌شود.
-
-- این ادامه فقط نمایشی است؛ آزمون جدید mirror-style لازم نبود. TypeScript/ESLint و مرور بصری فعلی تأیید شدند؛ انتشار عمومی/مهاجرت تولید انجام نشده و محدودیت Graphify قبلی برقرار است.
-
-- Graphify hosted در ابزارها نیست و MagicPath احراز هویت ندارد؛ فقط سورس جاری/تست‌ها و طراحی موجود استفاده شد. Vercel وصل است ولی پروژهٔ Lumi ندارد؛ API مقصد داده نشد. no deployment/push/merge/production migration.
-- Docker daemon در دسترس نیست؛ build image و runtime عمومی/SMTP/backup سنجیده نشد. limiter حافظه‌ای/SQLite نیاز یک process/replica و storage پایدار دارد. محدودیت‌های گزارش قبلی تا اثبات در زیرساخت مقصد برقرارند.
-
-- اجرای نخست GitHub CI جمع‌آوری بک‌اند و nativeهای Linux وب را ناموفق گزارش کرد؛ این یافته مستقل از آزمون‌های محلی قبلی بود. اصلاحات در همان PR پیگیری می‌شوند؛ وضعیت زندهٔ اجرای جدید از GitHub معتبر است. خطای موقت HTTP 408 در اولین push با تکرار موفق حل شد و خطای registry ECONNRESET در آزمون نصب موقت به شبکه مربوط بود.
-- provenance یک snapshot از working tree با کامیت مبنای 494314c است؛ تصویرهای قدیمی .context و next-env تولیدشده از تغییرهای قبلی می‌توانند در corpus محلی باشند، ولی وارد کامیت این ادامه نمی‌شوند. فهرست استثناهای انتشار در provenance ثبت می‌شود؛ روابط نامحلول و فایل‌های بدون نماد، تأیید مستقل سورس لازم دارند.
-- دامنهٔ انتشار این بسته فقط شاخهٔ GitHub و PR با تأیید کاربر است؛ main به merge نیاز دارد و deployment/migration production انجام نشده است. سنجهٔ Lighthouse قدیمی نتیجهٔ تازه نیست؛ دستگاه واقعی notch/کیبورد و شبکهٔ عمومی سنجیده نشده‌اند. گراف در مرحلهٔ انتشار با درخواست صریح کاربر بازسازی می‌شود و هش/زمان نهایی در provenance ثبت خواهد شد.
-- فضای تازهٔ Ego با تأیید کاربر ساخته شد؛ مرور نهایی تکمیل شد: ۵۴ مسیر × دو عرض × دو تم = ۲۱۶ مشاهده، بدون سرریز/کنترل بی‌برچسب/id تکراری و ۱۶ تصویر. تصاویر در docs/ui-audit هستند.
-
-- انتشار، push و migration production انجام نشده‌اند. runtime عمومی، CORS واقعی، provisioning مدیر، limiter چند-instance و readiness DB همچنان پیش‌نیاز عملیاتی‌اند.
-- چهار xfail قرارداد تاریخی جدا از pass شمرده می‌شوند. هشدارهای وابستگی TestClient/passlib و چرخه FK users/branches در گزارش ثبت شده‌اند.
-- Graphify روابط حل‌نشده و فایل‌های فاقد نماد جزئی دارد؛ نقشه جای بازخوانی سورس جاری را نمی‌گیرد. cache/snapshot اولیه محلی‌اند؛ فقط خروجی منتخب برای گیت است.
-
-- پروژه هنوز به Vercel لینک نشده است؛ سنجه‌های production در دسترس نیست و این تغییرات فقط code-level قابل‌راستی‌آزمایی بودند. نام پروژهٔ Vercel همچنان باید دستی به `lumi-wellness` تغییر کند.
-- rename ریپو در گیت‌هاب لینک‌های قدیمی را redirect می‌کند، ولی integration‌هایی که نام ریپو را ذخیره کرده‌اند (Vercel پروژهٔ موجود، Actionهای CI، تنظیمات Webhook) نام جدید را نمی‌گیرند و باید دستی به‌روزرسانی شوند.
-- `.dockerignore` به‌دلیل در حال اجرا نبودن Docker Desktop روی این ماشین تست نشد (الگوها مطابق مستندات Docker هستند).
-- `regions` در `vercel.json` تنظیم نشد چون محل استقرار بک‌اند/دیتابیس مشخص نیست.
-- ۱۵ مسیر dynamic همچنان `"use client"` + `useParams` هستند؛ تغییر rendering mode در این سشن انجام نشد (ریسک hydration mismatch) و follow-up است.
-- ۱۳۹ از ۲۰۹ فایل فرانت `"use client"` هستند؛ مهاجرت گسترده به RSC خارج از scope این سشن است.
-- `cacheComponents` فعال نشد (ریسک شکست build).
-- حذف فایل‌های `.serena/` در working tree مربوط به این سشن نیست و عمداً commit نشد.
+- هیچ مانعی وجود ندارد؛ تمامی تست‌های محلی و تست‌های زنده روی سرور پروداکشن با موفقیت 100% پاس شدند.

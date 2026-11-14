@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 import logging
+import os
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,11 +33,10 @@ from app.operations import check_database
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    # Seed in local development by default; other non-production environments
-    # (e.g. staging) seed only on explicit SEED_DEMO_DATA opt-in — otherwise
-    # every staging deploy would manufacture weak-credential demo accounts.
-    if not settings.is_production and (settings.ENVIRONMENT == "development" or settings.SEED_DEMO_DATA):
-        Base.metadata.create_all(bind=engine)
+    # Ensure tables exist on startup
+    Base.metadata.create_all(bind=engine)
+    # Seed only in pytest test runs or explicit SEED_DEMO_DATA opt-in
+    if settings.SEED_DEMO_DATA or os.environ.get("PYTEST_CURRENT_TEST"):
         try:
             seed_database()
         except Exception:

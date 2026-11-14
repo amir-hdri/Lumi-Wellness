@@ -82,3 +82,40 @@
 - **فایل‌های تغییریافته:** `apps/web/src/app/athlete/WorkoutExerciseRow.tsx`, `apps/web/src/app/athlete/WorkoutExerciseRow.test.tsx`, `apps/web/src/app/athlete/programs/[id]/page.tsx`, `apps/web/src/components/twilight/WorkoutPlayer.tsx`, `docs/workout-exercises`, `.context/STATE.md`, `.context/SESSION_LOG.md`
 - **تسک پیشنهادی بعدی:** Commit atomically, fast-forward main including 7c7265e and 31c487e, push normally, verify GitHub SHA and final CI. Public deployment prerequisites remain in docs/DEPLOYMENT_RUNBOOK.md.
 ---
+
+
+## [2026-11-14T22:16:00+03:30] Agent: antigravity
+- **خلاصه کار:** پاک‌سازی داده‌های ساختگی و موک، تنظیم حساب مدیر ارشد واقعی (`mahshid-amiri` / `M@hshid`)، و دیپلوی زنده و ایزولهٔ پروژه Lumi-Wellness روی سرور ورکر شماره 1 بارپرو (`87.107.109.185`) با Docker Compose، بدون کوچک‌ترین اختلال در ورکر سلری و پروکسی بارپرو.
+- **شواهد و راستی‌آزمایی:**
+  - بیلد موفق Docker کانتینرهای بک‌اند (FastAPI) و فرانت‌اند (Next.js 16).
+  - راه‌اندازی موفق کانتینرهای `lumi_backend` و `lumi_web` روی پورت‌های 8000 و 3000 با سقف حافظه ایزوله.
+  - تست موفق هلث‌چک `/ready` (200 OK) و تست لاگین API با اکانت `mahshid-amiri` و صدور توکن‌های JWT.
+  - تست لود صفحه وب فرانت‌اند `http://87.107.109.185:3000` (200 OK با CSP و متصل به بک‌اند).
+  - مانیتورینگ منابع سرور ورکر: مصرف کمتر از 1 گیگابایت رم با بیش از 6.6 گیگابایت رم آزاد و اجرای کاملاً پایدار کانتینرهای `barpro-celery-worker` و `barpro-squid-worker`.
+- **فایل‌های تغییریافته:** `backend/app/schemas.py`, `backend/app/routers/auth.py`, `backend/app/main.py`, `backend/app/clean_db.py`, `apps/web/src/app/auth/login/page.tsx`, `apps/web/config/deploy-env.mjs`, `apps/web/Dockerfile`, `docker-compose.prod.yml`, `.context/STATE.md`, `.context/SESSION_LOG.md`
+- **تسک پیشنهادی بعدی:** بررسی تعاملی پنل مدیریت توسط کاربر و تنظیم احتمالی دامنه سفارشی و SSL در صورت درخواست.
+---
+
+## [2026-11-14T22:17:28.350344] Agent: antigravity
+- **خلاصه کار:** Session completed successfully.
+- **فایل‌های تغییریافته:** none
+- **تسک پیشنهادی بعدی:** Check .context/STATE.md for next planned task.
+---
+
+
+## [2026-11-14T23:55:00+03:30] Agent: antigravity
+- **خلاصه کار:** ریشه‌یابی و رفع کامل خطای 401 هنگام ورود اعضا و مربیان. افزودن قابلیت ورود با شماره موبایل (با انواع فرمت‌های ایرانی 09، +98، 0098 و بدون صفر)، نام‌کاربری ایمیل (بدون وابستگی به دامنه)، و تبدیل خودکار اعداد فارسی کیبورد در فیلد نام‌کاربری و رمز عبور.
+- **شواهد و راستی‌آزمایی:**
+  - راستی‌آزمایی با تست اختصاصی `backend/tests/test_member_login.py` شامل ۸ تست واحد (پاس شدن 100%).
+  - پاس شدن تست‌های کامل بک‌اند (`pytest`) و تست‌های وب (`vitest` و `tsc --noEmit`).
+  - تست و راستی‌آزمایی زنده End-to-End روی سرور پروداکشن ورکر 1 (`87.107.109.185`): اجرای ۶ سناریوی ورود زنده با کد 200 OK شامل ورود با ایمیل، شماره موبایل 11 رقمی، شماره موبایل با +98، شماره موبایل با ارقام فارسی، نام‌کاربری، و رمز عبور حاوی ارقام فارسی کیبورد.
+  - بیلد مجدد و استقرار موفق کانتینرهای `lumi_backend` و `lumi_web` روی سرور ورکر در کنار سرویس‌های پایدار بارپرو بدون کوچک‌ترین تداخل و با حفظ بیش از 6.6 گیگابایت رم آزاد.
+- **فایل‌های تغییریافته:** `backend/app/auth.py`, `backend/app/routers/auth.py`, `backend/app/schemas.py`, `backend/tests/test_member_login.py`, `apps/web/src/app/auth/login/page.tsx`, `.context/STATE.md`, `.context/SESSION_LOG.md`
+- **تسک پیشنهادی بعدی:** تست ورود توسط اعضا در محیط مرورگر و مدیریت باشگاه.
+---
+
+## [2026-11-14T23:52:23.862116] Agent: antigravity
+- **خلاصه کار:** Session completed successfully.
+- **فایل‌های تغییریافته:** none
+- **تسک پیشنهادی بعدی:** Check .context/STATE.md for next planned task.
+---

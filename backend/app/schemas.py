@@ -23,6 +23,10 @@ class BaseSchema(BaseModel):
 # ---- Auth ----
 
 EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+# Supports standard emails, usernames, and Iranian/international phone numbers (including Persian numerals)
+LOGIN_IDENTIFIER_PATTERN = (
+    r"^([^\s@]+@[^\s@]+\.[^\s@]+|[\+0-9a-zA-Z_.\s\u0660-\u0669\u06f0-\u06f9-]{3,100})$"
+)
 
 # Shared password policy (register / reset / change): min 8 chars, >=1 letter, >=1 digit.
 PASSWORD_MIN_LENGTH = 8
@@ -42,7 +46,7 @@ def validate_password_policy(value: str) -> str:
 
 
 class LoginRequest(BaseModel):
-    email: str = Field(max_length=255, pattern=EMAIL_PATTERN)
+    email: str = Field(max_length=255, pattern=LOGIN_IDENTIFIER_PATTERN)
     password: str = Field(min_length=6)
 
 

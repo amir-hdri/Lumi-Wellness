@@ -27,6 +27,32 @@ PASSWORD_RESET_TTL_MINUTES = 30
 _rate_limit_store: dict[str, list[float]] = defaultdict(list)
 
 
+def normalize_digits(s: str) -> str:
+    """Convert Persian and Arabic digits to standard ASCII digits (0-9)."""
+    if not s:
+        return ""
+    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
+    arabic_digits = "٠١٢٣٤٥٦٧٨٩"
+    trans = str.maketrans({
+        **{c: str(i) for i, c in enumerate(persian_digits)},
+        **{c: str(i) for i, c in enumerate(arabic_digits)},
+    })
+    return s.translate(trans)
+
+
+def normalize_phone(raw: str) -> str:
+    """Normalize Iranian phone numbers to standard 11-digit 09xxxxxxxxx format."""
+    digits = normalize_digits(raw)
+    digits = "".join(c for c in digits if c.isdigit())
+    if digits.startswith("0098") and len(digits) >= 14:
+        digits = "0" + digits[4:]
+    elif digits.startswith("98") and len(digits) >= 12:
+        digits = "0" + digits[2:]
+    elif len(digits) == 10 and digits.startswith("9"):
+        digits = "0" + digits
+    return digits
+
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 

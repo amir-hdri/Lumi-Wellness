@@ -44,7 +44,7 @@ const SEED_DEMO_ACCOUNTS: DemoAccount[] = [
 ];
 
 const DEMO_ACCOUNTS = USE_MOCK ? MOCK_DEMO_ACCOUNTS : SEED_DEMO_ACCOUNTS;
-const SHOW_DEMO_ACCOUNTS = process.env.NODE_ENV !== "production";
+const SHOW_DEMO_ACCOUNTS = false;
 
 function SignInContent() {
   const router = useRouter();
@@ -92,28 +92,23 @@ function SignInContent() {
           press, demo pick) instead. */}
       <div>
         <label htmlFor="email" className="mb-2 block text-xs font-medium text-muted-foreground">
-          ایمیل
+          شماره موبایل، نام کاربری یا ایمیل
         </label>
         <div className="relative">
           <input
             id="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
+            type="text"
+            autoComplete="username"
             autoCapitalize="none"
             spellCheck={false}
-            dir="ltr"
-            placeholder="your@email.com"
+            dir="auto"
+            placeholder="شماره موبایل، نام کاربری یا ایمیل"
             disabled={isSubmitting}
             aria-invalid={errors.email ? "true" : "false"}
             aria-describedby={errors.email ? "email-error" : undefined}
-            className={`${inputClassName} text-left`}
+            className={inputClassName}
             {...register("email", {
-              required: "ایمیل ضروری است",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "فرمت ایمیل نامعتبر است",
-              },
+              required: "شماره موبایل، نام کاربری یا ایمیل ضروری است",
             })}
           />
           <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
