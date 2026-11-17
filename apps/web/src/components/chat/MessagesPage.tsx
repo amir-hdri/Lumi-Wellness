@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MessageSquare, Send, User } from "lucide-react";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ function MessagesInner({ role }: { role: "athlete" | "coach" }) {
   const [newOpen, setNewOpen] = useState(false);
   const { mutate: markRead } = useMarkConversationRead();
   const [body, setBody] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const rows = messagesQuery.data?.data ?? [];
   const unread = rows.some((row) => row.senderId !== user?.id && !row.readAt);
   const candidates = (athletes.data?.data ?? []).filter((athlete) =>
@@ -55,6 +56,10 @@ function MessagesInner({ role }: { role: "athlete" | "coach" }) {
   useEffect(() => {
     if (conversation && user && unread) markRead({ conversationId: conversation.id, userId: user.id });
   }, [conversation, user, unread, markRead]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [rows.length]);
 
   const handleSend = async () => {
     if (!conversation || !user || !body.trim() || send.isPending) return;
@@ -80,17 +85,20 @@ function MessagesInner({ role }: { role: "athlete" | "coach" }) {
         <EmptyState icon={<MessageSquare className="h-6 w-6" />} title="هنوز گفت‌وگویی ندارید" />
       ) : (
         <div className="grid min-w-0 gap-4 lg:grid-cols-3">
-          <div className="flex min-w-0 flex-col gap-2 lg:col-span-1" aria-label="گفت‌وگوها">
-            {conversations.map((row) => (
-              <Button key={row.id} variant="ghost" className="h-auto min-w-0 justify-start whitespace-normal text-start"
-                aria-pressed={row.id === conversation?.id}
-                onClick={() => { setBody(""); router.replace(`/${role}/messages?c=${row.id}`, { scroll: false }); }}>
-                <span className="min-w-0 break-words">
-                  {row.participant ? `${row.participant.firstName} ${row.participant.lastName}` : "گفت‌وگو"}
-                  {row.unreadCount > 0 && <span className="ms-2 text-xs">({row.unreadCount})</span>}
-                </span>
-              </Button>
-            ))}
+          <div className="flex min-w-0 gap-2 overflow-x-auto pb-2 no-scrollbar lg:col-span-1 lg:flex-col lg:overflow-x-visible" aria-label="گفت‌وگوها">
+            {conversations.map((row) => {
+              const isSelected = row.id === conversation?.id;
+              return (
+                <Button key={row.id} variant={isSelected ? "secondary" : "ghost"} className="h-auto min-w-0 shrink-0 justify-start whitespace-nowrap text-start lg:shrink lg:whitespace-normal"
+                  aria-pressed={isSelected}
+                  onClick={() => { setBody(""); router.replace(`/${role}/messages?c=${row.id}`, { scroll: false }); }}>
+                  <span className="min-w-0 break-words">
+                    {row.participant ? `${row.participant.firstName} ${row.participant.lastName}` : "گفت‌وگو"}
+                    {row.unreadCount > 0 && <span className="ms-2 text-xs">({row.unreadCount})</span>}
+                  </span>
+                </Button>
+              );
+            })}
           </div>
           {!conversation ? <ErrorDisplay message="گفت‌وگو یافت نشد" /> : (
             <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card lg:col-span-2" aria-label={name}>
@@ -103,17 +111,44 @@ function MessagesInner({ role }: { role: "athlete" | "coach" }) {
                 ) : (
                   <div className="flex max-h-[28rem] flex-col gap-3 overflow-y-auto py-2" role="log" aria-live="polite" aria-label="تاریخچه گفت‌وگو">
                     {rows.length === 0 && <p className="text-xs text-muted-foreground">اولین پیام را بنویسید</p>}
-                    {rows.map((message) => (
-                      <div key={message.id} className={cn("flex", message.senderId === user?.id ? "justify-start" : "justify-end")}>
-                        <div className={cn("max-w-[86%] rounded-2xl px-4 py-3 sm:max-w-[72%]", message.senderId === user?.id ? "bg-primary text-primary-foreground" : "border border-border bg-secondary")}>
-                          <p className="break-words text-sm leading-7 [overflow-wrap:anywhere]">{message.body}</p>
-                          <time dateTime={message.createdAt} className="mt-1.5 block text-xs">{formatRelativeTime(message.createdAt)}</time>
+                    {rows.map((message) => {
+                      const isMine = message.senderId === user?.id;
+                      return (
+                        <div key={message.id} className={cn("flex", isMine ? "justify-end" : "justify-start")}>
+                          <div
+                            className={cn(
+                              "max-w-[86%] rounded-2xl px-4 py-3 sm:max-w-[72%]",
+                              isMine
+                                ? "bg-primary text-primary-foreground rounded-ee-none"
+                                : "border border-border bg-secondary text-foreground rounded-es-none"
+                            )}
+                          >
+                            <p className="break-words text-sm leading-7 [overflow-wrap:anywhere]">{message.body}</p>
+                            <time dateTime={message.createdAt} className={cn("mt-1.5 block text-xs", isMine ? "text-primary-foreground/75" : "text-muted-foreground")}>
+                              {formatRelativeTime(message.createdAt)}
+                            </time>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
+                    <div ref={messagesEndRef} />
                   </div>
                 )}
-                <Textarea aria-label="متن پیام" placeholder="پیام خود را بنویسید..." value={body} onChange={(event) => setBody(event.target.value)} maxLength={2000} disabled={send.isPending} rows={3} />
+                <Textarea
+                  aria-label="متن پیام"
+                  placeholder="پیام خود را بنویسید..."
+                  value={body}
+                  onChange={(event) => setBody(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  maxLength={2000}
+                  disabled={send.isPending}
+                  rows={3}
+                />
                 <Button onClick={handleSend} loading={send.isPending} disabled={!body.trim() || messagesQuery.isError}>
                   <Send className="h-4 w-4" />ارسال پیام
                 </Button>

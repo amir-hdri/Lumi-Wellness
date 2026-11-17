@@ -52,7 +52,7 @@ export default function MembershipPage() {
   const [createdPaymentId, setCreatedPaymentId] = useState<string | null>(null);
 
   const allMemberships = membershipsData?.data || [];
-  const membership = allMemberships.find((m) => m.userId === user?.id) || allMemberships[0];
+  const membership = allMemberships.find((m) => m.userId === user?.id);
   const payments = paymentsData?.data || [];
   const plans = plansData?.data || [];
 

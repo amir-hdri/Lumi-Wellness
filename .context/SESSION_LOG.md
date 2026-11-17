@@ -119,3 +119,15 @@
 - **فایل‌های تغییریافته:** none
 - **تسک پیشنهادی بعدی:** Check .context/STATE.md for next planned task.
 ---
+
+## [2026-11-17T18:48:00+03:30] Agent: antigravity
+- **خلاصه کار:** رفع باگ‌های بحرانی فرانت‌اند و ارتقای تجربه کاربری موبایل بر مبنای ارزیابی UI/UX:
+  1. رفع باگ نشت داده‌های عضویت سایر اعضا در `apps/web/src/app/athlete/membership/page.tsx` با حذف فال‌بک ناامن `|| allMemberships[0]` و نمایش تمیز `EmptyState`.
+  2. حذف محدودیت‌های زوم موبایل (`maximumScale: 1` و `userScalable: false`) در `apps/web/src/app/layout.tsx` جهت برقراری کامل استاندارد `WCAG 1.4.4`.
+  3. استانداردسازی پیام‌رسان در راست‌به‌چپ (`apps/web/src/components/chat/MessagesPage.tsx`): چیدمان صحیح پیام‌های خودی در سمت چپ و مخاطب در سمت راست، اسکرول خودکار به پیام آخر، پشتیبانی از ارسال با کلید Enter، و بهینه‌سازی دکمه‌های گفتگو برای صفحات باریک موبایل.
+- **راستی‌آزمایی:**
+  - بررسی نوع‌سنجی `tsc --noEmit` با کد خروجی 0.
+  - پاس شدن ۱۰۰٪ تمامی ۳۴ فایل تست و ۲۵۵ تست واحد با `vitest`.
+- **فایل‌های تغییریافته:** `apps/web/src/app/athlete/membership/page.tsx`, `apps/web/src/app/layout.tsx`, `apps/web/src/components/chat/MessagesPage.tsx`, `.context/STATE.md`, `.context/SESSION_LOG.md`
+- **تسک پیشنهادی بعدی:** ثبت کامیت، پوش به گیت‌هاب و استقرار کانتینر به‌روزشده فرانت‌اند روی سرور ورکر بارپرو (`87.107.109.185`).
+---
